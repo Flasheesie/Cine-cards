@@ -38,6 +38,10 @@
   .tabs { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;}
   .tab-btn { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); color: var(--text-main); padding: 12px 25px; font-size: 14px; font-family: 'Rajdhani', sans-serif; font-weight: 700; cursor: pointer; border-radius: 30px; transition: 0.4s; text-transform: uppercase; letter-spacing: 2px; }
   .tab-btn:hover, .tab-btn.active { background: rgba(0, 243, 255, 0.1); border-color: var(--neon-blue); color: var(--neon-blue); box-shadow: 0 0 15px rgba(0, 243, 255, 0.3); }
+  
+  /* Onglet Classement Spécial */
+  .tab-btn.btn-classement { border-color: var(--gold); color: var(--gold); }
+  .tab-btn.btn-classement:hover, .tab-btn.btn-classement.active { background: rgba(255, 215, 0, 0.1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
 
   .tab-content { display: none; padding: 40px 20px; max-width: 1300px; margin: 0 auto; animation: fadeIn 0.5s ease-out; }
   .tab-content.active { display: block; }
@@ -251,7 +255,7 @@
   /* BADGE HIGHSCORE */
   .arcade-hs { position: absolute; top: 10px; right: 10px; border: 1px solid; font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 12px; font-family: 'Inter', sans-serif; z-index: 10; }
 
-  /* JEU 1: AFFICHE MYSTERE */
+  /* JEUX STYLES */
   .mystery-poster-container { width: 250px; height: 375px; margin: 0 auto 30px auto; border-radius: 15px; border: 3px solid #333; overflow: hidden; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); transition: 0.5s;}
   .mystery-poster { width: 100%; height: 100%; background-size: cover; background-position: center; transition: 1s ease-out; }
   .mystery-poster.blurred { filter: blur(25px) contrast(1.5) grayscale(50%); transform: scale(1.1); }
@@ -263,31 +267,19 @@
   .mystery-btn.wrong { background: var(--danger); border-color: #fff; box-shadow: 0 0 20px var(--danger); color: #fff; }
   @keyframes shake { 0%, 100% {transform: translateX(0);} 20% {transform: translateX(-10px);} 40% {transform: translateX(10px);} 60% {transform: translateX(-10px);} 80% {transform: translateX(10px);} }
   .shake-effect { animation: shake 0.5s ease-in-out; }
-
-  /* JEU 2: LA MACHINE TEMPORELLE (CHRONO) */
   .chrono-poster-container { width: 220px; height: 330px; margin: 0 auto 15px auto; border-radius: 12px; border: 2px solid var(--neon-pink); overflow: hidden; box-shadow: 0 0 25px rgba(255,0,234,0.3); }
   .chrono-poster { width: 100%; height: 100%; background-size: cover; background-position: center; }
   .chrono-title { font-family: 'Rajdhani'; font-size: 26px; font-weight: bold; color: #fff; margin-bottom: 25px; }
   .chrono-choices .mystery-btn { border-color: var(--neon-pink); font-size: 20px; font-family: 'Rajdhani'; letter-spacing: 1px; }
   .chrono-choices .mystery-btn:hover { background: rgba(255, 0, 234, 0.2); box-shadow: 0 0 15px rgba(255, 0, 234, 0.4); }
-
-  /* JEU 3: L'ŒIL DU CRITIQUE */
   .critic-arena { display: flex; flex-direction: column; align-items: center; gap: 20px; }
   .critic-poster { width: 200px; height: 300px; border-radius: 10px; background-size: cover; background-position: center; border: 2px solid var(--gold); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2); }
   .critic-title { font-family: 'Rajdhani'; font-size: 28px; font-weight: bold; color: #fff; margin-top: 10px;}
   .critic-slider-container { width: 100%; max-width: 400px; margin: 20px 0; }
   .critic-value-display { font-family: 'Rajdhani'; font-size: 56px; color: var(--gold); text-shadow: 0 0 20px var(--gold); font-weight: bold; margin-bottom: 10px; }
-  
   input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
   input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 26px; width: 26px; border-radius: 50%; background: var(--gold); cursor: pointer; margin-top: -9px; box-shadow: 0 0 15px var(--gold); }
   input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: rgba(255, 255, 255, 0.2); border-radius: 5px; }
-
-  /* LEADERBOARD (CLASSEMENT GLOBAL) */
-  .lb-game-title { color: var(--neon-pink); font-family: 'Rajdhani'; font-size: 24px; text-transform: uppercase; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px; text-align: left; }
-  .lb-row { display: flex; justify-content: space-between; padding: 12px; background: rgba(0,0,0,0.5); border-radius: 8px; margin-bottom: 8px; font-family: 'Inter'; font-size: 14px; border: 1px solid rgba(255,255,255,0.05); }
-  .lb-row:nth-child(1) { border-left: 4px solid var(--gold); background: rgba(255, 215, 0, 0.1); font-weight: bold; color: var(--gold);}
-  .lb-row:nth-child(2) { border-left: 4px solid var(--silver); background: rgba(192, 192, 192, 0.1); color: var(--silver);}
-  .lb-row:nth-child(3) { border-left: 4px solid var(--bronze); background: rgba(205, 127, 50, 0.1); color: var(--bronze);}
 
   @media (max-width: 900px) { 
     .collection-layout { flex-direction: column; } 
@@ -315,6 +307,7 @@
     <button class="tab-btn" onclick="switchTab('films')">Films</button>
     <button class="tab-btn" onclick="switchTab('series')">Séries</button>
     <button class="tab-btn" onclick="switchTab('collections')">Collections</button>
+    <button class="tab-btn btn-classement" onclick="switchTab('classement')">🏆 Classement</button>
   </nav>
 </header>
 
@@ -351,14 +344,8 @@
 
   <!-- ESPACE ARCADE -->
   <div class="glass-panel" style="margin-top: 30px; text-align: center;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <div></div> <!-- Spacer -->
-        <div>
-            <h3 style="color: var(--gold); font-family: 'Rajdhani'; font-size: 28px; margin:0; text-shadow: 0 0 15px var(--gold); letter-spacing: 2px;">🕹️ Arcade Ciné</h3>
-            <p style="font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 0px; margin-bottom:0;">Des mini-jeux générés à partir de ta propre collection !</p>
-        </div>
-        <button class="btn-sync" style="margin:0; border-color: var(--success); color: var(--success); font-size: 14px; padding: 10px 20px;" onclick="openLeaderboard()">🏆 Classement Général</button>
-    </div>
+    <h3 style="color: var(--gold); font-family: 'Rajdhani'; font-size: 28px; margin:0; text-shadow: 0 0 15px var(--gold); letter-spacing: 2px;">🕹️ Arcade Ciné</h3>
+    <p style="font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 0px; margin-bottom:0;">Des mini-jeux générés à partir de ta propre collection !</p>
     
     <div class="arcade-grid" id="arcade-container">
       <div class="arcade-cabinet" onclick="initMysteryGame()">
@@ -380,6 +367,19 @@
         <p class="arcade-desc">Penses-tu connaître les notes TMDB de tes films ? Devine à 0.5 point près.</p>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- NOUVEL ONGLET CLASSEMENT GÉNÉRAL -->
+<div id="tab-classement" class="tab-content">
+  <div style="text-align: center; margin-bottom: 30px;">
+    <h2 style="color:var(--gold); font-family:'Rajdhani'; text-transform:uppercase; font-size:36px; text-shadow:0 0 15px var(--gold); margin-bottom: 5px; margin-top:0;">Le Panthéon</h2>
+    <p style="color:rgba(255,255,255,0.7); font-size:14px; margin-top:0;">Compare la taille de ta collection et tes records d'arcade avec tes amis !</p>
+    <button class="btn-sync" onclick="loadGlobalLeaderboard()" style="border-color:var(--neon-blue); color:var(--neon-blue); margin-top:10px;">🔄 Actualiser le classement</button>
+  </div>
+  
+  <div class="dashboard-grid" id="global-leaderboard-container">
+      <!-- Les cartes de classement seront injectées ici par Firebase -->
   </div>
 </div>
 
@@ -539,7 +539,7 @@
   <span class="overlay-close" onclick="closeSettingsModal()">×</span>
   <div class="selector-modal" style="height: auto; max-width: 550px;">
     <div class="selector-header">
-      <h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">⚙️️ Paramètres</h2>
+      <h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">⚙ Paramètres</h2>
     </div>
     <div style="display: flex; flex-direction: column; margin-top: 10px;">
       <label class="setting-row"><input type="checkbox" id="setting-skip-anim"> Mode Rapide : Pas d'animation, reste sur l'onglet Gestion</label>
@@ -563,18 +563,7 @@
     <h2 style="color:var(--neon-blue); font-family:'Rajdhani'; text-transform:uppercase; margin-top:0;">Identifiant Arcade</h2>
     <p style="font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom:20px;">Choisis un pseudo pour apparaître dans le classement en ligne avec tes amis.</p>
     <input type="text" id="pseudo-input" placeholder="Ton pseudo..." style="width:100%; padding:15px; border-radius:10px; background:rgba(0,0,0,0.5); border:1px solid var(--neon-blue); color:#fff; margin-bottom:20px; text-align:center; font-family:'Inter'; font-weight:bold; font-size:18px;">
-    <button class="btn-submit" onclick="savePseudo()">Commencer à jouer</button>
-  </div>
-</div>
-
-<!-- NOUVELLE MODALE LEADERBOARD -->
-<div id="leaderboard-overlay" class="overlay">
-  <span class="overlay-close" onclick="closeLeaderboard()">×</span>
-  <div class="selector-modal" style="height: 80vh; max-width: 600px;">
-    <h2 style="color:var(--success); font-family:'Rajdhani'; text-transform:uppercase; text-align:center; margin-top:0; text-shadow: 0 0 15px var(--success); font-size:36px;">🏆 Classement Mondial</h2>
-    <div id="leaderboard-content" style="overflow-y:auto; padding-right:10px; margin-top:20px; flex-grow:1;">
-        <div style="text-align:center; color:var(--neon-blue); font-family:'Rajdhani'; font-size:24px; margin-top:50px;">Connexion au satellite en cours...</div>
-    </div>
+    <button class="btn-submit" onclick="savePseudo()">Entrer dans l'Arène</button>
   </div>
 </div>
 
@@ -655,7 +644,7 @@
     "🦾 Terminator": { type: "collections", ids: [525], localKeys: ["terminator"], max: 6 },
     "🥊 Rocky & Creed": { type: "collections", ids: [1575, 529893], localKeys: ["rocky", "creed"], max: 9 },
     "🏎️ Fast & Furious": { type: "collections", ids: [9485], localKeys: ["fast & furious", "fast and furious", "hobbs & shaw"], max: 11 },
-    "🏴‍☠️ Pirates des Caraïbes": { type: "collections", ids: [295], localKeys: ["pirates of the caribbean", "pirates des caraïbes"], max: 5 },
+    "🏴‍☠️️ Pirates des Caraïbes": { type: "collections", ids: [295], localKeys: ["pirates of the caribbean", "pirates des caraïbes"], max: 5 },
     "🦍 Planète des Singes": { type: "collections", ids: [1722, 1720], localKeys: ["planet of the apes", "planète des singes"], max: 10 },
     "🧙‍♂️ The Witcher": { type: "queries", queries: ["The Witcher", "The Witcher: Blood Origin"], localKeys: ["witcher"], max: 3 },
     "🧟‍♂️ The Walking Dead": { type: "queries", queries: ["The Walking Dead", "Fear the Walking Dead", "The Walking Dead: Dead City", "The Walking Dead: Daryl Dixon", "The Walking Dead: The Ones Who Live", "The Walking Dead: World Beyond", "Tales of the Walking Dead"], localKeys: ["walking dead", "daryl dixon", "dead city", "ones who live"], max: 7 },
@@ -663,26 +652,26 @@
     "🕵️‍♂️ Mission: Impossible": { type: "collections", ids: [87359], localKeys: ["mission: impossible", "mission impossible"], max: 8 }
   };
 
-  let appSettings = JSON.parse(localStorage.getItem('thomasSettings_v70')) || {
+  let appSettings = JSON.parse(localStorage.getItem('thomasSettings_v72')) || {
     skipAnimation: false, dateMode: 'manual', searchMode: 'multi', universeCounts: {},
     highScores: { mystery: 0, chrono: 0, critic: 0 }, pseudo: ""
   };
 
-  let oldSettings = JSON.parse(localStorage.getItem('thomasSettings_v69'));
-  if (oldSettings && !localStorage.getItem('thomasSettings_v70')) {
+  let oldSettings = JSON.parse(localStorage.getItem('thomasSettings_v70')) || JSON.parse(localStorage.getItem('thomasSettings_v69'));
+  if (oldSettings && !localStorage.getItem('thomasSettings_v72')) {
      appSettings.skipAnimation = oldSettings.skipAnimation;
      appSettings.dateMode = oldSettings.dateMode;
      appSettings.searchMode = oldSettings.searchMode;
      appSettings.universeCounts = oldSettings.universeCounts; 
      appSettings.highScores = oldSettings.highScores || { mystery: 0, chrono: 0, critic: 0 };
      appSettings.pseudo = oldSettings.pseudo || "";
-     localStorage.setItem('thomasSettings_v70', JSON.stringify(appSettings));
+     localStorage.setItem('thomasSettings_v72', JSON.stringify(appSettings));
   }
 
   let myMovies = null;
   let myTop3 = null;
   
-  for (let i = 70; i >= 1; i--) {
+  for (let i = 72; i >= 1; i--) {
     let oldData = JSON.parse(localStorage.getItem('thomasMovieCollection_v' + i));
     if (oldData && oldData.length > 0) {
       myMovies = oldData;
@@ -712,16 +701,16 @@
   });
   myMovies = uniqueMovies;
   
-  localStorage.setItem('thomasMovieCollection_v70', JSON.stringify(myMovies));
-  localStorage.setItem('thomasTop3_v70', JSON.stringify(myTop3));
+  localStorage.setItem('thomasMovieCollection_v72', JSON.stringify(myMovies));
+  localStorage.setItem('thomasTop3_v72', JSON.stringify(myTop3));
   
   let recentlyAddedTitle = null;
   let currentPodiumSelectionType = null;
   let currentPodiumSelectionRank = null;
 
   function saveData() {
-    localStorage.setItem('thomasMovieCollection_v70', JSON.stringify(myMovies));
-    localStorage.setItem('thomasTop3_v70', JSON.stringify(myTop3));
+    localStorage.setItem('thomasMovieCollection_v72', JSON.stringify(myMovies));
+    localStorage.setItem('thomasTop3_v72', JSON.stringify(myTop3));
     updateApp();
   }
 
@@ -753,7 +742,7 @@
     appSettings.dateMode = document.getElementById('setting-date-auto').checked ? 'auto' : 'manual';
     const searchRadios = document.getElementsByName('searchMode');
     for (let r of searchRadios) { if (r.checked) { appSettings.searchMode = r.value; break; } }
-    localStorage.setItem('thomasSettings_v70', JSON.stringify(appSettings));
+    localStorage.setItem('thomasSettings_v72', JSON.stringify(appSettings));
     applySettingsUI();
     closeSettingsModal();
   }
@@ -764,6 +753,7 @@
     document.getElementById('tab-' + tabName).classList.add('active');
     event.currentTarget.classList.add('active');
     if(tabName === 'vitrine') { renderPodiums(); checkArcadeAvailability(); updateHighScoresDisplay(); }
+    if(tabName === 'classement') { loadGlobalLeaderboard(); }
   }
 
   function updateHighScoresDisplay() {
@@ -777,10 +767,10 @@
     renderAdminList(); renderAll(); renderPodiums(); updateCollectionsTab(); updateStats(); checkArcadeAvailability(); updateHighScoresDisplay();
   }
 
-function exportData() {
+  // --- NOUVELLE EXPORTATION AVEC BLOB (ZÉRO LIMITE DE TAILLE) ---
+  function exportData() {
     const data = { movies: myMovies, top3: myTop3 };
     const jsonStr = JSON.stringify(data);
-    // Utilisation d'un Blob pour supprimer la limite de taille !
     const blob = new Blob([jsonStr], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     
@@ -790,7 +780,7 @@ function exportData() {
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click(); 
     document.body.removeChild(downloadAnchorNode);
-    URL.revokeObjectURL(url); // Nettoie la mémoire
+    URL.revokeObjectURL(url);
   }
 
   function importData(event) {
@@ -1182,7 +1172,7 @@ function exportData() {
     document.getElementById('card-modal-overlay').classList.add('show');
   }
 
-  window.saveNote = function(index, text) { if (myMovies[index]) { myMovies[index].userNote = text; localStorage.setItem('thomasMovieCollection_v70', JSON.stringify(myMovies)); } }
+  window.saveNote = function(index, text) { if (myMovies[index]) { myMovies[index].userNote = text; localStorage.setItem('thomasMovieCollection_v72', JSON.stringify(myMovies)); } }
   function toggleNotes(index) { notesVisible = !notesVisible; openModal(index);  }
   function closeModal() { document.getElementById('card-modal-overlay').classList.remove('show'); setTimeout(() => { document.getElementById('modal-content-area').innerHTML = ''; }, 300); }
   document.getElementById('card-modal-overlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
@@ -1327,7 +1317,7 @@ function exportData() {
 
       appSettings.universeCounts = appSettings.universeCounts || {};
       appSettings.universeCounts[universeName] = uniqueItems.length;
-      localStorage.setItem('thomasSettings_v70', JSON.stringify(appSettings));
+      localStorage.setItem('thomasSettings_v72', JSON.stringify(appSettings));
       updateCollectionsTab(); 
 
       let html = `<div style="text-align:center; margin-bottom: 40px; margin-top: 20px;"><h2 style="font-family:'Rajdhani'; color:var(--neon-pink); text-transform:uppercase; font-size:36px; margin:0; text-shadow: 0 0 10px var(--neon-pink);">Saga : ${universeName}</h2><p style="color:#888; font-size:14px; text-transform:uppercase; letter-spacing:2px;">Chronologie Complète de l'Univers</p></div><div class="gallery" style="gap: 35px 20px;">`;
@@ -1549,6 +1539,8 @@ function exportData() {
       if (maxCount > 0) document.getElementById('stat-director').innerHTML = `${topDirector}<div style="font-size: 18px; color: #e0e6ed; text-shadow: none; margin-top: 5px;">(${maxCount} visionnages)</div>`;
       else document.getElementById('stat-director').innerText = "-";
     } else { document.getElementById('stat-director').innerText = "-"; }
+    
+    syncProfileToCloud(); // Synchronisation automatique du profil !
   }
 
   function renderAdminList() {
@@ -1571,7 +1563,7 @@ function exportData() {
     }
   }
 
-  // --- GESTION DU PSEUDO ET DU LEADERBOARD ---
+  // --- NOUVEAU SYSTÈME CENTRALISÉ : PROFIL & CLASSEMENT ---
 
   function checkPseudo() {
       if (!appSettings.pseudo || appSettings.pseudo.trim() === "") {
@@ -1588,63 +1580,96 @@ function exportData() {
           return;
       }
       appSettings.pseudo = input;
-      localStorage.setItem('thomasSettings_v70', JSON.stringify(appSettings));
+      localStorage.setItem('thomasSettings_v72', JSON.stringify(appSettings));
       document.getElementById('pseudo-overlay').classList.remove('show');
-      alert(`Bienvenue dans l'Arcade, ${input} ! Tes futurs records seront enregistrés.`);
+      syncProfileToCloud();
+      alert(`Bienvenue dans l'Arène, ${input} !`);
+      
+      // Relance le classement si on était dans cet onglet
+      if(document.getElementById('tab-classement').classList.contains('active')) {
+          loadGlobalLeaderboard();
+      }
   };
 
-  function saveScoreToCloud(gameId, score) {
-      if (!appSettings.pseudo || score <= 0) return;
+  function syncProfileToCloud() {
+      if (!appSettings.pseudo || appSettings.pseudo.trim() === "") return;
       
-      const docRef = db.collection('leaderboard_' + gameId).doc(appSettings.pseudo);
-      
-      docRef.get().then(doc => {
-          if (doc.exists) {
-              if (score > doc.data().score) {
-                  docRef.update({ score: score, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-              }
-          } else {
-              docRef.set({ pseudo: appSettings.pseudo, score: score, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-          }
-      }).catch(err => console.log("Cloud save error:", err));
+      let totalCards = myMovies.length;
+      let totalMinutes = 0;
+      myMovies.forEach(m => { 
+        if (m.type === 'Série' && m.episodeRuntime) {
+           let epsWatched = 0;
+           if (m.watchedEpisodes) { for (let s in m.watchedEpisodes) { epsWatched += m.watchedEpisodes[s].length; } } 
+           totalMinutes += m.episodeRuntime * epsWatched;
+        } else if (m.runtime) { totalMinutes += m.runtime; }
+      });
+      let totalHours = Math.round(totalMinutes / 60);
+
+      // Met à jour TOUT le profil d'un coup dans la collection 'users'
+      db.collection('users').doc(appSettings.pseudo).set({
+          pseudo: appSettings.pseudo,
+          totalCards: totalCards,
+          totalHours: totalHours,
+          hsMystery: appSettings.highScores.mystery || 0,
+          hsChrono: appSettings.highScores.chrono || 0,
+          hsCritic: appSettings.highScores.critic || 0,
+          lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).catch(e => console.log("Erreur sync profile:", e));
   }
 
-  window.openLeaderboard = async function() {
+  window.loadGlobalLeaderboard = async function() {
       if (!checkPseudo()) return;
-      document.getElementById('leaderboard-overlay').classList.add('show');
-      const content = document.getElementById('leaderboard-content');
-      content.innerHTML = `<div style="text-align:center; color:var(--neon-blue); font-family:'Rajdhani'; font-size:24px; margin-top:50px;">Connexion au satellite en cours...</div>`;
       
-      const games = [
-          { id: 'mystery', title: 'L\'Affiche Mystère', color: 'var(--neon-blue)' },
-          { id: 'chrono', title: 'La Machine Temporelle', color: 'var(--neon-pink)' },
-          { id: 'critic', title: 'L\'Œil du Critique', color: 'var(--gold)' }
-      ];
-
-      let fullHtml = '';
-      for (let g of games) {
-          fullHtml += `<div style="margin-bottom:30px;"><h3 class="lb-game-title" style="color:${g.color}; border-bottom-color:${g.color};">${g.title}</h3>`;
-          try {
-              const snapshot = await db.collection('leaderboard_' + g.id).orderBy('score', 'desc').limit(5).get();
-              if (snapshot.empty) {
-                  fullHtml += `<div style="color:#888; font-size:14px; text-align:center;">Aucun score enregistré pour l'instant.</div>`;
-              } else {
-                  snapshot.forEach((doc, idx) => {
-                      const data = doc.data();
-                      fullHtml += `<div class="lb-row"><span>${data.pseudo}</span><strong>${data.score} pts</strong></div>`;
-                  });
-              }
-          } catch(e) {
-              fullHtml += `<div style="color:#ff4c4c; font-size:12px; text-align:center;">Erreur réseau (Vérifie les règles Firestore)</div>`;
+      const container = document.getElementById('global-leaderboard-container');
+      container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:var(--neon-blue); font-family:'Rajdhani'; font-size:24px; margin-top:50px;">📡 Connexion au satellite en cours...</div>`;
+      
+      try {
+          const snapshot = await db.collection('users').get();
+          let users = [];
+          snapshot.forEach(doc => users.push(doc.data()));
+          
+          if(users.length === 0) {
+              container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:#888;">Aucun joueur détecté sur le réseau.</div>`;
+              return;
           }
-          fullHtml += `</div>`;
+
+          container.innerHTML = `
+              ${generateRankCard("📚 Plus Grosse Collection", users, 'totalCards', 'Cartes', 'var(--neon-blue)')}
+              ${generateRankCard("📺 Addict (Temps de visionnage)", users, 'totalHours', 'Heures', 'var(--neon-pink)')}
+              ${generateRankCard("❓ L'Affiche Mystère", users, 'hsMystery', 'Pts', 'var(--neon-blue)')}
+              ${generateRankCard("⏳ La Machine Temporelle", users, 'hsChrono', 'Pts', 'var(--neon-pink)')}
+              ${generateRankCard("🎯 L'Œil du Critique", users, 'hsCritic', 'Pts', 'var(--gold)')}
+          `;
+      } catch(e) {
+          console.error(e);
+          container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:var(--danger); margin-top:50px;">❌ Impossible de récupérer les données des amis.</div>`;
       }
-      content.innerHTML = fullHtml;
   };
 
-  window.closeLeaderboard = function() {
-      document.getElementById('leaderboard-overlay').classList.remove('show');
-  };
+  function generateRankCard(title, users, sortKey, unit, color) {
+      let sorted = [...users].sort((a,b) => (b[sortKey] || 0) - (a[sortKey] || 0));
+      sorted = sorted.filter(u => u[sortKey] > 0).slice(0, 5); // Affiche le Top 5 ayant un score > 0
+      
+      let listHtml = sorted.map((u, i) => {
+          let badgeClass = i === 0 ? 'border-left: 4px solid var(--gold); background: rgba(255, 215, 0, 0.1); color: var(--gold); font-weight:bold;' : 
+                           i === 1 ? 'border-left: 4px solid var(--silver); background: rgba(192, 192, 192, 0.1); color: var(--silver);' : 
+                           i === 2 ? 'border-left: 4px solid var(--bronze); background: rgba(205, 127, 50, 0.1); color: var(--bronze);' : 
+                           'border-left: 4px solid rgba(255,255,255,0.2); color: #fff;';
+                           
+          return `<div style="display:flex; justify-content:space-between; padding:10px 15px; border-radius:8px; margin-bottom:8px; font-family:'Inter'; font-size:14px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.05); ${badgeClass}">
+              <span><strong>${i+1}.</strong> ${u.pseudo} ${u.pseudo === appSettings.pseudo ? '<i>(Toi)</i>' : ''}</span>
+              <strong>${u[sortKey]} ${unit}</strong>
+          </div>`;
+      }).join('');
+      
+      if(sorted.length === 0) listHtml = `<div style="text-align:center; color:#888; font-size:12px; margin-top:20px;">Aucun record défini.</div>`;
+
+      return `
+      <div class="glass-panel" style="padding: 25px;">
+          <h3 style="color:${color}; font-family:'Rajdhani'; text-transform:uppercase; margin-top:0; border-bottom:1px dashed rgba(255,255,255,0.2); padding-bottom:10px; font-size:22px; text-shadow: 0 0 10px ${color};">${title}</h3>
+          <div style="margin-top:15px;">${listHtml}</div>
+      </div>`;
+  }
 
   // --- LOGIQUE DES MINI JEUX ARCADE ---
 
@@ -1713,10 +1738,10 @@ function exportData() {
               container.classList.remove('shake-effect');
               if (mysteryScore > (appSettings.highScores.mystery || 0)) {
                   appSettings.highScores.mystery = mysteryScore;
-                  localStorage.setItem('thomasSettings_v70', JSON.stringify(appSettings));
+                  localStorage.setItem('thomasSettings_v72', JSON.stringify(appSettings));
                   updateHighScoresDisplay();
+                  syncProfileToCloud(); // Synchronisation en Cloud !
               }
-              saveScoreToCloud('mystery', mysteryScore);
               alert(`Game Over ! Score final : ${mysteryScore}`);
               closeGame('mystery');
           }, 1800);
@@ -1798,10 +1823,10 @@ function exportData() {
               container.classList.remove('shake-effect');
               if (chronoScore > (appSettings.highScores.chrono || 0)) {
                   appSettings.highScores.chrono = chronoScore;
-                  localStorage.setItem('thomasSettings_v70', JSON.stringify(appSettings));
+                  localStorage.setItem('thomasSettings_v72', JSON.stringify(appSettings));
                   updateHighScoresDisplay();
+                  syncProfileToCloud(); // Synchronisation en Cloud !
               }
-              saveScoreToCloud('chrono', chronoScore);
               alert(`Raté ! L'année de sortie était bien ${currentChronoMovie.year}.\nScore final : ${chronoScore}`);
               closeGame('chrono');
           }, 1800);
@@ -1865,10 +1890,10 @@ function exportData() {
           setTimeout(() => {
               if (criticScore > (appSettings.highScores.critic || 0)) {
                   appSettings.highScores.critic = criticScore;
-                  localStorage.setItem('thomasSettings_v70', JSON.stringify(appSettings));
+                  localStorage.setItem('thomasSettings_v72', JSON.stringify(appSettings));
                   updateHighScoresDisplay();
+                  syncProfileToCloud(); // Synchronisation en Cloud !
               }
-              saveScoreToCloud('critic', criticScore);
               alert(`Game Over ! Tu as trouvé ${criticScore} notes d'affilée.`);
               closeGame('critic');
           }, 1800);
