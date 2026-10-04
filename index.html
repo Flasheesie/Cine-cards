@@ -40,7 +40,7 @@
   .tab-btn.btn-classement { border-color: var(--gold); color: var(--gold); }
   .tab-btn.btn-classement:hover, .tab-btn.btn-classement.active { background: rgba(255, 215, 0, 0.1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
 
-  #app-content { display: none; } /* Caché jusqu'à la connexion */
+  #app-content { display: none; }
   #app-content.loaded { display: block; }
 
   .tab-content { display: none; padding: 40px 20px; max-width: 1300px; margin: 0 auto; animation: fadeIn 0.5s ease-out; }
@@ -48,7 +48,7 @@
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   .glass-panel { background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
 
-  /* ÉLÉMENTS DE FORMULAIRE */
+  /* GESTION & RECHERCHE */
   .admin-container { display: flex; gap: 30px; flex-wrap: wrap; }
   .form-section, .list-section { flex: 1; min-width: 300px; }
   .form-group { margin-bottom: 20px; }
@@ -160,7 +160,7 @@
   .overlay-close { position: absolute; top: 30px; right: 40px; color: rgba(255,255,255,0.5); font-size: 40px; cursor: pointer; transition: 0.3s; font-family: sans-serif; z-index: 10000;}
   .overlay-close:hover { color: var(--neon-pink); transform: scale(1.2); }
   
-  /* OVERLAY DE CONNEXION (BLOQUE TOUT) */
+  /* OVERLAY DE CONNEXION */
   #login-overlay { background: var(--bg-dark); z-index: 99999; }
   .login-box { width: 100%; max-width: 400px; text-align: center; }
 
@@ -190,20 +190,10 @@
   .modal-card-container .unlock { font-size: 13px; padding: 10px; margin-bottom: 15px;}
   .modal-card-container .quote { font-size: 14px; padding-top: 15px;}
   .modal-card-container .universe-tag { font-size: 11px; padding: 4px 10px; margin-bottom: 10px;}
-
   .modal-synopsis { flex: 1; color: #fff; text-shadow: none; font-size: 16px; line-height: 1.6; font-weight: 500; max-height: 80vh; overflow-y: auto; text-align: left; }
   .modal-synopsis h3 { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); font-family: 'Rajdhani'; text-transform: uppercase; font-size: 24px; margin-top: 0;}
 
-  /* Modal de Selection Podium */
-  .selector-modal { background: var(--bg-dark); border: 1px solid var(--neon-blue); border-radius: 20px; width: 80%; max-width: 800px; height: 70vh; display: flex; flex-direction: column; padding: 30px; box-shadow: 0 0 30px rgba(0, 243, 255, 0.2); }
-  .selector-header { text-align: center; margin-bottom: 20px; }
-  .selector-header h2 { font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0; }
-  .selector-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; overflow-y: auto; padding-right: 10px; }
-  .selector-item { background-size: cover; background-position: center; height: 180px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; transition: 0.2s; position: relative; }
-  .selector-item:hover { border-color: var(--gold); transform: scale(1.05); }
-  .selector-title { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.8); color: #fff; font-size: 11px; text-align: center; padding: 5px 0; font-weight: bold; box-sizing: border-box; border-radius: 0 0 10px 10px;}
-
-  /* OVERLAY CLASSEUR GÉNÉRIQUE & GESTION ÉPISODES */
+  /* OVERLAYS CLASSEUR GÉNÉRIQUE & ÉPISODES */
   #collection-binder-overlay { background: rgba(0,0,0,0.9); }
   #episode-manager-overlay { background: rgba(0,0,0,0.95); z-index: 10001; }
   .episodes-modal { background: var(--bg-dark); border: 1px solid var(--neon-pink); border-radius: 20px; width: 90%; max-width: 1000px; height: 80vh; display: flex; flex-direction: column; padding: 20px; box-shadow: 0 0 30px rgba(255, 0, 234, 0.2); }
@@ -214,28 +204,17 @@
   .ep-btn.watched { background: rgba(0, 243, 255, 0.2); border-color: var(--neon-blue); color: var(--neon-blue); font-weight: bold; }
   .ep-btn:hover { border-color: var(--neon-pink); }
 
-  /* MODAL PARAMÈTRES */
-  #settings-overlay { z-index: 10005; }
-  .setting-row { display: flex; align-items: center; gap: 10px; cursor: pointer; color: #fff; font-family: 'Inter'; font-size: 14px; margin-bottom: 15px;}
-  .setting-row input { width: 18px; height: 18px; accent-color: var(--neon-blue); cursor: pointer;}
-
   /* MINI JEUX ARCADE */
   .arcade-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
   .arcade-cabinet { background: linear-gradient(135deg, rgba(20,20,30,0.8), rgba(0,0,0,0.9)); border: 2px solid var(--glass-border); border-radius: 15px; padding: 20px; text-align: center; cursor: pointer; transition: 0.4s; position: relative; overflow: hidden;}
   .arcade-cabinet:hover { border-color: var(--neon-blue); transform: translateY(-5px) scale(1.02); box-shadow: 0 10px 30px rgba(0, 243, 255, 0.2); }
   .arcade-cabinet::before { content:''; position: absolute; top:0; left:-100%; width:50%; height:100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); transform: skewX(-20deg); transition: 0.5s; }
   .arcade-cabinet:hover::before { left: 150%; }
-  
   @keyframes hoverIcon { 0%, 100% { transform: translateY(0); text-shadow: 0 0 5px rgba(255,255,255,0.3); } 50% { transform: translateY(-8px); text-shadow: 0 0 15px rgba(255,255,255,0.8); } }
   .arcade-icon { font-size: 45px; margin-bottom: 15px; display: inline-block; animation: hoverIcon 2.5s ease-in-out infinite; }
-  
   .arcade-title { color: var(--neon-pink); font-family: 'Rajdhani'; font-size: 22px; text-transform: uppercase; margin: 0 0 10px 0; letter-spacing: 1px; }
   .arcade-desc { font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.4; }
   .arcade-hs { position: absolute; top: 10px; right: 10px; border: 1px solid; font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 12px; font-family: 'Inter', sans-serif; z-index: 10; }
-
-  /* LEADERBOARD (CLASSEMENT GLOBAL) */
-  .lb-game-title { color: var(--neon-pink); font-family: 'Rajdhani'; font-size: 24px; text-transform: uppercase; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px; text-align: left; }
-  .lb-row { display: flex; justify-content: space-between; padding: 12px; background: rgba(0,0,0,0.5); border-radius: 8px; margin-bottom: 8px; font-family: 'Inter'; font-size: 14px; border: 1px solid rgba(255,255,255,0.05); }
 
   /* JEUX STYLES */
   .mystery-poster-container { width: 250px; height: 375px; margin: 0 auto 30px auto; border-radius: 15px; border: 3px solid #333; overflow: hidden; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); transition: 0.5s;}
@@ -264,10 +243,8 @@
   input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: rgba(255, 255, 255, 0.2); border-radius: 5px; }
 
   @media (max-width: 900px) { 
-    .collection-layout { flex-direction: column; } 
-    .sidebar { width: 100%; position: static; } 
-    .modal-wrapper { flex-direction: column; text-align: center; }
-    .modal-card-container { order: 1; }
+    .collection-layout { flex-direction: column; } .sidebar { width: 100%; position: static; } 
+    .modal-wrapper { flex-direction: column; text-align: center; } .modal-card-container { order: 1; }
     .modal-notes { order: 2; width: 100%; min-height: 180px; margin-top: 10px; }
     .modal-synopsis { order: 3; margin-top: 20px; text-align: center; font-size: 14px;}
     .mystery-choices, .chrono-choices { grid-template-columns: 1fr; }
@@ -276,27 +253,16 @@
 </head>
 <body>
 
-<div class="bg-animation">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-</div>
+<div class="bg-animation"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
 
 <!-- ÉCRAN DE CONNEXION (VERROUILLAGE) -->
 <div id="login-overlay" class="overlay show">
   <div class="glass-panel login-box">
     <h1 style="font-size: 2.5em; margin-top:0;">Ciné Cards</h1>
-    <p style="font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 30px;">Identifie-toi pour synchroniser tes cartes avec le cloud.</p>
-    
-    <div class="form-group" style="text-align: left;">
-        <label>Pseudo de Joueur</label>
-        <input type="text" id="login-pseudo" placeholder="Ex: Thomas">
-    </div>
-    <div class="form-group" style="text-align: left;">
-        <label>Code Secret (Mot de passe)</label>
-        <input type="password" id="login-pin" placeholder="••••">
-    </div>
-    
-    <button class="btn-submit" onclick="attemptLogin()" id="btn-login-submit">Se Connecter / S'inscrire</button>
+    <p style="font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 30px;">Identifie-toi pour accéder à ta collection et au classement mondial.</p>
+    <div class="form-group" style="text-align: left;"><label>Pseudo de Joueur</label><input type="text" id="login-pseudo" placeholder="Ex: Thomas"></div>
+    <div class="form-group" style="text-align: left;"><label>Code Secret (Mot de passe)</label><input type="password" id="login-pin" placeholder="••••"></div>
+    <button class="btn-submit" onclick="attemptLogin()" id="btn-login-submit">Entrer dans l'Arène</button>
     <div id="login-status" style="margin-top: 15px; font-size: 14px; font-weight: bold; color: var(--neon-blue); height: 20px;"></div>
   </div>
 </div>
@@ -315,61 +281,23 @@
       </nav>
     </header>
 
-    <!-- ONGLET VITRINE -->
     <div id="tab-vitrine" class="tab-content active">
       <div class="dashboard-grid">
-        <div class="glass-panel stat-card">
-          <h3 style="margin:0;">Cartes Débloquées</h3>
-          <div class="stat-value" id="stat-total" style="font-size: 48px; margin: 10px 0;">0</div>
-          <div class="stat-detail">Œuvres archivées dans ton classeur</div>
-        </div>
-        <div class="glass-panel stat-card">
-          <h3 style="margin:0; color: var(--gold);">Temps de Visionnage</h3>
-          <div class="stat-value" id="stat-runtime" style="font-size: 48px; margin: 10px 0; color: var(--gold); text-shadow: 0 0 10px var(--gold);">0 h</div>
-          <div class="stat-detail">Durée totale cumulée (arrondie à l'heure)</div>
-        </div>
-        <div class="glass-panel stat-card">
-          <h3 style="margin:0; color: var(--neon-pink);">Réal / Créateur Favori</h3>
-          <div class="stat-value" id="stat-director" style="font-size: 28px; margin: 10px 0; color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink);">...</div>
-          <div class="stat-detail">L'artiste le plus présent dans ta base</div>
-        </div>
+        <div class="glass-panel stat-card"><h3 style="margin:0;">Cartes Débloquées</h3><div class="stat-value" id="stat-total" style="font-size: 48px; margin: 10px 0;">0</div><div class="stat-detail">Œuvres archivées dans ton classeur</div></div>
+        <div class="glass-panel stat-card"><h3 style="margin:0; color: var(--gold);">Temps de Visionnage</h3><div class="stat-value" id="stat-runtime" style="font-size: 48px; margin: 10px 0; color: var(--gold); text-shadow: 0 0 10px var(--gold);">0 h</div><div class="stat-detail">Durée totale cumulée (arrondie à l'heure)</div></div>
+        <div class="glass-panel stat-card"><h3 style="margin:0; color: var(--neon-pink);">Réal / Créateur Favori</h3><div class="stat-value" id="stat-director" style="font-size: 28px; margin: 10px 0; color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink);">...</div><div class="stat-detail">L'artiste le plus présent dans ta base</div></div>
       </div>
-      
       <div style="display: flex; gap: 30px; margin-top: 30px; flex-wrap: wrap;">
-        <div class="glass-panel" style="flex: 1; min-width: 300px; text-align: center;">
-          <h3 style="color: var(--neon-blue); font-family: 'Rajdhani'; font-size: 24px; margin-top:0;">Top 3 Films (Personnalisé)</h3>
-          <div id="podium-films" class="podium-container"></div>
-        </div>
-        <div class="glass-panel" style="flex: 1; min-width: 300px; text-align: center;">
-          <h3 style="color: var(--neon-pink); font-family: 'Rajdhani'; font-size: 24px; margin-top:0;">Top 3 Séries (Personnalisé)</h3>
-          <div id="podium-series" class="podium-container"></div>
-        </div>
+        <div class="glass-panel" style="flex: 1; min-width: 300px; text-align: center;"><h3 style="color: var(--neon-blue); font-family: 'Rajdhani'; font-size: 24px; margin-top:0;">Top 3 Films (Personnalisé)</h3><div id="podium-films" class="podium-container"></div></div>
+        <div class="glass-panel" style="flex: 1; min-width: 300px; text-align: center;"><h3 style="color: var(--neon-pink); font-family: 'Rajdhani'; font-size: 24px; margin-top:0;">Top 3 Séries (Personnalisé)</h3><div id="podium-series" class="podium-container"></div></div>
       </div>
-
-      <!-- ESPACE ARCADE -->
       <div class="glass-panel" style="margin-top: 30px; text-align: center;">
         <h3 style="color: var(--gold); font-family: 'Rajdhani'; font-size: 28px; margin:0; text-shadow: 0 0 15px var(--gold); letter-spacing: 2px;">🕹️ Arcade Ciné</h3>
         <p style="font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 0px; margin-bottom:0;">Des mini-jeux générés à partir de ta propre collection !</p>
-        
         <div class="arcade-grid" id="arcade-container">
-          <div class="arcade-cabinet" onclick="initMysteryGame()">
-            <div class="arcade-hs" id="hs-mystery" style="border-color:var(--neon-blue); color:var(--neon-blue); background:rgba(0,243,255,0.1);">🏆 Max: 0</div>
-            <span class="arcade-icon">❓</span>
-            <h4 class="arcade-title" style="color: var(--neon-blue);">L'Affiche Mystère</h4>
-            <p class="arcade-desc">L'affiche est floutée. Sauras-tu retrouver l'œuvre parmi 4 choix ?</p>
-          </div>
-          <div class="arcade-cabinet" onclick="initChronoGame()" style="border-color: rgba(255,0,234,0.3);">
-            <div class="arcade-hs" id="hs-chrono" style="border-color:var(--neon-pink); color:var(--neon-pink); background:rgba(255,0,234,0.1);">🏆 Max: 0</div>
-            <span class="arcade-icon">⏳</span>
-            <h4 class="arcade-title" style="color: var(--neon-pink);">La Machine Temporelle</h4>
-            <p class="arcade-desc">Retrouve l'année exacte de sortie de l'œuvre pour continuer ta série !</p>
-          </div>
-          <div class="arcade-cabinet" onclick="initCriticGame()" style="border-color: rgba(255,215,0,0.3);">
-            <div class="arcade-hs" id="hs-critic" style="border-color:var(--gold); color:var(--gold); background:rgba(255,215,0,0.1);">🏆 Max: 0</div>
-            <span class="arcade-icon">🎯</span>
-            <h4 class="arcade-title" style="color: var(--gold);">L'Œil du Critique</h4>
-            <p class="arcade-desc">Penses-tu connaître les notes TMDB de tes films ? Devine à 0.5 point près.</p>
-          </div>
+          <div class="arcade-cabinet" onclick="initMysteryGame()"><div class="arcade-hs" id="hs-mystery" style="border-color:var(--neon-blue); color:var(--neon-blue); background:rgba(0,243,255,0.1);">🏆 Max: 0</div><span class="arcade-icon">❓</span><h4 class="arcade-title" style="color: var(--neon-blue);">L'Affiche Mystère</h4><p class="arcade-desc">L'affiche est floutée. Sauras-tu retrouver l'œuvre parmi 4 choix ?</p></div>
+          <div class="arcade-cabinet" onclick="initChronoGame()" style="border-color: rgba(255,0,234,0.3);"><div class="arcade-hs" id="hs-chrono" style="border-color:var(--neon-pink); color:var(--neon-pink); background:rgba(255,0,234,0.1);">🏆 Max: 0</div><span class="arcade-icon">⏳</span><h4 class="arcade-title" style="color: var(--neon-pink);">La Machine Temporelle</h4><p class="arcade-desc">Retrouve l'année exacte de sortie de l'œuvre pour continuer ta série !</p></div>
+          <div class="arcade-cabinet" onclick="initCriticGame()" style="border-color: rgba(255,215,0,0.3);"><div class="arcade-hs" id="hs-critic" style="border-color:var(--gold); color:var(--gold); background:rgba(255,215,0,0.1);">🏆 Max: 0</div><span class="arcade-icon">🎯</span><h4 class="arcade-title" style="color: var(--gold);">L'Œil du Critique</h4><p class="arcade-desc">Penses-tu connaître les notes TMDB de tes films ? Devine à 0.5 point près.</p></div>
         </div>
       </div>
     </div>
@@ -393,25 +321,19 @@
             <span style="font-size: 24px; cursor: pointer; transition: 0.3s;" onclick="openSettingsModal()" onmouseover="this.style.transform='rotate(90deg)'" onmouseout="this.style.transform='rotate(0deg)'" title="Paramètres">⚙️</span>
           </div>
           <p style="font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 20px; margin-top:-10px;">Indique le numéro ou l'année si tu veux cibler une version précise.</p>
-          
           <form id="movieForm">
             <div class="form-group"><label>Titre exact</label><input type="text" id="m-title" required placeholder="Ex: Toy Story 2"></div>
-            <div class="form-group" id="date-group-container">
-              <label id="date-label">Date de visionnage</label>
-              <input type="text" id="m-unlock" required placeholder="Ex: Juillet 2026">
-            </div>
+            <div class="form-group" id="date-group-container"><label id="date-label">Date de visionnage</label><input type="text" id="m-unlock" required placeholder="Ex: Juillet 2026"></div>
             <button type="submit" class="btn-submit" id="main-submit-btn" style="margin-top: 10px;">Lancer la recherche</button>
             <div id="loading-overlay">Scan des bases de données en cours...<span id="loading-details">Connexion à TMDB, Wikidata et OMDb...</span></div>
           </form>
         </div>
-
         <div class="glass-panel list-section">
           <h2 style="margin-top:0; color:var(--neon-pink); font-family: 'Rajdhani'; text-transform: uppercase;">Base de Données</h2>
           <input type="text" id="admin-search-input" placeholder="🔍 Rechercher un titre à supprimer..." onkeyup="renderAdminList()" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--neon-pink); background: rgba(0,0,0,0.5); color: #fff; margin-bottom: 15px; box-sizing: border-box; font-family: inherit;">
           <div id="admin-movie-list" style="max-height: 250px; overflow-y: auto; padding-right: 10px;"></div>
         </div>
       </div>
-
       <div class="glass-panel" style="width: 100%; box-sizing: border-box; margin-top: 30px; text-align: center;">
         <h2 style="margin-top:0; color:var(--silver); font-family: 'Rajdhani'; text-transform: uppercase;">⚙️ Sauvegarde (Optionnel)</h2>
         <p style="font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 20px;">Tes données sont sauvées dans le Cloud à chaque action ! Tu peux quand même exporter un JSON par sécurité.</p>
@@ -421,76 +343,13 @@
       </div>
     </div>
 
-    <!-- ONGLET FILMS -->
-    <div id="tab-films" class="tab-content">
-      <div class="collection-layout">
-        <aside class="glass-panel sidebar">
-          <div class="filter-box">
-            <h3>Rechercher</h3>
-            <input type="text" id="search-filter-films" placeholder="Nom du film..." onkeyup="renderAll()">
-            <h3 style="margin-top: 20px;">Trier</h3>
-            <select id="sort-select-films" onchange="renderAll()">
-              <option value="default">Derniers ajouts</option>
-              <option value="title-asc">Ordre alphabétique (A-Z)</option>
-              <option value="rarity-desc">Rareté TMDB (Légendaire d'abord)</option>
-              <option value="year-asc">Ordre chronologique (Marathon)</option>
-            </select>
-          </div>
-        </aside>
-        <main class="gallery-main"><div class="gallery" id="gallery-films"></div></main>
-      </div>
-    </div>
-
-    <!-- ONGLET SÉRIES -->
-    <div id="tab-series" class="tab-content">
-      <div class="collection-layout">
-        <aside class="glass-panel sidebar">
-          <div class="filter-box">
-            <h3>Rechercher</h3>
-            <input type="text" id="search-filter-series" placeholder="Nom de la série..." onkeyup="renderAll()">
-            <h3 style="margin-top: 20px;">Trier</h3>
-            <select id="sort-select-series" onchange="renderAll()">
-              <option value="default">Derniers ajouts</option>
-              <option value="title-asc">Ordre alphabétique (A-Z)</option>
-              <option value="rarity-desc">Rareté TMDB (Légendaire d'abord)</option>
-              <option value="year-asc">Ordre chronologique (Marathon)</option>
-            </select>
-          </div>
-        </aside>
-        <main class="gallery-main"><div class="gallery" id="gallery-series"></div></main>
-      </div>
-    </div>
-
-    <!-- ONGLET COLLECTIONS -->
+    <!-- ONGLETS FILMS / SÉRIES / COLLECTIONS -->
+    <div id="tab-films" class="tab-content"><div class="collection-layout"><aside class="glass-panel sidebar"><div class="filter-box"><h3>Rechercher</h3><input type="text" id="search-filter-films" placeholder="Nom du film..." onkeyup="renderAll()"><h3 style="margin-top: 20px;">Trier</h3><select id="sort-select-films" onchange="renderAll()"><option value="default">Derniers ajouts</option><option value="title-asc">Ordre alphabétique (A-Z)</option><option value="rarity-desc">Rareté TMDB (Légendaire d'abord)</option><option value="year-asc">Ordre chronologique (Marathon)</option></select></div></aside><main class="gallery-main"><div class="gallery" id="gallery-films"></div></main></div></div>
+    <div id="tab-series" class="tab-content"><div class="collection-layout"><aside class="glass-panel sidebar"><div class="filter-box"><h3>Rechercher</h3><input type="text" id="search-filter-series" placeholder="Nom de la série..." onkeyup="renderAll()"><h3 style="margin-top: 20px;">Trier</h3><select id="sort-select-series" onchange="renderAll()"><option value="default">Derniers ajouts</option><option value="title-asc">Ordre alphabétique (A-Z)</option><option value="rarity-desc">Rareté TMDB (Légendaire d'abord)</option><option value="year-asc">Ordre chronologique (Marathon)</option></select></div></aside><main class="gallery-main"><div class="gallery" id="gallery-series"></div></main></div></div>
     <div id="tab-collections" class="tab-content">
-      <div style="text-align: center; margin-bottom: 30px;">
-        <button class="btn-sync" onclick="syncCollection()" id="sync-btn">🔄 Synchroniser les données</button>
-        <div id="sync-status" style="display: none; color: var(--neon-blue); font-family: 'Rajdhani'; font-weight: bold; font-size: 18px;">Synchronisation en cours... 0%</div>
-      </div>
-      <div class="glass-panel" style="margin-bottom: 30px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
-        <div style="flex: 2; min-width: 250px;">
-          <label style="font-size: 12px; color: var(--neon-blue); text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">🔍 Rechercher</label>
-          <input type="text" id="search-filter-collections" placeholder="Nom de saga ou de réalisateur..." onkeyup="updateCollectionsTab()" style="width: 100%; padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--neon-blue); margin-top: 5px; box-sizing: border-box; font-family: inherit; transition: 0.3s;">
-        </div>
-        <div style="flex: 1; min-width: 200px;">
-          <label style="font-size: 12px; color: var(--neon-pink); text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">↕️ Trier par</label>
-          <select id="sort-select-collections" onchange="updateCollectionsTab()" style="width: 100%; padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--neon-pink); margin-top: 5px; box-sizing: border-box; font-family: inherit; cursor: pointer; transition: 0.3s;">
-            <option value="count-desc">Progression (Le plus vu d'abord)</option>
-            <option value="percent-desc">Complétion (% le plus élevé)</option>
-            <option value="name-asc">Ordre alphabétique (A-Z)</option>
-          </select>
-        </div>
-      </div>
-      <div style="display: flex; gap: 30px; flex-wrap: wrap;">
-        <div class="glass-panel" style="flex: 1; min-width: 300px;">
-          <h2 style="color: var(--neon-blue); font-family: 'Rajdhani'; text-transform: uppercase; margin-top:0;">Sagas & Univers</h2>
-          <div id="collections-universes"></div>
-        </div>
-        <div class="glass-panel" style="flex: 1; min-width: 300px;">
-          <h2 style="color: var(--neon-pink); font-family: 'Rajdhani'; text-transform: uppercase; margin-top:0;">Réalisateurs & Créateurs</h2>
-          <div id="collections-directors"></div>
-        </div>
-      </div>
+      <div style="text-align: center; margin-bottom: 30px;"><button class="btn-sync" onclick="syncCollection()" id="sync-btn">🔄 Synchroniser les données</button><div id="sync-status" style="display: none; color: var(--neon-blue); font-family: 'Rajdhani'; font-weight: bold; font-size: 18px;">Synchronisation en cours... 0%</div></div>
+      <div class="glass-panel" style="margin-bottom: 30px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap;"><div style="flex: 2; min-width: 250px;"><label style="font-size: 12px; color: var(--neon-blue); text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">🔍 Rechercher</label><input type="text" id="search-filter-collections" placeholder="Nom de saga ou de réalisateur..." onkeyup="updateCollectionsTab()" style="width: 100%; padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--neon-blue); margin-top: 5px; box-sizing: border-box; font-family: inherit; transition: 0.3s;"></div><div style="flex: 1; min-width: 200px;"><label style="font-size: 12px; color: var(--neon-pink); text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">↕️ Trier par</label><select id="sort-select-collections" onchange="updateCollectionsTab()" style="width: 100%; padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--neon-pink); margin-top: 5px; box-sizing: border-box; font-family: inherit; cursor: pointer; transition: 0.3s;"><option value="count-desc">Progression (Le plus vu d'abord)</option><option value="percent-desc">Complétion (% le plus élevé)</option><option value="name-asc">Ordre alphabétique (A-Z)</option></select></div></div>
+      <div style="display: flex; gap: 30px; flex-wrap: wrap;"><div class="glass-panel" style="flex: 1; min-width: 300px;"><h2 style="color: var(--neon-blue); font-family: 'Rajdhani'; text-transform: uppercase; margin-top:0;">Sagas & Univers</h2><div id="collections-universes"></div></div><div class="glass-panel" style="flex: 1; min-width: 300px;"><h2 style="color: var(--neon-pink); font-family: 'Rajdhani'; text-transform: uppercase; margin-top:0;">Réalisateurs & Créateurs</h2><div id="collections-directors"></div></div></div>
     </div>
 </div>
 
@@ -516,50 +375,15 @@
       <label class="setting-row"><input type="radio" name="dateMode" value="manual" id="setting-date-manual"> Date personnalisable</label>
       <label class="setting-row"><input type="radio" name="dateMode" value="auto" id="setting-date-auto"> Date automatique</label>
       <button onclick="saveSettings()" class="btn-submit" style="margin-top: 25px;">Enregistrer les modifications</button>
-      <button onclick="logout()" class="btn-sync" style="margin-top: 15px; border-color:#ff4c4c; color:#ff4c4c;">Se Déconnecter</button>
+      <button onclick="logout()" class="btn-sync" style="margin-top: 15px; border-color:#ff4c4c; color:#ff4c4c;">Se Déconnecter de l'Arène</button>
     </div>
   </div>
 </div>
 
 <!-- OVERLAYS DES MINI-JEUX ARCADE -->
-<div id="game-mystery-overlay" class="overlay">
-  <span class="overlay-close" onclick="closeGame('mystery')">×</span>
-  <div class="game-modal">
-    <div class="game-header">L'Affiche Mystère</div>
-    <div class="game-score">Série en cours : <span id="mystery-score">0</span></div>
-    <div class="mystery-poster-container" id="mystery-container"><div id="mystery-image" class="mystery-poster blurred"></div></div>
-    <div class="mystery-choices" id="mystery-choices"></div>
-  </div>
-</div>
-
-<div id="game-chrono-overlay" class="overlay">
-  <span class="overlay-close" onclick="closeGame('chrono')">×</span>
-  <div class="game-modal">
-    <div class="game-header" style="color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink);">La Machine Temporelle</div>
-    <div class="game-score">Série en cours : <span id="chrono-score" style="color: var(--neon-pink);">0</span></div>
-    <div class="chrono-poster-container" id="chrono-container"><div id="chrono-poster" class="chrono-poster"></div></div>
-    <div class="chrono-title" id="chrono-title">Titre de l'œuvre</div>
-    <div class="mystery-choices chrono-choices" id="chrono-choices"></div>
-  </div>
-</div>
-
-<div id="game-critic-overlay" class="overlay">
-  <span class="overlay-close" onclick="closeGame('critic')">×</span>
-  <div class="game-modal">
-    <div class="game-header" style="color: var(--gold); text-shadow: 0 0 15px var(--gold);">L'Œil du Critique</div>
-    <div class="game-score">Série en cours : <span id="critic-score" style="color: var(--gold);">0</span></div>
-    <div class="critic-arena">
-      <div class="critic-poster" id="critic-poster"></div>
-      <div class="critic-title" id="critic-title">Titre du Film</div>
-      <div class="critic-slider-container">
-        <div class="critic-value-display" id="critic-slider-val">5.0</div>
-        <input type="range" id="critic-slider" min="0" max="10" step="0.1" value="5" oninput="updateCriticSlider(this.value)">
-      </div>
-      <div id="critic-result" style="height: 30px; margin-bottom: 10px;"></div>
-      <button class="btn-submit" id="critic-validate-btn" style="width: auto; padding: 10px 40px; font-size: 20px;">Valider ma note</button>
-    </div>
-  </div>
-</div>
+<div id="game-mystery-overlay" class="overlay"><span class="overlay-close" onclick="closeGame('mystery')">×</span><div class="game-modal"><div class="game-header">L'Affiche Mystère</div><div class="game-score">Série en cours : <span id="mystery-score">0</span></div><div class="mystery-poster-container" id="mystery-container"><div id="mystery-image" class="mystery-poster blurred"></div></div><div class="mystery-choices" id="mystery-choices"></div></div></div>
+<div id="game-chrono-overlay" class="overlay"><span class="overlay-close" onclick="closeGame('chrono')">×</span><div class="game-modal"><div class="game-header" style="color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink);">La Machine Temporelle</div><div class="game-score">Série en cours : <span id="chrono-score" style="color: var(--neon-pink);">0</span></div><div class="chrono-poster-container" id="chrono-container"><div id="chrono-poster" class="chrono-poster"></div></div><div class="chrono-title" id="chrono-title">Titre de l'œuvre</div><div class="mystery-choices chrono-choices" id="chrono-choices"></div></div></div>
+<div id="game-critic-overlay" class="overlay"><span class="overlay-close" onclick="closeGame('critic')">×</span><div class="game-modal"><div class="game-header" style="color: var(--gold); text-shadow: 0 0 15px var(--gold);">L'Œil du Critique</div><div class="game-score">Série en cours : <span id="critic-score" style="color: var(--gold);">0</span></div><div class="critic-arena"><div class="critic-poster" id="critic-poster"></div><div class="critic-title" id="critic-title">Titre du Film</div><div class="critic-slider-container"><div class="critic-value-display" id="critic-slider-val">5.0</div><input type="range" id="critic-slider" min="0" max="10" step="0.1" value="5" oninput="updateCriticSlider(this.value)"></div><div id="critic-result" style="height: 30px; margin-bottom: 10px;"></div><button class="btn-submit" id="critic-validate-btn" style="width: auto; padding: 10px 40px; font-size: 20px;">Valider ma note</button></div></div></div>
 
 <script>
   const API_KEY = 'fb195a905bf531daf7eb642dbf16c455'; 
@@ -589,28 +413,25 @@
   };
 
   // VARIABLES GLOBALES
-  let appSettings = JSON.parse(localStorage.getItem('thomasSettings_v73')) || {
+  let appSettings = JSON.parse(localStorage.getItem('thomasSettings_v74')) || {
     skipAnimation: false, dateMode: 'manual', searchMode: 'multi', universeCounts: {},
     highScores: { mystery: 0, chrono: 0, critic: 0 }, pseudo: "", pin: ""
   };
   let myMovies = []; let myTop3 = { Film: [null, null, null], Série: [null, null, null] };
-  let notesVisible = true;
-  let recentlyAddedTitle = null; let currentPodiumSelectionType = null; let currentPodiumSelectionRank = null;
+  let notesVisible = true; let recentlyAddedTitle = null; let currentPodiumSelectionType = null; let currentPodiumSelectionRank = null;
 
   // --- DÉMARRAGE ET CONNEXION CLOUD ---
   document.addEventListener("DOMContentLoaded", () => {
-    // Regarde si on trouve une ancienne sauvegarde locale pour migrer les données
-    for (let i = 72; i >= 1; i--) {
+    for (let i = 73; i >= 1; i--) {
       let oldData = JSON.parse(localStorage.getItem('thomasMovieCollection_v' + i));
       if (oldData && oldData.length > 0) {
-        myMovies = oldData;
-        myTop3 = JSON.parse(localStorage.getItem('thomasTop3_v' + i)) || myTop3;
+        myMovies = oldData; myTop3 = JSON.parse(localStorage.getItem('thomasTop3_v' + i)) || myTop3;
         break;
       }
     }
     
-    let oldSettings = JSON.parse(localStorage.getItem('thomasSettings_v72'));
-    if (oldSettings && !localStorage.getItem('thomasSettings_v73')) {
+    let oldSettings = JSON.parse(localStorage.getItem('thomasSettings_v73')) || JSON.parse(localStorage.getItem('thomasSettings_v72'));
+    if (oldSettings && !localStorage.getItem('thomasSettings_v74')) {
        appSettings.skipAnimation = oldSettings.skipAnimation; appSettings.dateMode = oldSettings.dateMode;
        appSettings.searchMode = oldSettings.searchMode; appSettings.universeCounts = oldSettings.universeCounts; 
        appSettings.highScores = oldSettings.highScores || appSettings.highScores;
@@ -618,7 +439,6 @@
     }
 
     if(appSettings.pseudo && appSettings.pin) {
-        // Tente la connexion automatique
         document.getElementById('login-pseudo').value = appSettings.pseudo;
         document.getElementById('login-pin').value = appSettings.pin;
         attemptLogin();
@@ -630,10 +450,7 @@
       const pin = document.getElementById('login-pin').value.trim();
       const status = document.getElementById('login-status');
       
-      if (pseudo.length < 3 || pin.length < 3) {
-          status.innerText = "Le pseudo et le mot de passe doivent faire 3 caractères min.";
-          return;
-      }
+      if (pseudo.length < 3 || pin.length < 3) { status.innerText = "Le pseudo et le mot de passe doivent faire 3 caractères min."; return; }
       
       document.getElementById('btn-login-submit').style.display = 'none';
       status.innerText = "Connexion au Cloud Firebase en cours...";
@@ -645,18 +462,27 @@
           if(docSnap.exists) {
               const data = docSnap.data();
               if(data.pin === pin) {
-                  // Connexion Réussie : On télécharge les cartes du cloud et écrase le local
-                  if(data.moviesStr) myMovies = JSON.parse(data.moviesStr);
-                  if(data.top3Str) myTop3 = JSON.parse(data.top3Str);
+                  // Connecté : On va chercher le fichier lourd dans la nouvelle collection 'saves'
+                  const saveRef = db.collection('saves').doc(pseudo);
+                  const saveSnap = await saveRef.get();
+                  if(saveSnap.exists) {
+                      const saveData = saveSnap.data();
+                      if(saveData.moviesStr) myMovies = JSON.parse(saveData.moviesStr);
+                      if(saveData.top3Str) myTop3 = JSON.parse(saveData.top3Str);
+                  }
+                  
                   appSettings.pseudo = pseudo; appSettings.pin = pin;
                   appSettings.highScores = { mystery: data.hsMystery||0, chrono: data.hsChrono||0, critic: data.hsCritic||0 };
-                  finishLogin("Connecté avec succès ! Chargement de ta collection...");
+                  
+                  // Nettoyage automatique des anciens profils lourds (Migration v74)
+                  if(data.moviesStr) { await syncProfileToCloud(true); } 
+                  
+                  finishLogin("Connecté ! Chargement de ta collection...");
               } else {
                   status.innerText = "Mot de passe incorrect pour ce pseudo !";
                   document.getElementById('btn-login-submit').style.display = 'block';
               }
           } else {
-              // Nouveau compte : On utilise les cartes locales actuelles et on les pousse sur le cloud
               appSettings.pseudo = pseudo; appSettings.pin = pin;
               await syncProfileToCloud(true);
               finishLogin("Nouveau compte créé ! Collection sauvegardée dans le Cloud.");
@@ -670,9 +496,8 @@
 
   function finishLogin(message) {
       document.getElementById('login-status').innerText = message;
-      localStorage.setItem('thomasSettings_v73', JSON.stringify(appSettings));
+      localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
       
-      // Nettoyage de sécurité des films
       const uniqueMovies = []; const seenKeys = new Set();
       myMovies.forEach(movie => {
         const key = movie.title.toLowerCase() + '|' + movie.type;
@@ -689,27 +514,25 @@
       setTimeout(() => {
           document.getElementById('login-overlay').classList.remove('show');
           document.getElementById('app-content').classList.add('loaded');
-          saveDataLocalOnly(); 
-          applySettingsUI();
-          updateApp();
+          saveDataLocalOnly(); applySettingsUI(); updateApp();
       }, 1000);
   }
 
   window.logout = function() {
       appSettings.pseudo = ""; appSettings.pin = "";
-      localStorage.setItem('thomasSettings_v73', JSON.stringify(appSettings));
+      localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
       window.location.reload();
   };
 
-  // --- SAUVEGARDES ET SYNCHRONISATION CLOUD ---
+  // --- NOUVELLE SYNCHRONISATION CLOUD V74 (ULTRA RAPIDE) ---
   function saveDataLocalOnly() {
-      localStorage.setItem('thomasMovieCollection_v73', JSON.stringify(myMovies));
-      localStorage.setItem('thomasTop3_v73', JSON.stringify(myTop3));
+      localStorage.setItem('thomasMovieCollection_v74', JSON.stringify(myMovies));
+      localStorage.setItem('thomasTop3_v74', JSON.stringify(myTop3));
   }
 
   function saveData() {
       saveDataLocalOnly();
-      syncProfileToCloud(true); // À chaque modif (ajout de film, record), on force la synchro cloud complète
+      syncProfileToCloud(true); // On met à jour le profil et les sauvegardes lourdes
       updateApp();
   }
 
@@ -726,7 +549,8 @@
       });
       let totalHours = Math.round(totalMinutes / 60);
 
-      let payload = {
+      // 1. Sauvegarde LÉGÈRE (Seulement les stats pour le classement mondial)
+      let payloadStats = {
           pseudo: appSettings.pseudo,
           pin: appSettings.pin,
           totalCards: myMovies.length,
@@ -734,48 +558,33 @@
           hsMystery: appSettings.highScores.mystery || 0,
           hsChrono: appSettings.highScores.chrono || 0,
           hsCritic: appSettings.highScores.critic || 0,
-          lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+          lastUpdate: firebase.firestore.FieldValue.serverTimestamp(),
+          // Suppression sécurisée des anciennes données lourdes
+          moviesStr: firebase.firestore.FieldValue.delete(), 
+          top3Str: firebase.firestore.FieldValue.delete()
       };
 
-      if(includeMovies) {
-          payload.moviesStr = JSON.stringify(myMovies);
-          payload.top3Str = JSON.stringify(myTop3);
-      }
+      try {
+          // On envoie les petites stats dans 'users'
+          await db.collection('users').doc(appSettings.pseudo).set(payloadStats, { merge: true });
 
-      try { await db.collection('users').doc(appSettings.pseudo).set(payload, { merge: true }); } 
-      catch(e) { console.log("Sauvegarde Cloud échouée (mode hors ligne)", e); }
+          // 2. Sauvegarde LOURDE (Les films) dans un coffre séparé 'saves'
+          if(includeMovies) {
+              let payloadSave = {
+                  moviesStr: JSON.stringify(myMovies),
+                  top3Str: JSON.stringify(myTop3)
+              };
+              await db.collection('saves').doc(appSettings.pseudo).set(payloadSave, { merge: true });
+          }
+      } catch(e) { console.log("Sauvegarde Cloud échouée (mode hors ligne)", e); }
   }
 
-  function updateApp() {
-    renderAdminList(); renderAll(); renderPodiums(); updateCollectionsTab(); updateStats(); checkArcadeAvailability(); updateHighScoresDisplay();
-  }
-
-  function applySettingsUI() {
-    const dateInput = document.getElementById('m-unlock');
-    const dateLabel = document.getElementById('date-label');
-    if (appSettings.dateMode === 'auto') {
-      dateInput.style.display = 'none'; dateInput.required = false;
-      dateLabel.innerHTML = 'Date de visionnage <span style="color:var(--neon-pink);">(Automatique : Mois et Année actuels)</span>';
-    } else {
-      dateInput.style.display = 'block'; dateInput.required = true;
-      dateLabel.innerText = 'Date de visionnage (Exigée: Mois Année)';
-    }
-  }
-
-  function switchTab(tabName) {
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById('tab-' + tabName).classList.add('active');
-    event.currentTarget.classList.add('active');
-    if(tabName === 'vitrine') { renderPodiums(); checkArcadeAvailability(); updateHighScoresDisplay(); }
-    if(tabName === 'classement') { loadGlobalLeaderboard(); }
-  }
-
-  // --- LEADERBOARD & EXPORTATION ---
+  // --- LEADERBOARD V74 (ULTRA RAPIDE) ---
   window.loadGlobalLeaderboard = async function() {
       const container = document.getElementById('global-leaderboard-container');
       container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:var(--neon-blue); font-family:'Rajdhani'; font-size:24px; margin-top:50px;">📡 Synchronisation avec le Cloud...</div>`;
       try {
+          // Ce get() est maintenant ultra rapide car les documents 'users' font quelques octets !
           const snapshot = await db.collection('users').get();
           let users = []; snapshot.forEach(doc => users.push(doc.data()));
           
@@ -800,23 +609,35 @@
       return `<div class="glass-panel" style="padding: 25px;"><h3 style="color:${color}; font-family:'Rajdhani'; text-transform:uppercase; margin-top:0; border-bottom:1px dashed rgba(255,255,255,0.2); padding-bottom:10px; font-size:22px; text-shadow: 0 0 10px ${color};">${title}</h3><div style="margin-top:15px;">${listHtml}</div></div>`;
   }
 
+  function updateApp() {
+    renderAdminList(); renderAll(); renderPodiums(); updateCollectionsTab(); updateStats(); checkArcadeAvailability(); updateHighScoresDisplay();
+  }
+
+  function applySettingsUI() {
+    const dateInput = document.getElementById('m-unlock'); const dateLabel = document.getElementById('date-label');
+    if (appSettings.dateMode === 'auto') { dateInput.style.display = 'none'; dateInput.required = false; dateLabel.innerHTML = 'Date de visionnage <span style="color:var(--neon-pink);">(Automatique : Mois et Année actuels)</span>'; } 
+    else { dateInput.style.display = 'block'; dateInput.required = true; dateLabel.innerText = 'Date de visionnage (Exigée: Mois Année)'; }
+  }
+
+  function switchTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('tab-' + tabName).classList.add('active');
+    event.currentTarget.classList.add('active');
+    if(tabName === 'vitrine') { renderPodiums(); checkArcadeAvailability(); updateHighScoresDisplay(); }
+    if(tabName === 'classement') { loadGlobalLeaderboard(); }
+  }
+
   function exportData() {
-    const data = { movies: myMovies, top3: myTop3 };
-    const jsonStr = JSON.stringify(data);
-    const blob = new Blob([jsonStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
+    const data = { movies: myMovies, top3: myTop3 }; const jsonStr = JSON.stringify(data);
+    const blob = new Blob([jsonStr], { type: "application/json" }); const url = URL.createObjectURL(blob);
     const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.href = url; downloadAnchorNode.download = "cine_cards_sauvegarde.json";
     document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); document.body.removeChild(downloadAnchorNode); URL.revokeObjectURL(url);
   }
 
   function importData(event) {
     const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        const importedData = JSON.parse(e.target.result);
-        if (importedData.movies) { myMovies = importedData.movies; if (importedData.top3) myTop3 = importedData.top3; saveData(); alert("✅ Sauvegarde restaurée et synchronisée avec le Cloud !"); } 
-      } catch (err) { alert("❌ Erreur lors de la lecture du fichier json."); }
-    };
+    reader.onload = function(e) { try { const importedData = JSON.parse(e.target.result); if (importedData.movies) { myMovies = importedData.movies; if (importedData.top3) myTop3 = importedData.top3; saveData(); alert("✅ Sauvegarde restaurée et synchronisée avec le Cloud !"); } } catch (err) { alert("❌ Erreur lors de la lecture du fichier json."); } };
     reader.readAsText(file); event.target.value = '';
   }
 
@@ -860,7 +681,7 @@
       const itemData = await detailsRes.json();
 
       let title = mediaType === 'movie' ? itemData.title : itemData.name;
-      if (myMovies.some(m => m.title.toLowerCase() === title.toLowerCase() && m.type === (mediaType === 'movie' ? 'Film' : 'Série'))) { alert(`⚠️️ L'œuvre "${title}" est déjà dans ta collection !`); loadingUI.style.display = 'none'; submitBtn.style.display = 'block'; return; }
+      if (myMovies.some(m => m.title.toLowerCase() === title.toLowerCase() && m.type === (mediaType === 'movie' ? 'Film' : 'Série'))) { alert(`⚠ L'œuvre "${title}" est déjà dans ta collection !`); loadingUI.style.display = 'none'; submitBtn.style.display = 'block'; return; }
 
       const rating = itemData.vote_average || 0; let rarity = "commune"; if (rating >= 8.0) rarity = "legendaire"; else if (rating >= 7.0) rarity = "epique"; else if (rating >= 6.0) rarity = "rare";
 
@@ -908,10 +729,21 @@
           const wikiRes = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(sparqlQuery)}&format=json`, { headers: { 'Accept': 'application/sparql-results+json' } });
           const wikiData = await wikiRes.json();
           if (wikiData.results && wikiData.results.bindings.length > 0) {
-            const validAwards = wikiData.results.bindings.filter(b => b.awardLabel && !/^Q\d+$/.test(b.awardLabel.value)).map(b => { let name = b.awardLabel.value; name = name.charAt(0).toUpperCase() + name.slice(1); let awardYear = b.year && b.year.value ? ` (${b.year.value})` : ` (${year})`; return `${name}${awardYear}`; });
+            const validAwards = wikiData.results.bindings.filter(b => b.awardLabel && !/^Q\d+$/.test(b.awardLabel.value)).map(b => { let name = b.awardLabel.value.charAt(0).toUpperCase() + b.awardLabel.value.slice(1); return `${name} (${b.year ? b.year.value : movie.year})`; });
             if (validAwards.length > 0) awards = validAwards;
           }
         } catch(e) {}
+      }
+
+      if (awards.length === 0 && imdbId) {
+        try {
+          const omdbRes = await fetch(`https://www.omdbapi.com/?i=${imdbId}&apikey=${OMDB_KEY}`);
+          const omdbData = await omdbRes.json();
+          if (omdbData.Awards && omdbData.Awards !== "N/A" && omdbData.Awards.includes("Won")) {
+            let wonText = omdbData.Awards.split('.')[0]; 
+            if (wonText.includes("Won")) awards = [`${wonText} (${movie.year})`];
+          }
+        } catch(omdbError) {}
       }
 
       const newMovie = {
