@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ciné Cards</title>
+<!-- FIREBASE SDKS -->
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Inter:wght@300;500;700&display=swap');
 
@@ -278,6 +282,13 @@
   input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 26px; width: 26px; border-radius: 50%; background: var(--gold); cursor: pointer; margin-top: -9px; box-shadow: 0 0 15px var(--gold); }
   input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: rgba(255, 255, 255, 0.2); border-radius: 5px; }
 
+  /* LEADERBOARD (CLASSEMENT GLOBAL) */
+  .lb-game-title { color: var(--neon-pink); font-family: 'Rajdhani'; font-size: 24px; text-transform: uppercase; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px; text-align: left; }
+  .lb-row { display: flex; justify-content: space-between; padding: 12px; background: rgba(0,0,0,0.5); border-radius: 8px; margin-bottom: 8px; font-family: 'Inter'; font-size: 14px; border: 1px solid rgba(255,255,255,0.05); }
+  .lb-row:nth-child(1) { border-left: 4px solid var(--gold); background: rgba(255, 215, 0, 0.1); font-weight: bold; color: var(--gold);}
+  .lb-row:nth-child(2) { border-left: 4px solid var(--silver); background: rgba(192, 192, 192, 0.1); color: var(--silver);}
+  .lb-row:nth-child(3) { border-left: 4px solid var(--bronze); background: rgba(205, 127, 50, 0.1); color: var(--bronze);}
+
   @media (max-width: 900px) { 
     .collection-layout { flex-direction: column; } 
     .sidebar { width: 100%; position: static; } 
@@ -340,8 +351,14 @@
 
   <!-- ESPACE ARCADE -->
   <div class="glass-panel" style="margin-top: 30px; text-align: center;">
-    <h3 style="color: var(--gold); font-family: 'Rajdhani'; font-size: 28px; margin-top:0; text-shadow: 0 0 15px var(--gold); letter-spacing: 2px;">🕹️ Arcade Ciné</h3>
-    <p style="font-size: 13px; color: rgba(255,255,255,0.6); margin-top: -10px;">Des mini-jeux générés à partir de ta propre collection !</p>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div></div> <!-- Spacer -->
+        <div>
+            <h3 style="color: var(--gold); font-family: 'Rajdhani'; font-size: 28px; margin:0; text-shadow: 0 0 15px var(--gold); letter-spacing: 2px;">🕹️ Arcade Ciné</h3>
+            <p style="font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 0px; margin-bottom:0;">Des mini-jeux générés à partir de ta propre collection !</p>
+        </div>
+        <button class="btn-sync" style="margin:0; border-color: var(--success); color: var(--success); font-size: 14px; padding: 10px 20px;" onclick="openLeaderboard()">🏆 Classement Général</button>
+    </div>
     
     <div class="arcade-grid" id="arcade-container">
       <div class="arcade-cabinet" onclick="initMysteryGame()">
@@ -522,7 +539,7 @@
   <span class="overlay-close" onclick="closeSettingsModal()">×</span>
   <div class="selector-modal" style="height: auto; max-width: 550px;">
     <div class="selector-header">
-      <h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">⚙️ Paramètres</h2>
+      <h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">⚙️️ Paramètres</h2>
     </div>
     <div style="display: flex; flex-direction: column; margin-top: 10px;">
       <label class="setting-row"><input type="checkbox" id="setting-skip-anim"> Mode Rapide : Pas d'animation, reste sur l'onglet Gestion</label>
@@ -540,8 +557,28 @@
   </div>
 </div>
 
+<!-- NOUVELLE MODALE POUR LE PSEUDO -->
+<div id="pseudo-overlay" class="overlay">
+  <div class="selector-modal" style="height: auto; max-width: 400px; text-align: center;">
+    <h2 style="color:var(--neon-blue); font-family:'Rajdhani'; text-transform:uppercase; margin-top:0;">Identifiant Arcade</h2>
+    <p style="font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom:20px;">Choisis un pseudo pour apparaître dans le classement en ligne avec tes amis.</p>
+    <input type="text" id="pseudo-input" placeholder="Ton pseudo..." style="width:100%; padding:15px; border-radius:10px; background:rgba(0,0,0,0.5); border:1px solid var(--neon-blue); color:#fff; margin-bottom:20px; text-align:center; font-family:'Inter'; font-weight:bold; font-size:18px;">
+    <button class="btn-submit" onclick="savePseudo()">Commencer à jouer</button>
+  </div>
+</div>
+
+<!-- NOUVELLE MODALE LEADERBOARD -->
+<div id="leaderboard-overlay" class="overlay">
+  <span class="overlay-close" onclick="closeLeaderboard()">×</span>
+  <div class="selector-modal" style="height: 80vh; max-width: 600px;">
+    <h2 style="color:var(--success); font-family:'Rajdhani'; text-transform:uppercase; text-align:center; margin-top:0; text-shadow: 0 0 15px var(--success); font-size:36px;">🏆 Classement Mondial</h2>
+    <div id="leaderboard-content" style="overflow-y:auto; padding-right:10px; margin-top:20px; flex-grow:1;">
+        <div style="text-align:center; color:var(--neon-blue); font-family:'Rajdhani'; font-size:24px; margin-top:50px;">Connexion au satellite en cours...</div>
+    </div>
+  </div>
+</div>
+
 <!-- OVERLAYS DES MINI-JEUX ARCADE -->
-<!-- Jeu 1 : Mystère -->
 <div id="game-mystery-overlay" class="overlay">
   <span class="overlay-close" onclick="closeGame('mystery')">×</span>
   <div class="game-modal">
@@ -554,13 +591,11 @@
   </div>
 </div>
 
-<!-- Jeu 2 : La Machine Temporelle (Chrono) -->
 <div id="game-chrono-overlay" class="overlay">
   <span class="overlay-close" onclick="closeGame('chrono')">×</span>
   <div class="game-modal">
     <div class="game-header" style="color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink);">La Machine Temporelle</div>
     <div class="game-score">Série en cours : <span id="chrono-score" style="color: var(--neon-pink);">0</span></div>
-    
     <div class="chrono-poster-container" id="chrono-container">
       <div id="chrono-poster" class="chrono-poster"></div>
     </div>
@@ -569,24 +604,19 @@
   </div>
 </div>
 
-<!-- Jeu 3 : L'Œil du Critique -->
 <div id="game-critic-overlay" class="overlay">
   <span class="overlay-close" onclick="closeGame('critic')">×</span>
   <div class="game-modal">
     <div class="game-header" style="color: var(--gold); text-shadow: 0 0 15px var(--gold);">L'Œil du Critique</div>
     <div class="game-score">Série en cours : <span id="critic-score" style="color: var(--gold);">0</span></div>
-    
     <div class="critic-arena">
       <div class="critic-poster" id="critic-poster"></div>
       <div class="critic-title" id="critic-title">Titre du Film</div>
-      
       <div class="critic-slider-container">
         <div class="critic-value-display" id="critic-slider-val">5.0</div>
         <input type="range" id="critic-slider" min="0" max="10" step="0.1" value="5" oninput="updateCriticSlider(this.value)">
       </div>
-      
       <div id="critic-result" style="height: 30px; margin-bottom: 10px;"></div>
-      
       <button class="btn-submit" id="critic-validate-btn" style="width: auto; padding: 10px 40px; font-size: 20px;">Valider ma note</button>
     </div>
   </div>
@@ -595,6 +625,18 @@
 <script>
   const API_KEY = 'fb195a905bf531daf7eb642dbf16c455'; 
   const OMDB_KEY = 'bb349eee';
+
+  // --- INITIALISATION DE LA BASE DE DONNÉES CLOUD (FIREBASE) ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyA0syiijV_sB24t_vFBeaReOg-WF4x6SfE",
+    authDomain: "cinecards.firebaseapp.com",
+    projectId: "cinecards",
+    storageBucket: "cinecards.firebasestorage.app",
+    messagingSenderId: "372218012013",
+    appId: "1:372218012013:web:3cf9d42e42174d1504fa64"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
   const SUPER_UNIVERSES = {
     "🌌 Star Wars": { type: "collections", ids: [10], extraQueries: ["The Mandalorian", "The Book of Boba Fett", "Obi-Wan Kenobi", "Andor", "Ahsoka", "The Acolyte", "The Bad Batch", "Star Wars: The Clone Wars", "Rogue One", "Solo", "Tales of the Jedi", "Tales of the Empire", "Skeleton Crew", "Star Wars: Rebels", "Star Wars: Resistance", "Star Wars: Visions"], localKeys: ["star wars", "mandalorian", "boba", "obi-wan", "andor", "ahsoka", "acolyte", "skeleton", "clone", "bad batch", "rogue one", "solo", "rebels", "visions"], max: 25 },
@@ -621,25 +663,26 @@
     "🕵️‍♂️ Mission: Impossible": { type: "collections", ids: [87359], localKeys: ["mission: impossible", "mission impossible"], max: 8 }
   };
 
-  let appSettings = JSON.parse(localStorage.getItem('thomasSettings_v69')) || {
+  let appSettings = JSON.parse(localStorage.getItem('thomasSettings_v70')) || {
     skipAnimation: false, dateMode: 'manual', searchMode: 'multi', universeCounts: {},
-    highScores: { mystery: 0, chrono: 0, critic: 0 }
+    highScores: { mystery: 0, chrono: 0, critic: 0 }, pseudo: ""
   };
 
-  let oldSettings = JSON.parse(localStorage.getItem('thomasSettings_v68'));
-  if (oldSettings && !localStorage.getItem('thomasSettings_v69')) {
+  let oldSettings = JSON.parse(localStorage.getItem('thomasSettings_v69'));
+  if (oldSettings && !localStorage.getItem('thomasSettings_v70')) {
      appSettings.skipAnimation = oldSettings.skipAnimation;
      appSettings.dateMode = oldSettings.dateMode;
      appSettings.searchMode = oldSettings.searchMode;
      appSettings.universeCounts = oldSettings.universeCounts; 
      appSettings.highScores = oldSettings.highScores || { mystery: 0, chrono: 0, critic: 0 };
-     localStorage.setItem('thomasSettings_v69', JSON.stringify(appSettings));
+     appSettings.pseudo = oldSettings.pseudo || "";
+     localStorage.setItem('thomasSettings_v70', JSON.stringify(appSettings));
   }
 
   let myMovies = null;
   let myTop3 = null;
   
-  for (let i = 69; i >= 1; i--) {
+  for (let i = 70; i >= 1; i--) {
     let oldData = JSON.parse(localStorage.getItem('thomasMovieCollection_v' + i));
     if (oldData && oldData.length > 0) {
       myMovies = oldData;
@@ -669,16 +712,16 @@
   });
   myMovies = uniqueMovies;
   
-  localStorage.setItem('thomasMovieCollection_v69', JSON.stringify(myMovies));
-  localStorage.setItem('thomasTop3_v69', JSON.stringify(myTop3));
+  localStorage.setItem('thomasMovieCollection_v70', JSON.stringify(myMovies));
+  localStorage.setItem('thomasTop3_v70', JSON.stringify(myTop3));
   
   let recentlyAddedTitle = null;
   let currentPodiumSelectionType = null;
   let currentPodiumSelectionRank = null;
 
   function saveData() {
-    localStorage.setItem('thomasMovieCollection_v69', JSON.stringify(myMovies));
-    localStorage.setItem('thomasTop3_v69', JSON.stringify(myTop3));
+    localStorage.setItem('thomasMovieCollection_v70', JSON.stringify(myMovies));
+    localStorage.setItem('thomasTop3_v70', JSON.stringify(myTop3));
     updateApp();
   }
 
@@ -710,7 +753,7 @@
     appSettings.dateMode = document.getElementById('setting-date-auto').checked ? 'auto' : 'manual';
     const searchRadios = document.getElementsByName('searchMode');
     for (let r of searchRadios) { if (r.checked) { appSettings.searchMode = r.value; break; } }
-    localStorage.setItem('thomasSettings_v69', JSON.stringify(appSettings));
+    localStorage.setItem('thomasSettings_v70', JSON.stringify(appSettings));
     applySettingsUI();
     closeSettingsModal();
   }
@@ -1133,7 +1176,7 @@
     document.getElementById('card-modal-overlay').classList.add('show');
   }
 
-  window.saveNote = function(index, text) { if (myMovies[index]) { myMovies[index].userNote = text; localStorage.setItem('thomasMovieCollection_v69', JSON.stringify(myMovies)); } }
+  window.saveNote = function(index, text) { if (myMovies[index]) { myMovies[index].userNote = text; localStorage.setItem('thomasMovieCollection_v70', JSON.stringify(myMovies)); } }
   function toggleNotes(index) { notesVisible = !notesVisible; openModal(index);  }
   function closeModal() { document.getElementById('card-modal-overlay').classList.remove('show'); setTimeout(() => { document.getElementById('modal-content-area').innerHTML = ''; }, 300); }
   document.getElementById('card-modal-overlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
@@ -1278,7 +1321,7 @@
 
       appSettings.universeCounts = appSettings.universeCounts || {};
       appSettings.universeCounts[universeName] = uniqueItems.length;
-      localStorage.setItem('thomasSettings_v69', JSON.stringify(appSettings));
+      localStorage.setItem('thomasSettings_v70', JSON.stringify(appSettings));
       updateCollectionsTab(); 
 
       let html = `<div style="text-align:center; margin-bottom: 40px; margin-top: 20px;"><h2 style="font-family:'Rajdhani'; color:var(--neon-pink); text-transform:uppercase; font-size:36px; margin:0; text-shadow: 0 0 10px var(--neon-pink);">Saga : ${universeName}</h2><p style="color:#888; font-size:14px; text-transform:uppercase; letter-spacing:2px;">Chronologie Complète de l'Univers</p></div><div class="gallery" style="gap: 35px 20px;">`;
@@ -1522,6 +1565,81 @@
     }
   }
 
+  // --- GESTION DU PSEUDO ET DU LEADERBOARD ---
+
+  function checkPseudo() {
+      if (!appSettings.pseudo || appSettings.pseudo.trim() === "") {
+          document.getElementById('pseudo-overlay').classList.add('show');
+          return false;
+      }
+      return true;
+  }
+
+  window.savePseudo = function() {
+      const input = document.getElementById('pseudo-input').value.trim();
+      if (input.length < 3) {
+          alert("Ton pseudo doit contenir au moins 3 caractères !");
+          return;
+      }
+      appSettings.pseudo = input;
+      localStorage.setItem('thomasSettings_v70', JSON.stringify(appSettings));
+      document.getElementById('pseudo-overlay').classList.remove('show');
+      alert(`Bienvenue dans l'Arcade, ${input} ! Tes futurs records seront enregistrés.`);
+  };
+
+  function saveScoreToCloud(gameId, score) {
+      if (!appSettings.pseudo || score <= 0) return;
+      
+      const docRef = db.collection('leaderboard_' + gameId).doc(appSettings.pseudo);
+      
+      docRef.get().then(doc => {
+          if (doc.exists) {
+              if (score > doc.data().score) {
+                  docRef.update({ score: score, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+              }
+          } else {
+              docRef.set({ pseudo: appSettings.pseudo, score: score, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+          }
+      }).catch(err => console.log("Cloud save error:", err));
+  }
+
+  window.openLeaderboard = async function() {
+      if (!checkPseudo()) return;
+      document.getElementById('leaderboard-overlay').classList.add('show');
+      const content = document.getElementById('leaderboard-content');
+      content.innerHTML = `<div style="text-align:center; color:var(--neon-blue); font-family:'Rajdhani'; font-size:24px; margin-top:50px;">Connexion au satellite en cours...</div>`;
+      
+      const games = [
+          { id: 'mystery', title: 'L\'Affiche Mystère', color: 'var(--neon-blue)' },
+          { id: 'chrono', title: 'La Machine Temporelle', color: 'var(--neon-pink)' },
+          { id: 'critic', title: 'L\'Œil du Critique', color: 'var(--gold)' }
+      ];
+
+      let fullHtml = '';
+      for (let g of games) {
+          fullHtml += `<div style="margin-bottom:30px;"><h3 class="lb-game-title" style="color:${g.color}; border-bottom-color:${g.color};">${g.title}</h3>`;
+          try {
+              const snapshot = await db.collection('leaderboard_' + g.id).orderBy('score', 'desc').limit(5).get();
+              if (snapshot.empty) {
+                  fullHtml += `<div style="color:#888; font-size:14px; text-align:center;">Aucun score enregistré pour l'instant.</div>`;
+              } else {
+                  snapshot.forEach((doc, idx) => {
+                      const data = doc.data();
+                      fullHtml += `<div class="lb-row"><span>${data.pseudo}</span><strong>${data.score} pts</strong></div>`;
+                  });
+              }
+          } catch(e) {
+              fullHtml += `<div style="color:#ff4c4c; font-size:12px; text-align:center;">Erreur réseau (Vérifie les règles Firestore)</div>`;
+          }
+          fullHtml += `</div>`;
+      }
+      content.innerHTML = fullHtml;
+  };
+
+  window.closeLeaderboard = function() {
+      document.getElementById('leaderboard-overlay').classList.remove('show');
+  };
+
   // --- LOGIQUE DES MINI JEUX ARCADE ---
 
   function checkArcadeAvailability() {
@@ -1537,6 +1655,7 @@
 
   window.initMysteryGame = function() {
       if (myMovies.length < 4) return;
+      if (!checkPseudo()) return;
       mysteryScore = 0;
       document.getElementById('mystery-score').innerText = mysteryScore;
       document.getElementById('game-mystery-overlay').classList.add('show');
@@ -1588,9 +1707,10 @@
               container.classList.remove('shake-effect');
               if (mysteryScore > (appSettings.highScores.mystery || 0)) {
                   appSettings.highScores.mystery = mysteryScore;
-                  localStorage.setItem('thomasSettings_v69', JSON.stringify(appSettings));
+                  localStorage.setItem('thomasSettings_v70', JSON.stringify(appSettings));
                   updateHighScoresDisplay();
               }
+              saveScoreToCloud('mystery', mysteryScore);
               alert(`Game Over ! Score final : ${mysteryScore}`);
               closeGame('mystery');
           }, 1800);
@@ -1607,6 +1727,7 @@
           alert("Pas assez d'œuvres avec une date de sortie valide dans ta collection.");
           return;
       }
+      if (!checkPseudo()) return;
       chronoScore = 0;
       document.getElementById('chrono-score').innerText = chronoScore;
       document.getElementById('game-chrono-overlay').classList.add('show');
@@ -1671,9 +1792,10 @@
               container.classList.remove('shake-effect');
               if (chronoScore > (appSettings.highScores.chrono || 0)) {
                   appSettings.highScores.chrono = chronoScore;
-                  localStorage.setItem('thomasSettings_v69', JSON.stringify(appSettings));
+                  localStorage.setItem('thomasSettings_v70', JSON.stringify(appSettings));
                   updateHighScoresDisplay();
               }
+              saveScoreToCloud('chrono', chronoScore);
               alert(`Raté ! L'année de sortie était bien ${currentChronoMovie.year}.\nScore final : ${chronoScore}`);
               closeGame('chrono');
           }, 1800);
@@ -1686,6 +1808,7 @@
 
   window.initCriticGame = function() {
       if (myMovies.length < 1) return;
+      if (!checkPseudo()) return;
       criticScore = 0;
       document.getElementById('critic-score').innerText = criticScore;
       document.getElementById('game-critic-overlay').classList.add('show');
@@ -1736,9 +1859,10 @@
           setTimeout(() => {
               if (criticScore > (appSettings.highScores.critic || 0)) {
                   appSettings.highScores.critic = criticScore;
-                  localStorage.setItem('thomasSettings_v69', JSON.stringify(appSettings));
+                  localStorage.setItem('thomasSettings_v70', JSON.stringify(appSettings));
                   updateHighScoresDisplay();
               }
+              saveScoreToCloud('critic', criticScore);
               alert(`Game Over ! Tu as trouvé ${criticScore} notes d'affilée.`);
               closeGame('critic');
           }, 1800);
@@ -1751,7 +1875,6 @@
 
   applySettingsUI(); 
   updateApp();
-  updateHighScoresDisplay();
 </script>
 </body>
 </html>
