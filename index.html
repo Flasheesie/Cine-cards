@@ -777,14 +777,20 @@
     renderAdminList(); renderAll(); renderPodiums(); updateCollectionsTab(); updateStats(); checkArcadeAvailability(); updateHighScoresDisplay();
   }
 
-  function exportData() {
+function exportData() {
     const data = { movies: myMovies, top3: myTop3 };
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+    const jsonStr = JSON.stringify(data);
+    // Utilisation d'un Blob pour supprimer la limite de taille !
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    
     const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "cine_cards_sauvegarde.json");
+    downloadAnchorNode.href = url;
+    downloadAnchorNode.download = "cine_cards_sauvegarde.json";
     document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click(); downloadAnchorNode.remove();
+    downloadAnchorNode.click(); 
+    document.body.removeChild(downloadAnchorNode);
+    URL.revokeObjectURL(url); // Nettoie la mémoire
   }
 
   function importData(event) {
