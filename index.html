@@ -462,7 +462,6 @@
           if(docSnap.exists) {
               const data = docSnap.data();
               if(data.pin === pin) {
-                  // Connecté : On va chercher le fichier lourd dans la nouvelle collection 'saves'
                   const saveRef = db.collection('saves').doc(pseudo);
                   const saveSnap = await saveRef.get();
                   if(saveSnap.exists) {
@@ -473,10 +472,7 @@
                   
                   appSettings.pseudo = pseudo; appSettings.pin = pin;
                   appSettings.highScores = { mystery: data.hsMystery||0, chrono: data.hsChrono||0, critic: data.hsCritic||0 };
-                  
-                  // Nettoyage automatique des anciens profils lourds (Migration v74)
                   if(data.moviesStr) { await syncProfileToCloud(true); } 
-                  
                   finishLogin("Connecté ! Chargement de ta collection...");
               } else {
                   status.innerText = "Mot de passe incorrect pour ce pseudo !";
@@ -532,7 +528,7 @@
 
   function saveData() {
       saveDataLocalOnly();
-      syncProfileToCloud(true); // On met à jour le profil et les sauvegardes lourdes
+      syncProfileToCloud(true); 
       updateApp();
   }
 
@@ -549,7 +545,6 @@
       });
       let totalHours = Math.round(totalMinutes / 60);
 
-      // 1. Sauvegarde LÉGÈRE (Seulement les stats pour le classement mondial)
       let payloadStats = {
           pseudo: appSettings.pseudo,
           pin: appSettings.pin,
@@ -559,24 +554,17 @@
           hsChrono: appSettings.highScores.chrono || 0,
           hsCritic: appSettings.highScores.critic || 0,
           lastUpdate: firebase.firestore.FieldValue.serverTimestamp(),
-          // Suppression sécurisée des anciennes données lourdes
           moviesStr: firebase.firestore.FieldValue.delete(), 
           top3Str: firebase.firestore.FieldValue.delete()
       };
 
       try {
-          // On envoie les petites stats dans 'users'
           await db.collection('users').doc(appSettings.pseudo).set(payloadStats, { merge: true });
-
-          // 2. Sauvegarde LOURDE (Les films) dans un coffre séparé 'saves'
           if(includeMovies) {
-              let payloadSave = {
-                  moviesStr: JSON.stringify(myMovies),
-                  top3Str: JSON.stringify(myTop3)
-              };
+              let payloadSave = { moviesStr: JSON.stringify(myMovies), top3Str: JSON.stringify(myTop3) };
               await db.collection('saves').doc(appSettings.pseudo).set(payloadSave, { merge: true });
           }
-      } catch(e) { console.log("Sauvegarde Cloud échouée (mode hors ligne)", e); }
+      } catch(e) {}
   }
 
   // --- LEADERBOARD V74 (ULTRA RAPIDE) ---
@@ -584,7 +572,6 @@
       const container = document.getElementById('global-leaderboard-container');
       container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:var(--neon-blue); font-family:'Rajdhani'; font-size:24px; margin-top:50px;">📡 Synchronisation avec le Cloud...</div>`;
       try {
-          // Ce get() est maintenant ultra rapide car les documents 'users' font quelques octets !
           const snapshot = await db.collection('users').get();
           let users = []; snapshot.forEach(doc => users.push(doc.data()));
           
@@ -609,13 +596,11 @@
       return `<div class="glass-panel" style="padding: 25px;"><h3 style="color:${color}; font-family:'Rajdhani'; text-transform:uppercase; margin-top:0; border-bottom:1px dashed rgba(255,255,255,0.2); padding-bottom:10px; font-size:22px; text-shadow: 0 0 10px ${color};">${title}</h3><div style="margin-top:15px;">${listHtml}</div></div>`;
   }
 
-  function updateApp() {
-    renderAdminList(); renderAll(); renderPodiums(); updateCollectionsTab(); updateStats(); checkArcadeAvailability(); updateHighScoresDisplay();
-  }
+  function updateApp() { renderAdminList(); renderAll(); renderPodiums(); updateCollectionsTab(); updateStats(); checkArcadeAvailability(); updateHighScoresDisplay(); }
 
   function applySettingsUI() {
     const dateInput = document.getElementById('m-unlock'); const dateLabel = document.getElementById('date-label');
-    if (appSettings.dateMode === 'auto') { dateInput.style.display = 'none'; dateInput.required = false; dateLabel.innerHTML = 'Date de visionnage <span style="color:var(--neon-pink);">(Automatique : Mois et Année actuels)</span>'; } 
+    if (appSettings.dateMode === 'auto') { dateInput.style.display = 'none'; dateInput.required = false; dateLabel.innerHTML = 'Date de visionnage <span style="color:var(--neon-pink);">(Automatique)</span>'; } 
     else { dateInput.style.display = 'block'; dateInput.required = true; dateLabel.innerText = 'Date de visionnage (Exigée: Mois Année)'; }
   }
 
@@ -637,7 +622,7 @@
 
   function importData(event) {
     const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
-    reader.onload = function(e) { try { const importedData = JSON.parse(e.target.result); if (importedData.movies) { myMovies = importedData.movies; if (importedData.top3) myTop3 = importedData.top3; saveData(); alert("✅ Sauvegarde restaurée et synchronisée avec le Cloud !"); } } catch (err) { alert("❌ Erreur lors de la lecture du fichier json."); } };
+    reader.onload = function(e) { try { const importedData = JSON.parse(e.target.result); if (importedData.movies) { myMovies = importedData.movies; if (importedData.top3) myTop3 = importedData.top3; saveData(); alert("✅ Sauvegarde restaurée et synchronisée avec le Cloud !"); } } catch (err) { alert("❌ Erreur de lecture."); } };
     reader.readAsText(file); event.target.value = '';
   }
 
@@ -645,15 +630,8 @@
   document.getElementById('movieForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     let unlockDate = "";
-    if (appSettings.dateMode === 'auto') {
-      const d = new Date(); const monthMapAuto = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-      unlockDate = `${monthMapAuto[d.getMonth()]} ${d.getFullYear()}`;
-    } else {
-      const rawUnlockDate = document.getElementById('m-unlock').value.trim();
-      if (!/^(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre)\s\d{4}$/i.test(rawUnlockDate)) { alert("⚠️ Format invalide (ex: Juillet 2026)."); return; }
-      const parts = rawUnlockDate.split(/\s+/); const monthMap = { 'janvier': 'Janvier', 'février': 'Février', 'fevrier': 'Février', 'mars': 'Mars', 'avril': 'Avril', 'mai': 'Mai', 'juin': 'Juin', 'juillet': 'Juillet', 'août': 'Août', 'aout': 'Août', 'septembre': 'Septembre', 'octobre': 'Octobre', 'novembre': 'Novembre', 'décembre': 'Décembre', 'decembre': 'Décembre' };
-      unlockDate = `${monthMap[parts[0].toLowerCase()]} ${parts[1]}`;
-    }
+    if (appSettings.dateMode === 'auto') { const d = new Date(); const monthMapAuto = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']; unlockDate = `${monthMapAuto[d.getMonth()]} ${d.getFullYear()}`; } 
+    else { const rawUnlockDate = document.getElementById('m-unlock').value.trim(); if (!/^(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre)\s\d{4}$/i.test(rawUnlockDate)) { alert("⚠️ Format invalide (ex: Juillet 2026)."); return; } const parts = rawUnlockDate.split(/\s+/); const monthMap = { 'janvier': 'Janvier', 'février': 'Février', 'fevrier': 'Février', 'mars': 'Mars', 'avril': 'Avril', 'mai': 'Mai', 'juin': 'Juin', 'juillet': 'Juillet', 'août': 'Août', 'aout': 'Août', 'septembre': 'Septembre', 'octobre': 'Octobre', 'novembre': 'Novembre', 'décembre': 'Décembre', 'decembre': 'Décembre' }; unlockDate = `${monthMap[parts[0].toLowerCase()]} ${parts[1]}`; }
 
     let rawInput = document.getElementById('m-title').value.trim(); let targetYear = null;
     const yearMatch = rawInput.match(/\b(19\d{2}|20\d{2})\b$/);
@@ -661,7 +639,7 @@
 
     const cleanInputNorm = normalize(rawInput);
     const loadingUI = document.getElementById('loading-overlay'); const loadingDetails = document.getElementById('loading-details'); const submitBtn = document.getElementById('main-submit-btn');
-    loadingUI.style.display = 'block'; submitBtn.style.display = 'none'; loadingDetails.innerText = "Interrogation de TMDB (Recherche de précision)...";
+    loadingUI.style.display = 'block'; submitBtn.style.display = 'none'; loadingDetails.innerText = "Recherche...";
     let endpoint = appSettings.searchMode || 'multi';
 
     try {
@@ -670,9 +648,7 @@
       let validResults = endpoint === 'multi' ? searchData.results.filter(r => r.media_type === 'movie' || r.media_type === 'tv') : searchData.results.map(r => ({...r, media_type: endpoint}));
 
       let bestResult = null;
-      if (targetYear) {
-        bestResult = validResults.find(r => { const name = normalize(r.title || r.name || ''); const resDate = r.release_date || r.first_air_date || ''; return name === cleanInputNorm && resDate.startsWith(targetYear); }) || validResults.find(r => { const resDate = r.release_date || r.first_air_date || ''; return resDate.startsWith(targetYear); });
-      }
+      if (targetYear) { bestResult = validResults.find(r => { const name = normalize(r.title || r.name || ''); const resDate = r.release_date || r.first_air_date || ''; return name === cleanInputNorm && resDate.startsWith(targetYear); }) || validResults.find(r => { const resDate = r.release_date || r.first_air_date || ''; return resDate.startsWith(targetYear); }); }
       if (!bestResult) bestResult = validResults.find(r => { const name = normalize(r.title || r.name || ''); return name === cleanInputNorm; }) || validResults[0];
       if (!bestResult) { alert("Œuvre introuvable sur TMDB avec ces filtres."); throw new Error("Non trouvé"); }
 
@@ -685,9 +661,7 @@
 
       const rating = itemData.vote_average || 0; let rarity = "commune"; if (rating >= 8.0) rarity = "legendaire"; else if (rating >= 7.0) rarity = "epique"; else if (rating >= 6.0) rarity = "rare";
 
-      let director = "Inconnu"; let directorId = null; let directorTotal = 0; let year = "N/A"; let runtimeMinutes = 0;
-      let seasonsData = []; let watchedEpisodes = {}; let episodeRuntime = 0;
-
+      let director = "Inconnu"; let directorId = null; let directorTotal = 0; let year = "N/A"; let runtimeMinutes = 0; let seasonsData = []; let watchedEpisodes = {}; let episodeRuntime = 0;
       if (mediaType === 'movie') {
         const dirObjs = itemData.credits.crew.filter(c => c.job === 'Director');
         if (dirObjs.length > 0) { director = dirObjs.map(d => d.name).join(', '); directorId = dirObjs[0].id; }
@@ -702,237 +676,79 @@
         episodeRuntime = epLength;
       }
 
-      if (directorId) {
-        try {
-          const dirCreditsRes = await fetch(`https://api.themoviedb.org/3/person/${directorId}/combined_credits?api_key=${API_KEY}&language=fr-FR`);
-          const dirCreditsData = await dirCreditsRes.json();
-          if (dirCreditsData.crew) {
-            const directedList = dirCreditsData.crew.filter(c => c.job === 'Director' || c.job === 'Creator' || c.job === 'Series Director');
-            const uniqueSet = new Set(); directedList.forEach(x => uniqueSet.add(x.id)); directorTotal = Math.max(uniqueSet.size, 1);
-          }
-        } catch(e) {}
-      }
+      if (directorId) { try { const dirCreditsRes = await fetch(`https://api.themoviedb.org/3/person/${directorId}/combined_credits?api_key=${API_KEY}&language=fr-FR`); const dirCreditsData = await dirCreditsRes.json(); if (dirCreditsData.crew) { const directedList = dirCreditsData.crew.filter(c => c.job === 'Director' || c.job === 'Creator' || c.job === 'Series Director'); const uniqueSet = new Set(); directedList.forEach(x => uniqueSet.add(x.id)); directorTotal = Math.max(uniqueSet.size, 1); } } catch(e) {} }
 
       let universe = ""; let universeTotal = 0;
-      if (itemData.belongs_to_collection) {
-        universe = itemData.belongs_to_collection.name; const collId = itemData.belongs_to_collection.id;
-        try {
-          const collRes = await fetch(`https://api.themoviedb.org/3/collection/${collId}?api_key=${API_KEY}&language=fr-FR`);
-          const collData = await collRes.json(); if (collData.parts) universeTotal = collData.parts.length;
-        } catch(e) {}
-      }
+      if (itemData.belongs_to_collection) { universe = itemData.belongs_to_collection.name; const collId = itemData.belongs_to_collection.id; try { const collRes = await fetch(`https://api.themoviedb.org/3/collection/${collId}?api_key=${API_KEY}&language=fr-FR`); const collData = await collRes.json(); if (collData.parts) universeTotal = collData.parts.length; } catch(e) {} }
 
       let awards = []; const wikidataId = itemData.external_ids ? itemData.external_ids.wikidata_id : null; const imdbId = itemData.external_ids ? itemData.external_ids.imdb_id : itemData.imdb_id;
-      if (wikidataId) {
-        try {
-          const sparqlQuery = `SELECT DISTINCT ?awardLabel (YEAR(?date) as ?year) WHERE { wd:${wikidataId} p:P166 ?statement . ?statement ps:P166 ?award . OPTIONAL { ?statement pq:P585 ?date . } SERVICE wikibase:label { bd:serviceParam wikibase:language "en,fr". } } LIMIT 3`;
-          const wikiRes = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(sparqlQuery)}&format=json`, { headers: { 'Accept': 'application/sparql-results+json' } });
-          const wikiData = await wikiRes.json();
-          if (wikiData.results && wikiData.results.bindings.length > 0) {
-            const validAwards = wikiData.results.bindings.filter(b => b.awardLabel && !/^Q\d+$/.test(b.awardLabel.value)).map(b => { let name = b.awardLabel.value.charAt(0).toUpperCase() + b.awardLabel.value.slice(1); return `${name} (${b.year ? b.year.value : movie.year})`; });
-            if (validAwards.length > 0) awards = validAwards;
-          }
-        } catch(e) {}
-      }
+      if (wikidataId) { try { const sparqlQuery = `SELECT DISTINCT ?awardLabel (YEAR(?date) as ?year) WHERE { wd:${wikidataId} p:P166 ?statement . ?statement ps:P166 ?award . OPTIONAL { ?statement pq:P585 ?date . } SERVICE wikibase:label { bd:serviceParam wikibase:language "en,fr". } } LIMIT 3`; const wikiRes = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(sparqlQuery)}&format=json`, { headers: { 'Accept': 'application/sparql-results+json' } }); const wikiData = await wikiRes.json(); if (wikiData.results && wikiData.results.bindings.length > 0) { const validAwards = wikiData.results.bindings.filter(b => b.awardLabel && !/^Q\d+$/.test(b.awardLabel.value)).map(b => { let name = b.awardLabel.value.charAt(0).toUpperCase() + b.awardLabel.value.slice(1); return `${name} (${b.year ? b.year.value : movie.year})`; }); if (validAwards.length > 0) awards = validAwards; } } catch(e) {} }
+      if (awards.length === 0 && imdbId) { try { const omdbRes = await fetch(`https://www.omdbapi.com/?i=${imdbId}&apikey=${OMDB_KEY}`); const omdbData = await omdbRes.json(); if (omdbData.Awards && omdbData.Awards !== "N/A" && omdbData.Awards.includes("Won")) { let wonText = omdbData.Awards.split('.')[0]; if (wonText.includes("Won")) awards = [`${wonText} (${movie.year})`]; } } catch(e) {} }
 
-      if (awards.length === 0 && imdbId) {
-        try {
-          const omdbRes = await fetch(`https://www.omdbapi.com/?i=${imdbId}&apikey=${OMDB_KEY}`);
-          const omdbData = await omdbRes.json();
-          if (omdbData.Awards && omdbData.Awards !== "N/A" && omdbData.Awards.includes("Won")) {
-            let wonText = omdbData.Awards.split('.')[0]; 
-            if (wonText.includes("Won")) awards = [`${wonText} (${movie.year})`];
-          }
-        } catch(omdbError) {}
-      }
-
-      const newMovie = {
-        title: title, type: mediaType === 'movie' ? 'Film' : 'Série', director: director, directorTotal: directorTotal,
-        universe: universe, universeTotal: universeTotal, genre: itemData.genres.map(g => g.name).join(' / '), rarity: rarity, rating: rating.toFixed(1), 
-        poster: itemData.poster_path ? `https://image.tmdb.org/t/p/w500${itemData.poster_path}` : 'https://via.placeholder.com/500x750/0a0a16/00f3ff?text=Image+Manquante',
-        year: year, unlockDate: unlockDate, quote: itemData.tagline || "Une œuvre mémorable.", awards: awards, runtime: runtimeMinutes, synopsis: itemData.overview || "Synopsis non disponible.", userNote: "", seasonsData: seasonsData, watchedEpisodes: watchedEpisodes, episodeRuntime: episodeRuntime
-      };
-
+      const newMovie = { title: title, type: mediaType === 'movie' ? 'Film' : 'Série', director: director, directorTotal: directorTotal, universe: universe, universeTotal: universeTotal, genre: itemData.genres.map(g => g.name).join(' / '), rarity: rarity, rating: rating.toFixed(1), poster: itemData.poster_path ? `https://image.tmdb.org/t/p/w500${itemData.poster_path}` : 'https://via.placeholder.com/500x750/0a0a16/00f3ff?text=Image+Manquante', year: year, unlockDate: unlockDate, quote: itemData.tagline || "Une œuvre mémorable.", awards: awards, runtime: runtimeMinutes, synopsis: itemData.overview || "Synopsis non disponible.", userNote: "", seasonsData: seasonsData, watchedEpisodes: watchedEpisodes, episodeRuntime: episodeRuntime };
       myMovies.unshift(newMovie); recentlyAddedTitle = title; this.reset(); saveData();
       if (!appSettings.skipAnimation) { if (mediaType === 'movie') document.querySelectorAll('.tab-btn')[2].click(); else document.querySelectorAll('.tab-btn')[3].click(); } 
       else { const originalText = submitBtn.innerText; submitBtn.innerText = `✅ Ajouté : ${title}`; submitBtn.style.background = "#28a745"; setTimeout(() => { submitBtn.innerText = originalText; submitBtn.style.background = ""; }, 2000); }
-    } catch (error) { console.error(error); } 
-    finally { loadingUI.style.display = 'none'; submitBtn.style.display = 'block'; }
+    } catch (error) {} finally { loadingUI.style.display = 'none'; submitBtn.style.display = 'block'; }
   });
 
-  // --- RENDU ET AUTRES FONCTIONS ---
-  function getAwardsHTML(awardsArray) {
-    if (!awardsArray) return '';
-    if (typeof awardsArray === 'string') { if(awardsArray.trim() === '') return ''; return `<ul class="awards-list"><li>🏆 ${awardsArray.replace('🏆 ', '')}</li></ul>`; }
-    if (Array.isArray(awardsArray) && awardsArray.length > 0) { const listItems = awardsArray.map(a => `<li>🏆 ${a}</li>`).join(''); return `<ul class="awards-list">${listItems}</ul>`; }
-    return '';
-  }
-
+  // --- RENDU ---
+  function getAwardsHTML(awardsArray) { if (!awardsArray) return ''; if (typeof awardsArray === 'string') { if(awardsArray.trim() === '') return ''; return `<ul class="awards-list"><li>🏆 ${awardsArray.replace('🏆 ', '')}</li></ul>`; } if (Array.isArray(awardsArray) && awardsArray.length > 0) { const listItems = awardsArray.map(a => `<li>🏆 ${a}</li>`).join(''); return `<ul class="awards-list">${listItems}</ul>`; } return ''; }
   function renderAll() { renderGallery('Film', 'gallery-films', 'sort-select-films', 'search-filter-films'); renderGallery('Série', 'gallery-series', 'sort-select-series', 'search-filter-series'); }
+  function renderGallery(type, containerId, sortId, searchId) { const gallery = document.getElementById(containerId); gallery.innerHTML = ''; let sortedMovies = myMovies.map((movie, originalIndex) => ({ movie, originalIndex })).filter(item => item.movie.type === type); const searchVal = document.getElementById(searchId).value.toLowerCase(); if (searchVal) { sortedMovies = sortedMovies.filter(item => item.movie.title.toLowerCase().includes(searchVal)); } const sortValue = document.getElementById(sortId).value; if (sortValue === 'title-asc') sortedMovies.sort((a, b) => a.movie.title.localeCompare(b.movie.title)); else if (sortValue === 'rarity-desc') { const scores = { legendaire: 4, epique: 3, rare: 2, commune: 1 }; sortedMovies.sort((a, b) => scores[b.movie.rarity] - scores[a.movie.rarity]); } else if (sortValue === 'year-asc') { sortedMovies.sort((a, b) => parseInt(a.movie.year || 9999) - parseInt(b.movie.year || 9999)); } sortedMovies.forEach(item => { const movie = item.movie; const index = item.originalIndex; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const animClass = (movie.title === recentlyAddedTitle && !appSettings.skipAnimation) ? 'new-card-anim' : ''; let epBadge = ''; let percentage = 100; if (isSerie) { if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } const cardHTML = `<div class="card-container ${animClass}" onclick="openModal(${index})"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel}:</span> ${movie.director}</p><p><span>Année:</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre:</span> ${movie.genre}</p></div><div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div></div></div></div>`; gallery.innerHTML += cardHTML; }); if(type === 'Série' || type === 'Film') { setTimeout(() => { recentlyAddedTitle = null; }, 100); } }
 
-  function renderGallery(type, containerId, sortId, searchId) {
-    const gallery = document.getElementById(containerId); gallery.innerHTML = ''; 
-    let sortedMovies = myMovies.map((movie, originalIndex) => ({ movie, originalIndex })).filter(item => item.movie.type === type);
-    const searchVal = document.getElementById(searchId).value.toLowerCase();
-    if (searchVal) { sortedMovies = sortedMovies.filter(item => item.movie.title.toLowerCase().includes(searchVal)); }
-    const sortValue = document.getElementById(sortId).value;
-    if (sortValue === 'title-asc') sortedMovies.sort((a, b) => a.movie.title.localeCompare(b.movie.title));
-    else if (sortValue === 'rarity-desc') { const scores = { legendaire: 4, epique: 3, rare: 2, commune: 1 }; sortedMovies.sort((a, b) => scores[b.movie.rarity] - scores[a.movie.rarity]); }
-    else if (sortValue === 'year-asc') { sortedMovies.sort((a, b) => parseInt(a.movie.year || 9999) - parseInt(b.movie.year || 9999)); }
-
-    sortedMovies.forEach(item => {
-      const movie = item.movie; const index = item.originalIndex;
-      const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : '';
-      const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : '';
-      const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`;
-      const animClass = (movie.title === recentlyAddedTitle && !appSettings.skipAnimation) ? 'new-card-anim' : '';
-
-      let epBadge = ''; let percentage = 100;
-      if (isSerie) {
-         if (movie.seasonsData && movie.seasonsData.length > 0) {
-            let completedSeasons = 0; let totalSeasons = movie.seasonsData.length;
-            movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; });
-            percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0;
-            epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`;
-         } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; }
-      }
-
-      const cardHTML = `<div class="card-container ${animClass}" onclick="openModal(${index})"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel}:</span> ${movie.director}</p><p><span>Année:</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre:</span> ${movie.genre}</p></div><div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div></div></div></div>`;
-      gallery.innerHTML += cardHTML;
-    });
-    if(type === 'Série' || type === 'Film') { setTimeout(() => { recentlyAddedTitle = null; }, 100); }
-  }
-
-  function openModal(index) {
-    const movie = myMovies[index];
-    const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : '';
-    const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : '';
-    const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`;
-    const awardsHTML = getAwardsHTML(movie.awards);
-    const synopsisText = movie.synopsis || "Clique sur 'Synchroniser les données' dans l'onglet Collections pour charger le synopsis.";
-    const userNoteText = movie.userNote || "";
-    const notesHiddenClass = notesVisible ? '' : 'hidden'; const toggleButtonText = notesVisible ? '📝 Masquer les notes' : '📝 Afficher les notes';
-
-    let epBadge = ''; let percentage = 100; let btnManager = '';
-    if (isSerie) {
-       btnManager = `<button class="btn-sync" style="border-color: var(--neon-pink); color: var(--neon-pink); font-size: 12px; padding: 6px 12px; margin-top: 10px;" onclick="openEpisodeManager(${index})">📺 Gérer les épisodes</button>`;
-       if (movie.seasonsData && movie.seasonsData.length > 0) {
-          let completedSeasons = 0; let totalSeasons = movie.seasonsData.length;
-          movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; });
-          percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0;
-          epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`;
-       } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; }
-    }
-
-    const fullModalHTML = `<div class="modal-container-box"><button class="btn-toggle-notes" onclick="toggleNotes(${index})">${toggleButtonText}</button><div class="modal-wrapper"><div class="modal-notes ${notesHiddenClass}" id="modal-notes-panel"><h3>📝 Mes Notes</h3><textarea class="post-it" placeholder="Écris tes critiques, théories ou citations préférées ici..." oninput="saveNote(${index}, this.value)">${userNoteText}</textarea><span style="font-size: 10px; color: #888; margin-top: 5px; text-align:right;">* Sauvegarde en temps réel</span></div><div class="modal-card-container"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel} :</span> ${movie.director}</p><p><span>Année :</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre :</span> ${movie.genre}</p>${btnManager}</div>${awardsHTML}<div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div><p class="quote">"${movie.quote}"</p></div></div></div><div class="modal-synopsis"><h3>Synopsis</h3><p>${synopsisText}</p></div></div></div>`;
-    document.getElementById('modal-content-area').innerHTML = fullModalHTML; document.getElementById('card-modal-overlay').classList.add('show');
-  }
-
+  function openModal(index) { const movie = myMovies[index]; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const awardsHTML = getAwardsHTML(movie.awards); const synopsisText = movie.synopsis || "Clique sur 'Synchroniser les données'."; const userNoteText = movie.userNote || ""; const notesHiddenClass = notesVisible ? '' : 'hidden'; const toggleButtonText = notesVisible ? '📝 Masquer les notes' : '📝 Afficher les notes'; let epBadge = ''; let percentage = 100; let btnManager = ''; if (isSerie) { btnManager = `<button class="btn-sync" style="border-color: var(--neon-pink); color: var(--neon-pink); font-size: 12px; padding: 6px 12px; margin-top: 10px;" onclick="openEpisodeManager(${index})">📺 Gérer les épisodes</button>`; if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } const fullModalHTML = `<div class="modal-container-box"><button class="btn-toggle-notes" onclick="toggleNotes(${index})">${toggleButtonText}</button><div class="modal-wrapper"><div class="modal-notes ${notesHiddenClass}" id="modal-notes-panel"><h3>📝 Mes Notes</h3><textarea class="post-it" placeholder="Écris tes critiques..." oninput="saveNote(${index}, this.value)">${userNoteText}</textarea><span style="font-size: 10px; color: #888; margin-top: 5px; text-align:right;">* Sauvegarde en temps réel</span></div><div class="modal-card-container"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel} :</span> ${movie.director}</p><p><span>Année :</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre :</span> ${movie.genre}</p>${btnManager}</div>${awardsHTML}<div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div><p class="quote">"${movie.quote}"</p></div></div></div><div class="modal-synopsis"><h3>Synopsis</h3><p>${synopsisText}</p></div></div></div>`; document.getElementById('modal-content-area').innerHTML = fullModalHTML; document.getElementById('card-modal-overlay').classList.add('show'); }
   window.saveNote = function(index, text) { if (myMovies[index]) { myMovies[index].userNote = text; saveData(); } }
   function toggleNotes(index) { notesVisible = !notesVisible; openModal(index);  }
   function closeModal() { document.getElementById('card-modal-overlay').classList.remove('show'); setTimeout(() => { document.getElementById('modal-content-area').innerHTML = ''; }, 300); }
   document.getElementById('card-modal-overlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 
-  window.openEpisodeManager = function(index) {
-    const overlay = document.getElementById('episode-manager-overlay'); const content = document.getElementById('episode-manager-content'); const titleObj = document.getElementById('episode-manager-title'); let movie = myMovies[index]; titleObj.innerText = `Épisodes : ${movie.title}`;
-    let oldScrollX = 0; let oldScrollY = []; let isSameMovie = (content.dataset.activeIndex == index);
-    if (isSameMovie) { const oldContainer = content.querySelector('.seasons-container'); if (oldContainer) { oldScrollX = oldContainer.scrollLeft; const oldLists = content.querySelectorAll('.episodes-list'); oldLists.forEach(list => oldScrollY.push(list.scrollTop)); } }
-    content.dataset.activeIndex = index;
-    if (!movie.seasonsData || movie.seasonsData.length === 0) { content.innerHTML = `<p style="text-align:center; color:#888; margin-top:50px;">Aucune donnée de saison.<br>Clique sur <strong>Synchroniser les données</strong> dans l'onglet Collections pour charger la grille.</p>`; } else {
-      let html = '<div class="seasons-container">';
-      movie.seasonsData.forEach(season => {
-          let sNum = season.s; let epCount = season.e; let watched = movie.watchedEpisodes[sNum] || [];
-          html += `<div class="season-col"><div style="flex-shrink:0; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><h4 style="margin:0; color:var(--neon-blue); font-family:'Rajdhani'; font-size: 18px;">Saison ${sNum}</h4><button onclick="toggleAllEpisodes(${index}, ${sNum})" style="background:var(--glass-bg); border:1px solid var(--neon-pink); border-radius:5px; color:var(--neon-pink); cursor:pointer; font-size:10px; padding:3px 6px; transition:0.2s;">TOUT</button></div><div class="episodes-list">`;
-          for (let e = 1; e <= epCount; e++) { let isW = watched.includes(e); let btnClass = isW ? 'ep-btn watched' : 'ep-btn'; let icon = isW ? '✔ ' : ''; html += `<button class="${btnClass}" onclick="toggleEpisode(${index}, ${sNum}, ${e})">${icon}S${sNum} E${e}</button>`; }
-          html += `</div></div>`;
-      });
-      html += '</div>'; content.innerHTML = html;
-      if (isSameMovie) { const newContainer = content.querySelector('.seasons-container'); if (newContainer) { newContainer.scrollLeft = oldScrollX; const newLists = content.querySelectorAll('.episodes-list'); newLists.forEach((list, i) => { if (oldScrollY[i] !== undefined) list.scrollTop = oldScrollY[i]; }); } }
-    }
-    overlay.classList.add('show');
-  };
-
+  window.openEpisodeManager = function(index) { const overlay = document.getElementById('episode-manager-overlay'); const content = document.getElementById('episode-manager-content'); const titleObj = document.getElementById('episode-manager-title'); let movie = myMovies[index]; titleObj.innerText = `Épisodes : ${movie.title}`; let oldScrollX = 0; let oldScrollY = []; let isSameMovie = (content.dataset.activeIndex == index); if (isSameMovie) { const oldContainer = content.querySelector('.seasons-container'); if (oldContainer) { oldScrollX = oldContainer.scrollLeft; const oldLists = content.querySelectorAll('.episodes-list'); oldLists.forEach(list => oldScrollY.push(list.scrollTop)); } } content.dataset.activeIndex = index; if (!movie.seasonsData || movie.seasonsData.length === 0) { content.innerHTML = `<p style="text-align:center; color:#888; margin-top:50px;">Aucune donnée de saison.</p>`; } else { let html = '<div class="seasons-container">'; movie.seasonsData.forEach(season => { let sNum = season.s; let epCount = season.e; let watched = movie.watchedEpisodes[sNum] || []; html += `<div class="season-col"><div style="flex-shrink:0; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><h4 style="margin:0; color:var(--neon-blue); font-family:'Rajdhani'; font-size: 18px;">Saison ${sNum}</h4><button onclick="toggleAllEpisodes(${index}, ${sNum})" style="background:var(--glass-bg); border:1px solid var(--neon-pink); border-radius:5px; color:var(--neon-pink); cursor:pointer; font-size:10px; padding:3px 6px;">TOUT</button></div><div class="episodes-list">`; for (let e = 1; e <= epCount; e++) { let isW = watched.includes(e); let btnClass = isW ? 'ep-btn watched' : 'ep-btn'; let icon = isW ? '✔ ' : ''; html += `<button class="${btnClass}" onclick="toggleEpisode(${index}, ${sNum}, ${e})">${icon}S${sNum} E${e}</button>`; } html += `</div></div>`; }); html += '</div>'; content.innerHTML = html; if (isSameMovie) { const newContainer = content.querySelector('.seasons-container'); if (newContainer) { newContainer.scrollLeft = oldScrollX; const newLists = content.querySelectorAll('.episodes-list'); newLists.forEach((list, i) => { if (oldScrollY[i] !== undefined) list.scrollTop = oldScrollY[i]; }); } } } overlay.classList.add('show'); };
   window.closeEpisodeManager = function() { document.getElementById('episode-manager-overlay').classList.remove('show'); };
   window.toggleEpisode = function(mIndex, sNum, eNum) { let movie = myMovies[mIndex]; if(!movie.watchedEpisodes[sNum]) movie.watchedEpisodes[sNum] = []; let arr = movie.watchedEpisodes[sNum]; let idx = arr.indexOf(eNum); if(idx > -1) arr.splice(idx, 1); else arr.push(eNum); saveData(); openModal(mIndex); openEpisodeManager(mIndex); };
   window.toggleAllEpisodes = function(mIndex, sNum) { let movie = myMovies[mIndex]; if(!movie.watchedEpisodes[sNum]) movie.watchedEpisodes[sNum] = []; let season = movie.seasonsData.find(s => s.s === sNum); if (movie.watchedEpisodes[sNum].length === season.e) { movie.watchedEpisodes[sNum] = []; } else { movie.watchedEpisodes[sNum] = Array.from({length: season.e}, (_, i) => i + 1); } saveData(); openModal(mIndex); openEpisodeManager(mIndex); };
 
   function renderPodiums() { renderPodiumCategory('Film', 'podium-films'); renderPodiumCategory('Série', 'podium-series'); }
-  function renderPodiumCategory(type, containerId) {
-    const container = document.getElementById(containerId); let html = ''; const ranks = [2, 1, 3];
-    ranks.forEach(rank => {
-      const selectedTitle = myTop3[type][rank - 1]; const movie = myMovies.find(m => m.title === selectedTitle && m.type === type); let cssClass = rank === 1 ? 'step-1' : (rank === 2 ? 'step-2' : 'step-3'); let color = rank === 1 ? 'var(--gold)' : (rank === 2 ? 'var(--silver)' : 'var(--bronze)');
-      if (movie) { let title = movie.title; if(title.length > 15) title = title.substring(0,13) + '...'; html += `<div class="podium-place"><div class="podium-poster" style="background-image: url('${movie.poster}'); border-color: ${color};" onclick="openPodiumSelector('${type}', ${rank})"></div><div style="font-size: 11px; margin-bottom: 5px; font-weight:bold; color: #fff; text-align:center;">${title}</div><div class="podium-step ${cssClass}">${rank}</div></div>`; } 
-      else { html += `<div class="podium-place"><div class="podium-poster podium-empty" onclick="openPodiumSelector('${type}', ${rank})"><span>+</span></div><div style="font-size: 11px; margin-bottom: 5px; font-weight:bold; color: #888; text-align:center;">Vide</div><div class="podium-step ${cssClass}">${rank}</div></div>`; }
-    });
-    container.innerHTML = html;
-  }
-
-  function openPodiumSelector(type, rank) {
-    currentPodiumSelectionType = type; currentPodiumSelectionRank = rank; document.getElementById('selector-title').innerText = `Sélectionne le Top ${rank} (${type})`;
-    const grid = document.getElementById('selector-grid'); grid.innerHTML = ''; const options = myMovies.filter(m => m.type === type);
-    if(options.length === 0) { grid.innerHTML = `<p style="color:#888; grid-column: 1 / -1; text-align:center;">Aucun(e) ${type.toLowerCase()} dans ta collection.</p>`; } else { options.sort((a, b) => a.title.localeCompare(b.title)).forEach(movie => { let title = movie.title; if(title.length > 15) title = title.substring(0,13) + '...'; const escapedTitle = movie.title.replace(/'/g, "\\'"); grid.innerHTML += `<div class="selector-item" style="background-image: url('${movie.poster}');" onclick="setPodiumItem('${escapedTitle}')"><div class="selector-title">${title}</div></div>`; }); }
-    document.getElementById('podium-selection-overlay').classList.add('show');
-  }
+  function renderPodiumCategory(type, containerId) { const container = document.getElementById(containerId); let html = ''; const ranks = [2, 1, 3]; ranks.forEach(rank => { const selectedTitle = myTop3[type][rank - 1]; const movie = myMovies.find(m => m.title === selectedTitle && m.type === type); let cssClass = rank === 1 ? 'step-1' : (rank === 2 ? 'step-2' : 'step-3'); let color = rank === 1 ? 'var(--gold)' : (rank === 2 ? 'var(--silver)' : 'var(--bronze)'); if (movie) { let title = movie.title; if(title.length > 15) title = title.substring(0,13) + '...'; html += `<div class="podium-place"><div class="podium-poster" style="background-image: url('${movie.poster}'); border-color: ${color};" onclick="openPodiumSelector('${type}', ${rank})"></div><div style="font-size: 11px; margin-bottom: 5px; font-weight:bold; color: #fff; text-align:center;">${title}</div><div class="podium-step ${cssClass}">${rank}</div></div>`; } else { html += `<div class="podium-place"><div class="podium-poster podium-empty" onclick="openPodiumSelector('${type}', ${rank})"><span>+</span></div><div style="font-size: 11px; margin-bottom: 5px; font-weight:bold; color: #888; text-align:center;">Vide</div><div class="podium-step ${cssClass}">${rank}</div></div>`; } }); container.innerHTML = html; }
+  function openPodiumSelector(type, rank) { currentPodiumSelectionType = type; currentPodiumSelectionRank = rank; document.getElementById('selector-title').innerText = `Sélectionne le Top ${rank} (${type})`; const grid = document.getElementById('selector-grid'); grid.innerHTML = ''; const options = myMovies.filter(m => m.type === type); if(options.length === 0) { grid.innerHTML = `<p style="color:#888; grid-column: 1 / -1; text-align:center;">Aucun(e) ${type.toLowerCase()} dans ta collection.</p>`; } else { options.sort((a, b) => a.title.localeCompare(b.title)).forEach(movie => { let title = movie.title; if(title.length > 15) title = title.substring(0,13) + '...'; const escapedTitle = movie.title.replace(/'/g, "\\'"); grid.innerHTML += `<div class="selector-item" style="background-image: url('${movie.poster}');" onclick="setPodiumItem('${escapedTitle}')"><div class="selector-title">${title}</div></div>`; }); } document.getElementById('podium-selection-overlay').classList.add('show'); }
   function setPodiumItem(movieTitle) { const type = currentPodiumSelectionType; const rankIndex = currentPodiumSelectionRank - 1; const existingIndex = myTop3[type].indexOf(movieTitle); if(existingIndex !== -1 && existingIndex !== rankIndex) myTop3[type][existingIndex] = null; myTop3[type][rankIndex] = movieTitle; saveData(); closePodiumSelector(); }
   function closePodiumSelector() { document.getElementById('podium-selection-overlay').classList.remove('show'); currentPodiumSelectionType = null; currentPodiumSelectionRank = null; }
 
   function updateCollectionsTab() {
     const uniMap = {}; const dirMap = {};
-    myMovies.forEach(m => {
-      let assignedUniverse = null; let assignedMax = 0; let searchString = ((m.universe || "") + " " + (m.title || "")).toLowerCase();
-      for (const [superName, data] of Object.entries(SUPER_UNIVERSES)) { if (data.localKeys.some(kw => searchString.includes(kw))) { assignedUniverse = superName; assignedMax = data.max; break; } }
-      if (!assignedUniverse && m.universe) { assignedUniverse = m.universe.replace(' Collection', ''); assignedMax = m.universeTotal || 0; }
-      if (assignedUniverse) { if (!uniMap[assignedUniverse]) { uniMap[assignedUniverse] = { count: 0, max: assignedMax }; } uniMap[assignedUniverse].count++; if (m.universeTotal > uniMap[assignedUniverse].max) { uniMap[assignedUniverse].max = m.universeTotal; } }
-      if (m.director && m.director !== "Inconnu") { const dirs = m.director.split(', '); dirs.forEach(d => { const key = d.trim(); if (!dirMap[key]) dirMap[key] = { count: 0, total: m.directorTotal || 0 }; dirMap[key].count++; if (m.directorTotal > dirMap[key].total) dirMap[key].total = m.directorTotal; }); }
-    });
-
+    myMovies.forEach(m => { let assignedUniverse = null; let assignedMax = 0; let searchString = ((m.universe || "") + " " + (m.title || "")).toLowerCase(); for (const [superName, data] of Object.entries(SUPER_UNIVERSES)) { if (data.localKeys.some(kw => searchString.includes(kw))) { assignedUniverse = superName; assignedMax = data.max; break; } } if (!assignedUniverse && m.universe) { assignedUniverse = m.universe.replace(' Collection', ''); assignedMax = m.universeTotal || 0; } if (assignedUniverse) { if (!uniMap[assignedUniverse]) { uniMap[assignedUniverse] = { count: 0, max: assignedMax }; } uniMap[assignedUniverse].count++; if (m.universeTotal > uniMap[assignedUniverse].max) { uniMap[assignedUniverse].max = m.universeTotal; } } if (m.director && m.director !== "Inconnu") { const dirs = m.director.split(', '); dirs.forEach(d => { const key = d.trim(); if (!dirMap[key]) dirMap[key] = { count: 0, total: m.directorTotal || 0 }; dirMap[key].count++; if (m.directorTotal > dirMap[key].total) dirMap[key].total = m.directorTotal; }); } });
     let universesArray = []; for (const [name, data] of Object.entries(uniMap)) { let maxVal = SUPER_UNIVERSES[name] ? SUPER_UNIVERSES[name].max : data.max; if (appSettings.universeCounts && appSettings.universeCounts[name]) { maxVal = appSettings.universeCounts[name]; } let finalTotal = Math.max(data.count, maxVal); let percentage = Math.min(Math.round((data.count / finalTotal) * 100), 100); universesArray.push({ name, count: data.count, total: finalTotal, percentage }); }
     let directorsArray = []; for (const [name, data] of Object.entries(dirMap)) { let finalTotal = Math.max(data.total > 0 ? data.total : data.count, data.count); let percentage = Math.min(Math.round((data.count / finalTotal) * 100), 100); directorsArray.push({ name, count: data.count, total: finalTotal, percentage }); }
-
-    const searchInput = document.getElementById('search-filter-collections'); const searchVal = searchInput ? searchInput.value.toLowerCase() : "";
-    if (searchVal) { universesArray = universesArray.filter(u => u.name.toLowerCase().includes(searchVal)); directorsArray = directorsArray.filter(d => d.name.toLowerCase().includes(searchVal)); }
-    const sortInput = document.getElementById('sort-select-collections'); const sortVal = sortInput ? sortInput.value : 'count-desc';
-    const sortFn = (a, b) => { if (sortVal === 'name-asc') return a.name.localeCompare(b.name); if (sortVal === 'count-desc') { if (b.count !== a.count) return b.count - a.count; return a.name.localeCompare(b.name); } if (sortVal === 'percent-desc') { if (b.percentage !== a.percentage) return b.percentage - a.percentage; return b.count - a.count; } return 0; };
+    const searchInput = document.getElementById('search-filter-collections'); const searchVal = searchInput ? searchInput.value.toLowerCase() : ""; if (searchVal) { universesArray = universesArray.filter(u => u.name.toLowerCase().includes(searchVal)); directorsArray = directorsArray.filter(d => d.name.toLowerCase().includes(searchVal)); }
+    const sortInput = document.getElementById('sort-select-collections'); const sortVal = sortInput ? sortInput.value : 'count-desc'; const sortFn = (a, b) => { if (sortVal === 'name-asc') return a.name.localeCompare(b.name); if (sortVal === 'count-desc') { if (b.count !== a.count) return b.count - a.count; return a.name.localeCompare(b.name); } if (sortVal === 'percent-desc') { if (b.percentage !== a.percentage) return b.percentage - a.percentage; return b.count - a.count; } return 0; };
     universesArray.sort(sortFn); directorsArray.sort(sortFn);
-
-    document.getElementById('collections-universes').innerHTML = universesArray.map(u => createProgressBar(u.name, u.count, u.total, 'openUniverseBinder')).join('') || "<p style='color:#888;'>Aucune saga trouvée avec ces critères.</p>";
-    document.getElementById('collections-directors').innerHTML = directorsArray.map(d => createProgressBar(d.name, d.count, d.total, 'openDirectorBinder')).join('') || "<p style='color:#888;'>Aucun réalisateur trouvé avec ces critères.</p>";
+    document.getElementById('collections-universes').innerHTML = universesArray.map(u => createProgressBar(u.name, u.count, u.total, '')).join('') || "<p style='color:#888;'>Aucune saga trouvée.</p>";
+    document.getElementById('collections-directors').innerHTML = directorsArray.map(d => createProgressBar(d.name, d.count, d.total, '')).join('') || "<p style='color:#888;'>Aucun réalisateur trouvé.</p>";
   }
+  function createProgressBar(label, watched, total, clickAction) { const percentage = Math.min(Math.round((watched / total) * 100), 100); return `<div class="progress-block"><div class="progress-header"><span>${label}</span><span>${watched}/${total} (${percentage}%)</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${percentage}%;"></div></div></div>`; }
 
-  function createProgressBar(label, watched, total, clickAction) { const percentage = Math.min(Math.round((watched / total) * 100), 100); const onClickAttr = clickAction ? `onclick="${clickAction}('${label.replace(/'/g, "\\'")}')" class="progress-hover"` : ''; const cursorStyle = clickAction ? 'cursor:pointer;' : ''; return `<div class="progress-block" ${onClickAttr} style="${cursorStyle}"><div class="progress-header"><span>${label}</span><span>${watched}/${total} (${percentage}%)</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${percentage}%;"></div></div></div>`; }
+  function updateStats() { document.getElementById('stat-total').innerText = myMovies.length; let totalMinutes = 0; myMovies.forEach(m => { if (m.type === 'Série' && m.episodeRuntime) { let epsWatched = 0; if (m.watchedEpisodes) { for (let s in m.watchedEpisodes) { epsWatched += m.watchedEpisodes[s].length; } } else if (m.episodesWatched !== undefined) { epsWatched = m.episodesWatched; } totalMinutes += m.episodeRuntime * epsWatched; } else if (m.runtime) { totalMinutes += m.runtime; } }); document.getElementById('stat-runtime').innerText = Math.round(totalMinutes / 60) + " h"; if (myMovies.length > 0) { const counts = {}; let maxCount = 0; let topDirector = "-"; myMovies.forEach(m => { if (m.director && m.director !== "Inconnu") { const dirs = m.director.split(', '); dirs.forEach(d => { counts[d] = (counts[d] || 0) + 1; if (counts[d] > maxCount) { maxCount = counts[d]; topDirector = d; } }); } }); if (maxCount > 0) document.getElementById('stat-director').innerHTML = `${topDirector}<div style="font-size: 18px; color: #e0e6ed; text-shadow: none; margin-top: 5px;">(${maxCount} visionnages)</div>`; else document.getElementById('stat-director').innerText = "-"; } else { document.getElementById('stat-director').innerText = "-"; } }
 
-  function updateStats() {
-    document.getElementById('stat-total').innerText = myMovies.length;
-    let totalMinutes = 0;
-    myMovies.forEach(m => { if (m.type === 'Série' && m.episodeRuntime) { let epsWatched = 0; if (m.watchedEpisodes) { for (let s in m.watchedEpisodes) { epsWatched += m.watchedEpisodes[s].length; } } else if (m.episodesWatched !== undefined) { epsWatched = m.episodesWatched; } totalMinutes += m.episodeRuntime * epsWatched; } else if (m.runtime) { totalMinutes += m.runtime; } });
-    document.getElementById('stat-runtime').innerText = Math.round(totalMinutes / 60) + " h";
-    if (myMovies.length > 0) { const counts = {}; let maxCount = 0; let topDirector = "-"; myMovies.forEach(m => { if (m.director && m.director !== "Inconnu") { const dirs = m.director.split(', '); dirs.forEach(d => { counts[d] = (counts[d] || 0) + 1; if (counts[d] > maxCount) { maxCount = counts[d]; topDirector = d; } }); } }); if (maxCount > 0) document.getElementById('stat-director').innerHTML = `${topDirector}<div style="font-size: 18px; color: #e0e6ed; text-shadow: none; margin-top: 5px;">(${maxCount} visionnages)</div>`; else document.getElementById('stat-director').innerText = "-"; } else { document.getElementById('stat-director').innerText = "-"; }
-  }
-
-  function renderAdminList() {
-    const listContainer = document.getElementById('admin-movie-list'); const searchVal = document.getElementById('admin-search-input') ? document.getElementById('admin-search-input').value.toLowerCase() : ""; listContainer.innerHTML = '';
-    let moviesToRender = myMovies.map((movie, index) => ({ movie, index })); if (searchVal) { moviesToRender = moviesToRender.filter(item => item.movie.title.toLowerCase().includes(searchVal)); }
-    moviesToRender.forEach(item => { listContainer.innerHTML += `<div class="movie-list-item"><div><strong>${item.movie.title}</strong> <span style="color:#888; font-size:12px;">(${item.movie.type} - ${item.movie.year})</span></div><button class="btn-delete" onclick="deleteMovie(${item.index})">Effacer</button></div>`; });
-  }
+  function renderAdminList() { const listContainer = document.getElementById('admin-movie-list'); const searchVal = document.getElementById('admin-search-input') ? document.getElementById('admin-search-input').value.toLowerCase() : ""; listContainer.innerHTML = ''; let moviesToRender = myMovies.map((movie, index) => ({ movie, index })); if (searchVal) { moviesToRender = moviesToRender.filter(item => item.movie.title.toLowerCase().includes(searchVal)); } moviesToRender.forEach(item => { listContainer.innerHTML += `<div class="movie-list-item"><div><strong>${item.movie.title}</strong> <span style="color:#888; font-size:12px;">(${item.movie.type} - ${item.movie.year})</span></div><button class="btn-delete" onclick="deleteMovie(${item.index})">Effacer</button></div>`; }); }
+  window.deleteMovie = function(index) { if(confirm("Détruire cette carte ?")) { const movieTitle = myMovies[index].title; const movieType = myMovies[index].type; const podiumIndex = myTop3[movieType].indexOf(movieTitle); if(podiumIndex !== -1) myTop3[movieType][podiumIndex] = null; myMovies.splice(index, 1); saveData(); renderAdminList(); } }
 
   // --- LOGIQUE DES MINI JEUX ARCADE ---
-  function checkArcadeAvailability() { const arcadeContainer = document.getElementById('arcade-container'); if (myMovies.length < 4) { arcadeContainer.innerHTML = `<div style="grid-column: 1 / -1; padding: 30px; border: 2px dashed rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); border-radius: 15px;">Pour allumer les bornes d'arcade, tu dois forger au moins 4 cartes dans ta collection. (Actuellement : ${myMovies.length}/4)</div>`; } }
-
+  function checkArcadeAvailability() { const arcadeContainer = document.getElementById('arcade-container'); if (myMovies.length < 4) { arcadeContainer.innerHTML = `<div style="grid-column: 1 / -1; padding: 30px; border: 2px dashed rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); border-radius: 15px;">Pour allumer les bornes d'arcade, tu dois forger au moins 4 cartes dans ta collection.</div>`; } }
   let mysteryScore = 0; let currentMysteryMovie = null;
   window.initMysteryGame = function() { if (myMovies.length < 4) return; mysteryScore = 0; document.getElementById('mystery-score').innerText = mysteryScore; document.getElementById('game-mystery-overlay').classList.add('show'); nextMysteryRound(); };
   function nextMysteryRound() { const choices = [...myMovies].sort(() => 0.5 - Math.random()).slice(0, 4); currentMysteryMovie = choices[Math.floor(Math.random() * 4)]; const poster = document.getElementById('mystery-image'); poster.style.backgroundImage = `url('${currentMysteryMovie.poster}')`; poster.className = 'mystery-poster blurred'; const choicesContainer = document.getElementById('mystery-choices'); choicesContainer.innerHTML = ''; choices.forEach(c => { const btn = document.createElement('button'); btn.className = 'mystery-btn'; btn.innerText = c.title; btn.onclick = () => handleMysteryGuess(btn, c.title === currentMysteryMovie.title); choicesContainer.appendChild(btn); }); }
   function handleMysteryGuess(btn, isCorrect) { document.querySelectorAll('#mystery-choices .mystery-btn').forEach(b => b.disabled = true); if (isCorrect) { btn.classList.add('correct'); mysteryScore++; document.getElementById('mystery-score').innerText = mysteryScore; document.getElementById('mystery-image').className = 'mystery-poster revealed'; setTimeout(nextMysteryRound, 1200); } else { btn.classList.add('wrong'); const container = document.getElementById('mystery-container'); container.classList.add('shake-effect'); document.getElementById('mystery-image').className = 'mystery-poster revealed'; document.querySelectorAll('#mystery-choices .mystery-btn').forEach(b => { if(b.innerText === currentMysteryMovie.title) b.classList.add('correct'); }); setTimeout(() => { container.classList.remove('shake-effect'); if (mysteryScore > (appSettings.highScores.mystery || 0)) { appSettings.highScores.mystery = mysteryScore; saveData(); } alert(`Game Over ! Score final : ${mysteryScore}`); closeGame('mystery'); }, 1800); } }
 
   let chronoScore = 0; let currentChronoMovie = null;
-  window.initChronoGame = function() { const validMovies = myMovies.filter(m => m.year && m.year !== "N/A" && !isNaN(parseInt(m.year))); if (validMovies.length < 4) { alert("Pas assez d'œuvres avec une date de sortie valide dans ta collection."); return; } chronoScore = 0; document.getElementById('chrono-score').innerText = chronoScore; document.getElementById('game-chrono-overlay').classList.add('show'); nextChronoRound(validMovies); };
+  window.initChronoGame = function() { const validMovies = myMovies.filter(m => m.year && m.year !== "N/A" && !isNaN(parseInt(m.year))); if (validMovies.length < 4) { alert("Pas assez d'œuvres avec une date de sortie valide."); return; } chronoScore = 0; document.getElementById('chrono-score').innerText = chronoScore; document.getElementById('game-chrono-overlay').classList.add('show'); nextChronoRound(validMovies); };
   function nextChronoRound(validMovies) { currentChronoMovie = validMovies[Math.floor(Math.random() * validMovies.length)]; document.getElementById('chrono-poster').style.backgroundImage = `url('${currentChronoMovie.poster}')`; document.getElementById('chrono-title').innerText = currentChronoMovie.title; const realYear = parseInt(currentChronoMovie.year); const yearSet = new Set([realYear]); const offsets = [-7, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 7].sort(() => 0.5 - Math.random()); for (let offset of offsets) { let candidate = realYear + offset; if (candidate > 1950 && candidate <= 2030) yearSet.add(candidate); if (yearSet.size === 4) break; } while (yearSet.size < 4) { yearSet.add(parseInt(validMovies[Math.floor(Math.random() * validMovies.length)].year)); } const choices = Array.from(yearSet).sort(() => 0.5 - Math.random()); const choicesContainer = document.getElementById('chrono-choices'); choicesContainer.innerHTML = ''; choices.forEach(y => { const btn = document.createElement('button'); btn.className = 'mystery-btn'; btn.innerText = y; btn.onclick = () => handleChronoGuess(btn, y === realYear, validMovies); choicesContainer.appendChild(btn); }); }
-  function handleChronoGuess(btn, isCorrect, validMovies) { document.querySelectorAll('#chrono-choices .mystery-btn').forEach(b => b.disabled = true); if (isCorrect) { btn.classList.add('correct'); chronoScore++; document.getElementById('chrono-score').innerText = chronoScore; setTimeout(() => nextChronoRound(validMovies), 1000); } else { btn.classList.add('wrong'); const container = document.getElementById('chrono-container'); container.classList.add('shake-effect'); document.querySelectorAll('#chrono-choices .mystery-btn').forEach(b => { if(parseInt(b.innerText) === parseInt(currentChronoMovie.year)) b.classList.add('correct'); }); setTimeout(() => { container.classList.remove('shake-effect'); if (chronoScore > (appSettings.highScores.chrono || 0)) { appSettings.highScores.chrono = chronoScore; saveData(); } alert(`Raté ! L'année de sortie était bien ${currentChronoMovie.year}.\nScore final : ${chronoScore}`); closeGame('chrono'); }, 1800); } }
+  function handleChronoGuess(btn, isCorrect, validMovies) { document.querySelectorAll('#chrono-choices .mystery-btn').forEach(b => b.disabled = true); if (isCorrect) { btn.classList.add('correct'); chronoScore++; document.getElementById('chrono-score').innerText = chronoScore; setTimeout(() => nextChronoRound(validMovies), 1000); } else { btn.classList.add('wrong'); const container = document.getElementById('chrono-container'); container.classList.add('shake-effect'); document.querySelectorAll('#chrono-choices .mystery-btn').forEach(b => { if(parseInt(b.innerText) === parseInt(currentChronoMovie.year)) b.classList.add('correct'); }); setTimeout(() => { container.classList.remove('shake-effect'); if (chronoScore > (appSettings.highScores.chrono || 0)) { appSettings.highScores.chrono = chronoScore; saveData(); } alert(`Raté ! L'année de sortie était ${currentChronoMovie.year}.\nScore final : ${chronoScore}`); closeGame('chrono'); }, 1800); } }
 
   let criticScore = 0; let currentCriticMovie = null;
   window.initCriticGame = function() { if (myMovies.length < 1) return; criticScore = 0; document.getElementById('critic-score').innerText = criticScore; document.getElementById('game-critic-overlay').classList.add('show'); nextCriticRound(); }
   function nextCriticRound() { currentCriticMovie = myMovies[Math.floor(Math.random() * myMovies.length)]; document.getElementById('critic-poster').style.backgroundImage = `url('${currentCriticMovie.poster}')`; document.getElementById('critic-title').innerText = currentCriticMovie.title; const slider = document.getElementById('critic-slider'); slider.value = 5.0; document.getElementById('critic-slider-val').innerText = "5.0"; slider.disabled = false; const btn = document.getElementById('critic-validate-btn'); btn.innerText = "Valider ma note"; btn.onclick = () => validateCriticGuess(); btn.className = 'btn-submit'; document.getElementById('critic-result').innerText = ""; }
   window.updateCriticSlider = function(val) { document.getElementById('critic-slider-val').innerText = parseFloat(val).toFixed(1); }
-  window.validateCriticGuess = function() { const slider = document.getElementById('critic-slider'); const guessed = parseFloat(slider.value); const realRating = parseFloat(currentCriticMovie.rating); slider.disabled = true; const diff = Math.abs(guessed - realRating); const resDiv = document.getElementById('critic-result'); if (diff <= 0.5) { resDiv.innerHTML = `<span style="color: var(--success); font-weight: bold; font-size: 20px;">Exact ! La note est de ${realRating}</span>`; criticScore++; document.getElementById('critic-score').innerText = criticScore; const btn = document.getElementById('critic-validate-btn'); btn.innerText = "Suivant ➔"; btn.onclick = nextCriticRound; } else { resDiv.innerHTML = `<span style="color: var(--danger); font-weight: bold; font-size: 20px;">Raté ! La vraie note est de ${realRating}</span>`; setTimeout(() => { if (criticScore > (appSettings.highScores.critic || 0)) { appSettings.highScores.critic = criticScore; saveData(); } alert(`Game Over ! Tu as trouvé ${criticScore} notes d'affilée.`); closeGame('critic'); }, 1800); } }
+  window.validateCriticGuess = function() { const slider = document.getElementById('critic-slider'); const guessed = parseFloat(slider.value); const realRating = parseFloat(currentCriticMovie.rating); slider.disabled = true; const diff = Math.abs(guessed - realRating); const resDiv = document.getElementById('critic-result'); if (diff <= 0.5) { resDiv.innerHTML = `<span style="color: var(--success); font-weight: bold; font-size: 20px;">Exact ! La note est de ${realRating}</span>`; criticScore++; document.getElementById('critic-score').innerText = criticScore; const btn = document.getElementById('critic-validate-btn'); btn.innerText = "Suivant ➔"; btn.onclick = nextCriticRound; } else { resDiv.innerHTML = `<span style="color: var(--danger); font-weight: bold; font-size: 20px;">Raté ! La vraie note est de ${realRating}</span>`; setTimeout(() => { if (criticScore > (appSettings.highScores.critic || 0)) { appSettings.highScores.critic = criticScore; saveData(); } alert(`Game Over ! Score final : ${criticScore}`); closeGame('critic'); }, 1800); } }
 
   window.closeGame = function(gameId) { document.getElementById(`game-${gameId}-overlay`).classList.remove('show'); };
 </script>
