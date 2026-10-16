@@ -58,6 +58,23 @@
 
   .btn-submit { background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink)); color: #fff; border: none; padding: 15px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-family: 'Rajdhani', sans-serif; font-size: 18px; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
   .btn-submit:hover { opacity: 0.8; box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
+
+  /* MODE RECHERCHE ULTRA-PRÉCISE & LIVE PREVIEW TMDB */
+  .precision-fields { display: none; gap: 15px; margin-bottom: 20px; animation: fadeIn 0.3s ease-out; }
+  .precision-fields.active { display: flex; flex-wrap: wrap; }
+  .precision-fields .form-group { flex: 1; min-width: 140px; margin-bottom: 0; }
+  .title-search-wrapper { position: relative; }
+  .tmdb-live-dropdown { display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: rgba(10, 10, 22, 0.98); backdrop-filter: blur(16px); border: 1px solid var(--neon-blue); border-radius: 12px; max-height: 290px; overflow-y: auto; z-index: 1000; box-shadow: 0 12px 35px rgba(0, 0, 0, 0.95); }
+  .tmdb-live-dropdown.active { display: block; }
+  .tmdb-live-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); cursor: pointer; transition: 0.2s; }
+  .tmdb-live-item:hover { background: rgba(0, 243, 255, 0.12); }
+  .tmdb-live-item img { width: 38px; height: 56px; object-fit: cover; border-radius: 5px; border: 1px solid rgba(255, 255, 255, 0.2); flex-shrink: 0; }
+  .tmdb-live-info { flex: 1; overflow: hidden; text-align: left; }
+  .tmdb-live-title { font-size: 14px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tmdb-live-meta { font-size: 11px; color: rgba(255, 255, 255, 0.65); margin-top: 3px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .tmdb-live-badge { padding: 2px 6px; border-radius: 8px; font-size: 9px; font-weight: bold; text-transform: uppercase; }
+  .tmdb-live-selected-banner { display: none; align-items: center; justify-content: space-between; background: rgba(0, 255, 115, 0.1); border: 1px solid var(--success); color: var(--success); padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
+  .tmdb-live-selected-banner.active { display: flex; }
   
   .btn-sync { background: transparent; border: 2px solid var(--neon-blue); color: var(--neon-blue); padding: 12px 30px; border-radius: 30px; cursor: pointer; font-family: 'Rajdhani'; font-weight: bold; font-size: 16px; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; margin-bottom: 20px; display: inline-block; }
   .btn-sync:hover { background: rgba(0, 243, 255, 0.1); box-shadow: 0 0 15px rgba(0, 243, 255, 0.4); }
@@ -370,8 +387,31 @@
             <span style="font-size: 24px; cursor: pointer; transition: 0.3s;" onclick="openSettingsModal()" onmouseover="this.style.transform='rotate(90deg)'" onmouseout="this.style.transform='rotate(0deg)'" title="Paramètres">⚙️</span>
           </div>
           <p style="font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 20px; margin-top:-10px;">Indique le numéro ou l'année si tu veux cibler une version précise.</p>
-          <form id="movieForm">
-            <div class="form-group"><label>Titre exact</label><input type="text" id="m-title" required placeholder="Ex: Toy Story 2"></div>
+        <form id="movieForm">
+            <div class="form-group title-search-wrapper" id="title-search-box">
+              <label>Titre exact <span id="precision-badge" style="display:none; color:var(--neon-pink); font-size:10px; margin-left:6px;">🎯 MODE ULTRA-PRÉCIS ACTIF</span></label>
+              <input type="text" id="m-title" required placeholder="Ex: 2012, Toy Story 2..." autocomplete="off" oninput="onPrecisionInput()">
+              <div id="tmdb-live-results" class="tmdb-live-dropdown"></div>
+            </div>
+
+            <!-- Champs dédiés du Mode Ultra-Précis -->
+            <div class="precision-fields" id="precision-fields-container">
+              <div class="form-group">
+                <label style="color: var(--neon-pink);">Année de sortie (Optionnel)</label>
+                <input type="text" id="m-year" placeholder="Ex: 2009" maxlength="4" oninput="onPrecisionInput()">
+              </div>
+              <div class="form-group">
+                <label style="color: var(--gold);">Réalisateur / Créateur (Optionnel)</label>
+                <input type="text" id="m-director" placeholder="Ex: Roland Emmerich" oninput="onPrecisionInput()">
+              </div>
+            </div>
+
+            <!-- Bannière de confirmation quand une œuvre est cliquée dans l'aperçu en direct -->
+            <div id="selected-tmdb-banner" class="tmdb-live-selected-banner">
+              <span id="selected-tmdb-text">✔ Œuvre verrouillée</span>
+              <span style="cursor:pointer; color:#ff4c4c; font-size:14px;" onclick="clearSelectedTmdbTarget()" title="Annuler la sélection">✕</span>
+            </div>
+
             <div class="form-group" id="date-group-container"><label id="date-label">Date de visionnage</label><input type="text" id="m-unlock" required placeholder="Ex: Juillet 2026"></div>
             <button type="submit" class="btn-submit" id="main-submit-btn" style="margin-top: 10px;">Lancer la recherche</button>
             <div id="loading-overlay">Scan des bases de données en cours...<span id="loading-details">Connexion à TMDB, Wikidata et OMDb...</span></div>
@@ -423,6 +463,9 @@
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">⚙️ Paramètres</h2></div>
     <div style="display: flex; flex-direction: column; margin-top: 10px;">
       <label class="setting-row"><input type="checkbox" id="setting-skip-anim"> Mode Rapide : Pas d'animation, reste sur l'onglet Gestion</label>
+      <label class="setting-row" style="color: var(--neon-blue); font-weight: 600;">
+        <input type="checkbox" id="setting-precision-mode"> 🎯 Recherche Ultra-Précise (Champs Année + Réal + Aperçu Live)
+      </label>
       <hr style="border-color: var(--glass-border); width: 100%; margin: 15px 0;">
       <p style="color: var(--neon-pink); font-family: 'Rajdhani'; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; font-size: 18px;">Cible de la recherche</p>
       <label class="setting-row"><input type="radio" name="searchMode" value="multi" id="setting-search-multi"> Automatique (Films & Séries)</label>
@@ -682,14 +725,32 @@
 
   function updateApp() { renderAdminList(); renderAll(); renderPodiums(); updateCollectionsTab(); updateStats(); checkArcadeAvailability(); updateHighScoresDisplay(); }
 
-  function applySettingsUI() {
+ function applySettingsUI() {
     const dateInput = document.getElementById('m-unlock'); const dateLabel = document.getElementById('date-label');
     if (appSettings.dateMode === 'auto') { dateInput.style.display = 'none'; dateInput.required = false; dateLabel.innerHTML = 'Date de visionnage <span style="color:var(--neon-pink);">(Automatique)</span>'; } 
     else { dateInput.style.display = 'block'; dateInput.required = true; dateLabel.innerText = 'Date de visionnage (Exigée: Mois Année)'; }
+
+    const precContainer = document.getElementById('precision-fields-container');
+    const precBadge = document.getElementById('precision-badge');
+    if (precContainer && precBadge) {
+      if (appSettings.precisionMode) {
+        precContainer.classList.add('active');
+        precBadge.style.display = 'inline';
+      } else {
+        precContainer.classList.remove('active');
+        precBadge.style.display = 'none';
+        clearSelectedTmdbTarget();
+        const drop = document.getElementById('tmdb-live-results');
+        if (drop) drop.classList.remove('active');
+      }
+    }
   }
 
   function openSettingsModal() {
     document.getElementById('setting-skip-anim').checked = appSettings.skipAnimation;
+    if (document.getElementById('setting-precision-mode')) {
+      document.getElementById('setting-precision-mode').checked = !!appSettings.precisionMode;
+    }
     if (appSettings.dateMode === 'auto') document.getElementById('setting-date-auto').checked = true;
     else document.getElementById('setting-date-manual').checked = true;
     let sMode = appSettings.searchMode || 'multi';
@@ -701,6 +762,9 @@
 
   function saveSettings() {
     appSettings.skipAnimation = document.getElementById('setting-skip-anim').checked;
+    if (document.getElementById('setting-precision-mode')) {
+      appSettings.precisionMode = document.getElementById('setting-precision-mode').checked;
+    }
     appSettings.dateMode = document.getElementById('setting-date-auto').checked ? 'auto' : 'manual';
     const searchRadios = document.getElementsByName('searchMode');
     for (let r of searchRadios) { if (r.checked) { appSettings.searchMode = r.value; break; } }
