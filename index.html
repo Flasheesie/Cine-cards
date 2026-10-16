@@ -534,6 +534,7 @@
   };
   let myMovies = []; let myTop3 = { Film: [null, null, null], Série: [null, null, null] };
   let notesVisible = true; let recentlyAddedTitle = null; let currentPodiumSelectionType = null; let currentPodiumSelectionRank = null;
+  let saveCloudTimeout = null; // Anti-latence pour le Cloud
 
   // --- DÉMARRAGE ET CONNEXION CLOUD ---
   document.addEventListener("DOMContentLoaded", () => {
@@ -654,10 +655,15 @@
       localStorage.setItem('thomasTop3_v74', JSON.stringify(myTop3));
   }
 
+  // SAUVEGARDE ULTRA-FLUIDE SANS LATENCE (ANTI-BLOCAGE UI)
   function saveData() {
       saveDataLocalOnly();
-      syncProfileToCloud(true); 
       updateApp();
+      
+      if (saveCloudTimeout) clearTimeout(saveCloudTimeout);
+      saveCloudTimeout = setTimeout(() => {
+          syncProfileToCloud(true);
+      }, 1500); // Envoi en arrière-plan après 1.5s d'inactivité
   }
 
   async function syncProfileToCloud(includeMovies = false) {
@@ -715,13 +721,29 @@
 
   function generateRankCard(title, users, sortKey, unit, color) {
       let sorted = [...users].sort((a,b) => (b[sortKey] || 0) - (a[sortKey] || 0)).filter(u => u[sortKey] > 0).slice(0, 5);
+      const isAdmin = (appSettings.pseudo === "Mr. Bonnet");
+
       let listHtml = sorted.map((u, i) => {
           let badgeClass = i === 0 ? 'border-left: 4px solid var(--gold); background: rgba(255, 215, 0, 0.1); color: var(--gold); font-weight:bold;' : i === 1 ? 'border-left: 4px solid var(--silver); background: rgba(192, 192, 192, 0.1); color: var(--silver);' : i === 2 ? 'border-left: 4px solid var(--bronze); background: rgba(205, 127, 50, 0.1); color: var(--bronze);' : 'border-left: 4px solid rgba(255,255,255,0.2); color: #fff;';
-          return `<div style="display:flex; justify-content:space-between; padding:10px 15px; border-radius:8px; margin-bottom:8px; font-family:'Inter'; font-size:14px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.05); ${badgeClass}"><span><strong>${i+1}.</strong> ${u.pseudo} ${u.pseudo === appSettings.pseudo ? '<i>(Toi)</i>' : ''}</span><strong>${u[sortKey]} ${unit}</strong></div>`;
+          let adminDeleteBtn = (isAdmin && u.pseudo !== "Mr. Bonnet") ? `<button onclick="deleteFakeAccount('${u.pseudo.replace(/'/g, "\\'")}')" style="background:transparent; border:1px solid #ff4c4c; color:#ff4c4c; padding:2px 6px; border-radius:4px; font-size:10px; cursor:pointer; margin-left:8px;" title="Supprimer ce faux compte">🗑️ Supprimer</button>` : '';
+          return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 15px; border-radius:8px; margin-bottom:8px; font-family:'Inter'; font-size:14px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.05); ${badgeClass}"><span style="display:flex; align-items:center;"><strong>${i+1}.</strong>&nbsp;${u.pseudo}&nbsp;${u.pseudo === appSettings.pseudo ? '<i>(Toi)</i>' : ''}&nbsp;${adminDeleteBtn}</span><strong>${u[sortKey]} ${unit}</strong></div>`;
       }).join('');
       if(sorted.length === 0) listHtml = `<div style="text-align:center; color:#888; font-size:12px; margin-top:20px;">Aucun record défini.</div>`;
       return `<div class="glass-panel" style="padding: 25px;"><h3 style="color:${color}; font-family:'Rajdhani'; text-transform:uppercase; margin-top:0; border-bottom:1px dashed rgba(255,255,255,0.2); padding-bottom:10px; font-size:22px; text-shadow: 0 0 10px ${color};">${title}</h3><div style="margin-top:15px;">${listHtml}</div></div>`;
   }
+
+  // SUPPRESSION DE FAUX COMPTE (RÉSERVÉ À MR. BONNET)
+  window.deleteFakeAccount = async function(pseudoTarget) {
+      if (!confirm(`Es-tu sûr de vouloir supprimer définitivement le faux compte "${pseudoTarget}" du Panthéon ?`)) return;
+      try {
+          await db.collection('users').doc(pseudoTarget).delete();
+          await db.collection('saves').doc(pseudoTarget).delete();
+          alert(`✅ Le compte ${pseudoTarget} a été supprimé avec succès !`);
+          loadGlobalLeaderboard();
+      } catch(e) {
+          alert(`❌ Erreur lors de la suppression : ${e.message}`);
+      }
+  };
 
   function updateApp() { renderAdminList(); renderAll(); renderPodiums(); updateCollectionsTab(); updateStats(); checkArcadeAvailability(); updateHighScoresDisplay(); }
 
@@ -1205,15 +1227,48 @@
   function renderGallery(type, containerId, sortId, searchId) { const gallery = document.getElementById(containerId); gallery.innerHTML = ''; let sortedMovies = myMovies.map((movie, originalIndex) => ({ movie, originalIndex })).filter(item => item.movie.type === type); const searchVal = document.getElementById(searchId).value.toLowerCase(); if (searchVal) { sortedMovies = sortedMovies.filter(item => item.movie.title.toLowerCase().includes(searchVal)); } const sortValue = document.getElementById(sortId).value; if (sortValue === 'title-asc') sortedMovies.sort((a, b) => a.movie.title.localeCompare(b.movie.title)); else if (sortValue === 'rarity-desc') { const scores = { legendaire: 4, epique: 3, rare: 2, commune: 1 }; sortedMovies.sort((a, b) => scores[b.movie.rarity] - scores[a.movie.rarity]); } else if (sortValue === 'year-asc') { sortedMovies.sort((a, b) => parseInt(a.movie.year || 9999) - parseInt(b.movie.year || 9999)); } sortedMovies.forEach(item => { const movie = item.movie; const index = item.originalIndex; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const animClass = (movie.title === recentlyAddedTitle && !appSettings.skipAnimation) ? 'new-card-anim' : ''; let epBadge = ''; let percentage = 100; if (isSerie) { if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } const cardHTML = `<div class="card-container ${animClass}" onclick="openModal(${index})"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel}:</span> ${movie.director}</p><p><span>Année:</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre:</span> ${movie.genre}</p></div><div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div></div></div></div>`; gallery.innerHTML += cardHTML; }); if(type === 'Série' || type === 'Film') { setTimeout(() => { recentlyAddedTitle = null; }, 100); } }
 
   function openModal(index) { const movie = myMovies[index]; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const awardsHTML = getAwardsHTML(movie.awards); const synopsisText = movie.synopsis || "Clique sur 'Synchroniser les données'."; const userNoteText = movie.userNote || ""; const notesHiddenClass = notesVisible ? '' : 'hidden'; const toggleButtonText = notesVisible ? '📝 Masquer les notes' : '📝 Afficher les notes'; let epBadge = ''; let percentage = 100; let btnManager = ''; if (isSerie) { btnManager = `<button class="btn-sync" style="border-color: var(--neon-pink); color: var(--neon-pink); font-size: 12px; padding: 6px 12px; margin-top: 10px;" onclick="openEpisodeManager(${index})">📺 Gérer les épisodes</button>`; if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } const fullModalHTML = `<div class="modal-container-box"><button class="btn-toggle-notes" onclick="toggleNotes(${index})">${toggleButtonText}</button><div class="modal-wrapper"><div class="modal-notes ${notesHiddenClass}" id="modal-notes-panel"><h3>📝 Mes Notes</h3><textarea class="post-it" placeholder="Écris tes critiques..." oninput="saveNote(${index}, this.value)">${userNoteText}</textarea><span style="font-size: 10px; color: #888; margin-top: 5px; text-align:right;">* Sauvegarde en temps réel</span></div><div class="modal-card-container"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel} :</span> ${movie.director}</p><p><span>Année :</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre :</span> ${movie.genre}</p>${btnManager}</div>${awardsHTML}<div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div><p class="quote">"${movie.quote}"</p></div></div></div><div class="modal-synopsis"><h3>Synopsis</h3><p>${synopsisText}</p></div></div></div>`; document.getElementById('modal-content-area').innerHTML = fullModalHTML; document.getElementById('card-modal-overlay').classList.add('show'); }
-  window.saveNote = function(index, text) { if (myMovies[index]) { myMovies[index].userNote = text; saveData(); } }
+  
+  // SAUVEGARDE INSTANTANÉE LOCALE POUR SUPPRIMER TOUTE LATENCE DES NOTES
+  window.saveNote = function(index, text) { 
+      if (myMovies[index]) { 
+          myMovies[index].userNote = text; 
+          saveDataLocalOnly(); // Sans attendre le Cloud
+      } 
+  }
+
   function toggleNotes(index) { notesVisible = !notesVisible; openModal(index);  }
   function closeModal() { document.getElementById('card-modal-overlay').classList.remove('show'); setTimeout(() => { document.getElementById('modal-content-area').innerHTML = ''; }, 300); }
   document.getElementById('card-modal-overlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 
   window.openEpisodeManager = function(index) { const overlay = document.getElementById('episode-manager-overlay'); const content = document.getElementById('episode-manager-content'); const titleObj = document.getElementById('episode-manager-title'); let movie = myMovies[index]; titleObj.innerText = `Épisodes : ${movie.title}`; let oldScrollX = 0; let oldScrollY = []; let isSameMovie = (content.dataset.activeIndex == index); if (isSameMovie) { const oldContainer = content.querySelector('.seasons-container'); if (oldContainer) { oldScrollX = oldContainer.scrollLeft; const oldLists = content.querySelectorAll('.episodes-list'); oldLists.forEach(list => oldScrollY.push(list.scrollTop)); } } content.dataset.activeIndex = index; if (!movie.seasonsData || movie.seasonsData.length === 0) { content.innerHTML = `<p style="text-align:center; color:#888; margin-top:50px;">Aucune donnée de saison.</p>`; } else { let html = '<div class="seasons-container">'; movie.seasonsData.forEach(season => { let sNum = season.s; let epCount = season.e; let watched = movie.watchedEpisodes[sNum] || []; html += `<div class="season-col"><div style="flex-shrink:0; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><h4 style="margin:0; color:var(--neon-blue); font-family:'Rajdhani'; font-size: 18px;">Saison ${sNum}</h4><button onclick="toggleAllEpisodes(${index}, ${sNum})" style="background:var(--glass-bg); border:1px solid var(--neon-pink); border-radius:5px; color:var(--neon-pink); cursor:pointer; font-size:10px; padding:3px 6px;">TOUT</button></div><div class="episodes-list">`; for (let e = 1; e <= epCount; e++) { let isW = watched.includes(e); let btnClass = isW ? 'ep-btn watched' : 'ep-btn'; let icon = isW ? '✔ ' : ''; html += `<button class="${btnClass}" onclick="toggleEpisode(${index}, ${sNum}, ${e})">${icon}S${sNum} E${e}</button>`; } html += `</div></div>`; }); html += '</div>'; content.innerHTML = html; if (isSameMovie) { const newContainer = content.querySelector('.seasons-container'); if (newContainer) { newContainer.scrollLeft = oldScrollX; const newLists = content.querySelectorAll('.episodes-list'); newLists.forEach((list, i) => { if (oldScrollY[i] !== undefined) list.scrollTop = oldScrollY[i]; }); } } } overlay.classList.add('show'); };
   window.closeEpisodeManager = function() { document.getElementById('episode-manager-overlay').classList.remove('show'); };
-  window.toggleEpisode = function(mIndex, sNum, eNum) { let movie = myMovies[mIndex]; if(!movie.watchedEpisodes[sNum]) movie.watchedEpisodes[sNum] = []; let arr = movie.watchedEpisodes[sNum]; let idx = arr.indexOf(eNum); if(idx > -1) arr.splice(idx, 1); else arr.push(eNum); saveData(); openModal(mIndex); openEpisodeManager(mIndex); };
-  window.toggleAllEpisodes = function(mIndex, sNum) { let movie = myMovies[mIndex]; if(!movie.watchedEpisodes[sNum]) movie.watchedEpisodes[sNum] = []; let season = movie.seasonsData.find(s => s.s === sNum); if (movie.watchedEpisodes[sNum].length === season.e) { movie.watchedEpisodes[sNum] = []; } else { movie.watchedEpisodes[sNum] = Array.from({length: season.e}, (_, i) => i + 1); } saveData(); openModal(mIndex); openEpisodeManager(mIndex); };
+  
+  // ACTIONS D'ÉPISODES INSTANTANÉES SANS LATENCE
+  window.toggleEpisode = function(mIndex, sNum, eNum) { 
+      let movie = myMovies[mIndex]; 
+      if(!movie.watchedEpisodes[sNum]) movie.watchedEpisodes[sNum] = []; 
+      let arr = movie.watchedEpisodes[sNum]; 
+      let idx = arr.indexOf(eNum); 
+      if(idx > -1) arr.splice(idx, 1); 
+      else arr.push(eNum); 
+      saveData(); 
+      openModal(mIndex); 
+      openEpisodeManager(mIndex); 
+  };
+  
+  window.toggleAllEpisodes = function(mIndex, sNum) { 
+      let movie = myMovies[mIndex]; 
+      if(!movie.watchedEpisodes[sNum]) movie.watchedEpisodes[sNum] = []; 
+      let season = movie.seasonsData.find(s => s.s === sNum); 
+      if (movie.watchedEpisodes[sNum].length === season.e) { 
+          movie.watchedEpisodes[sNum] = []; 
+      } else { 
+          movie.watchedEpisodes[sNum] = Array.from({length: season.e}, (_, i) => i + 1); 
+      } 
+      saveData(); 
+      openModal(mIndex); 
+      openEpisodeManager(mIndex); 
+  };
 
   // --- SYSTÈME DE PODIUMS TOP 3 & RECHERCHE RAPIDE ---
   function ensureValidTop3() {
