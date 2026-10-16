@@ -46,11 +46,12 @@
   .tab-content { display: none; padding: 40px 20px; max-width: 1300px; margin: 0 auto; animation: fadeIn 0.5s ease-out; }
   .tab-content.active { display: block; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  .glass-panel { background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
+  .glass-panel { background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); position: relative; }
 
   /* GESTION & RECHERCHE */
-  .admin-container { display: flex; gap: 30px; flex-wrap: wrap; }
-  .form-section, .list-section { flex: 1; min-width: 300px; }
+  .admin-container { display: flex; gap: 30px; flex-wrap: wrap; position: relative; z-index: 50; }
+  .form-section { flex: 1; min-width: 300px; position: relative; z-index: 60; }
+  .list-section { flex: 1; min-width: 300px; position: relative; z-index: 10; }
   .form-group { margin-bottom: 20px; }
   .form-group label { display: block; font-size: 12px; color: var(--neon-blue); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;}
   .form-group input[type="text"], .form-group input[type="password"] { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid rgba(0, 243, 255, 0.3); background: rgba(0,0,0,0.5); color: #fff; box-sizing: border-box; font-family: inherit; transition: 0.3s; font-size: 16px;}
@@ -63,8 +64,8 @@
   .precision-fields { display: none; gap: 15px; margin-bottom: 20px; animation: fadeIn 0.3s ease-out; }
   .precision-fields.active { display: flex; flex-wrap: wrap; }
   .precision-fields .form-group { flex: 1; min-width: 140px; margin-bottom: 0; }
-  .title-search-wrapper { position: relative; }
-  .tmdb-live-dropdown { display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: rgba(10, 10, 22, 0.98); backdrop-filter: blur(16px); border: 1px solid var(--neon-blue); border-radius: 12px; max-height: 290px; overflow-y: auto; z-index: 1000; box-shadow: 0 12px 35px rgba(0, 0, 0, 0.95); }
+  .title-search-wrapper { position: relative; z-index: 100; }
+  .tmdb-live-dropdown { display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: rgba(10, 10, 22, 0.98); backdrop-filter: blur(16px); border: 1px solid var(--neon-blue); border-radius: 12px; max-height: 290px; overflow-y: auto; z-index: 9999; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.98); }
   .tmdb-live-dropdown.active { display: block; }
   .tmdb-live-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); cursor: pointer; transition: 0.2s; }
   .tmdb-live-item:hover { background: rgba(0, 243, 255, 0.12); }
@@ -103,11 +104,11 @@
   .stat-detail { font-size: 14px; color: rgba(255,255,255,0.6); }
 
   /* PODIUM MANUEL & RECHERCHE RAPIDE */
-  .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 15px; margin-top: 15px; height: 270px; }
+  .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 15px; margin-top: 25px; height: 295px; position: relative; z-index: 5; }
   .podium-place { display: flex; flex-direction: column; align-items: center; width: 100px; animation: slideUp 0.8s ease-out; position: relative; }
   @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
   .podium-poster { width: 90px; height: 135px; background-size: cover; background-position: center; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); margin-bottom: 10px; border: 2px solid; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
-  .podium-poster:hover { transform: scale(1.08); }
+  .podium-poster:hover { transform: translateY(-4px) scale(1.05); }
   .podium-remove-btn { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 0, 60, 0.9); color: #fff; border: 1px solid #fff; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: 0.2s; z-index: 5; }
   .podium-poster:hover .podium-remove-btn { opacity: 1; }
   .podium-empty { background: rgba(0,0,0,0.4); border: 2px dashed rgba(255,255,255,0.3); display: flex; flex-direction: column; align-items: center; justify-content: center; color: rgba(255,255,255,0.5); font-weight: bold; }
@@ -119,8 +120,8 @@
   .step-3 { height: 50px; background: linear-gradient(180deg, var(--bronze) 0%, transparent 100%); border: 1px solid var(--bronze); border-bottom: none; color: var(--bronze); text-shadow: none; }
 
   /* BARRE DE RECHERCHE RAPIDE SUR CHAQUE PODIUM */
-  .podium-quick-search { position: relative; margin: 10px auto 5px auto; max-width: 320px; text-align: left; }
-  .podium-quick-input { width: 100%; padding: 10px 14px; border-radius: 20px; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; font-family: 'Inter', sans-serif; font-size: 13px; box-sizing: border-box; transition: 0.3s; outline: none; }
+  .podium-quick-search { position: relative; margin: 12px auto 22px auto; max-width: 320px; text-align: left; z-index: 30; }
+  .podium-quick-input { width: 100%; padding: 10px 14px; border-radius: 20px; background: rgba(0, 0, 0, 0.65); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; font-family: 'Inter', sans-serif; font-size: 13px; box-sizing: border-box; transition: 0.3s; outline: none; }
   .podium-quick-input:focus { border-color: var(--neon-blue); box-shadow: 0 0 12px rgba(0, 243, 255, 0.3); }
   .podium-quick-input.serie-input:focus { border-color: var(--neon-pink); box-shadow: 0 0 12px rgba(255, 0, 234, 0.3); }
   .podium-dropdown { display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: rgba(10, 10, 22, 0.98); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 12px; max-height: 240px; overflow-y: auto; z-index: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.9); }
@@ -136,7 +137,7 @@
   .podium-rank-btn.r2:hover { background: var(--silver); color: #000; border-color: var(--silver); }
   .podium-rank-btn.r3:hover { background: var(--bronze); color: #000; border-color: var(--bronze); }
 
-  /* MODALE DE SÉLECTION DU PODIUM (CORRIGÉE) */
+  /* MODALE DE SÉLECTION DU PODIUM */
   .selector-modal { background: var(--bg-dark); border: 1px solid var(--neon-blue); border-radius: 20px; width: 90%; max-width: 900px; height: 80vh; display: flex; flex-direction: column; padding: 25px; box-sizing: border-box; box-shadow: 0 0 30px rgba(0, 243, 255, 0.2); }
   .selector-header { text-align: center; margin-bottom: 15px; }
   .selector-header h2 { font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0 0 12px 0; font-size: 28px; }
@@ -423,7 +424,7 @@
           <div id="admin-movie-list" style="max-height: 250px; overflow-y: auto; padding-right: 10px;"></div>
         </div>
       </div>
-      <div class="glass-panel" style="width: 100%; box-sizing: border-box; margin-top: 30px; text-align: center;">
+      <div class="glass-panel" style="width: 100%; box-sizing: border-box; margin-top: 30px; text-align: center; position: relative; z-index: 1;">
         <h2 style="margin-top:0; color:var(--silver); font-family: 'Rajdhani'; text-transform: uppercase;">⚙️ Sauvegarde (Optionnel)</h2>
         <p style="font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 20px;">Tes données sont sauvées dans le Cloud à chaque action ! Tu peux quand même exporter un JSON par sécurité.</p>
         <button class="btn-sync" style="border-color: var(--gold); color: var(--gold);" onclick="exportData()">💾 Exporter un Backup (.json)</button>
@@ -900,7 +901,7 @@
     setTimeout(() => { status.style.display = 'none'; btn.style.display = 'inline-block'; }, 3000);
   }
 
-  // --- RECHERCHE ULTRA-PRÉCISE (LIVE PREVIEW) & AJOUT (TMDB) ---
+  // --- RECHERCHE ULTRA-PRÉCISE (LIVE PREVIEW) & AJOUT (TMDB) OPTIMISÉE ANIMES ---
   let liveSearchTimeout = null;
   let selectedTmdbTarget = null;
 
@@ -948,27 +949,42 @@
   async function fetchLiveTmdbPreview(titleQuery, yearFilter, dirFilter) {
     const drop = document.getElementById('tmdb-live-results');
     if (!drop) return;
-    drop.innerHTML = `<div style="padding:12px; text-align:center; color:var(--neon-blue); font-family:'Rajdhani'; font-size:14px;">🔎 Scan TMDB en direct...</div>`;
+    drop.innerHTML = `<div style="padding:12px; text-align:center; color:var(--neon-blue); font-family:'Rajdhani'; font-size:14px;">🔎 Scan TMDB en direct (Animes & Séries)...</div>`;
     drop.classList.add('active');
 
     let endpoint = appSettings.searchMode || 'multi';
     try {
-      let url = `https://api.themoviedb.org/3/search/${endpoint}?api_key=${API_KEY}&query=${encodeURIComponent(titleQuery)}&language=fr-FR`;
-      if (yearFilter && /^\d{4}$/.test(yearFilter)) {
-        if (endpoint === 'movie') url += `&primary_release_year=${yearFilter}`;
-        else if (endpoint === 'tv') url += `&first_air_date_year=${yearFilter}`;
-      }
+      let candidates = [];
 
-      const res = await fetch(url);
-      const data = await res.json();
-      let candidates = (data.results || []).filter(r => endpoint !== 'multi' || r.media_type === 'movie' || r.media_type === 'tv')
-                                           .map(r => ({ ...r, media_type: r.media_type || endpoint }));
+      if (endpoint === 'multi') {
+        let urls = [
+          `https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(titleQuery)}&language=fr-FR`,
+          `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(titleQuery)}&language=fr-FR`
+        ];
+        if (yearFilter && /^\d{4}$/.test(yearFilter)) {
+          urls[0] += `&first_air_date_year=${yearFilter}`;
+          urls[1] += `&primary_release_year=${yearFilter}`;
+        }
+        const [resTv, resMovie] = await Promise.all(urls.map(u => fetch(u).then(r => r.json())));
+        const tvList = (resTv.results || []).map(r => ({ ...r, media_type: 'tv' }));
+        const movieList = (resMovie.results || []).map(r => ({ ...r, media_type: 'movie' }));
+        candidates = [...tvList, ...movieList].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0));
+      } else {
+        let url = `https://api.themoviedb.org/3/search/${endpoint}?api_key=${API_KEY}&query=${encodeURIComponent(titleQuery)}&language=fr-FR`;
+        if (yearFilter && /^\d{4}$/.test(yearFilter)) {
+          if (endpoint === 'movie') url += `&primary_release_year=${yearFilter}`;
+          else if (endpoint === 'tv') url += `&first_air_date_year=${yearFilter}`;
+        }
+        const res = await fetch(url);
+        const data = await res.json();
+        candidates = (data.results || []).map(r => ({ ...r, media_type: endpoint }));
+      }
 
       if (yearFilter && /^\d{4}$/.test(yearFilter)) {
         candidates = candidates.filter(r => (r.release_date || r.first_air_date || '').startsWith(yearFilter));
       }
 
-      candidates = candidates.slice(0, 6);
+      candidates = candidates.slice(0, 8);
 
       const enriched = await Promise.all(candidates.map(async (c) => {
         let dirName = "Inconnu";
@@ -978,8 +994,13 @@
           if (c.media_type === 'movie' && detData.credits && detData.credits.crew) {
             const dirs = detData.credits.crew.filter(x => x.job === 'Director');
             if (dirs.length > 0) dirName = dirs.map(d => d.name).join(', ');
-          } else if (c.media_type === 'tv' && detData.created_by && detData.created_by.length > 0) {
-            dirName = detData.created_by.map(d => d.name).join(', ');
+          } else if (c.media_type === 'tv') {
+            if (detData.created_by && detData.created_by.length > 0) {
+              dirName = detData.created_by.map(d => d.name).join(', ');
+            } else if (detData.credits && detData.credits.crew) {
+              const animeCreators = detData.credits.crew.filter(x => x.job === 'Original Story' || x.job === 'Comic Book' || x.job === 'Series Director' || x.job === 'Director');
+              if (animeCreators.length > 0) dirName = animeCreators.map(d => d.name).join(', ');
+            }
           }
         } catch(e) {}
         return { ...c, directorName: dirName };
@@ -1067,17 +1088,30 @@
       if (selectedTmdbTarget && selectedTmdbTarget.id) {
         bestResult = { id: selectedTmdbTarget.id, media_type: selectedTmdbTarget.media_type };
       } else {
-        let searchUrl = `https://api.themoviedb.org/3/search/${endpoint}?api_key=${API_KEY}&query=${encodeURIComponent(rawInput)}&language=fr-FR`;
-        if (targetYear) {
-          if (endpoint === 'movie') searchUrl += `&primary_release_year=${targetYear}`;
-          else if (endpoint === 'tv') searchUrl += `&first_air_date_year=${targetYear}`;
+        let validResults = [];
+        if (endpoint === 'multi') {
+          let urls = [
+            `https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(rawInput)}&language=fr-FR`,
+            `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(rawInput)}&language=fr-FR`
+          ];
+          if (targetYear) {
+            urls[0] += `&first_air_date_year=${targetYear}`;
+            urls[1] += `&primary_release_year=${targetYear}`;
+          }
+          const [resTv, resMovie] = await Promise.all(urls.map(u => fetch(u).then(r => r.json())));
+          const tvList = (resTv.results || []).map(r => ({ ...r, media_type: 'tv' }));
+          const movieList = (resMovie.results || []).map(r => ({ ...r, media_type: 'movie' }));
+          validResults = [...tvList, ...movieList].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0));
+        } else {
+          let searchUrl = `https://api.themoviedb.org/3/search/${endpoint}?api_key=${API_KEY}&query=${encodeURIComponent(rawInput)}&language=fr-FR`;
+          if (targetYear) {
+            if (endpoint === 'movie') searchUrl += `&primary_release_year=${targetYear}`;
+            else if (endpoint === 'tv') searchUrl += `&first_air_date_year=${targetYear}`;
+          }
+          const searchRes = await fetch(searchUrl);
+          const searchData = await searchRes.json();
+          validResults = (searchData.results || []).map(r => ({ ...r, media_type: endpoint }));
         }
-
-        const searchRes = await fetch(searchUrl);
-        const searchData = await searchRes.json();
-        let validResults = endpoint === 'multi'
-          ? (searchData.results || []).filter(r => r.media_type === 'movie' || r.media_type === 'tv')
-          : (searchData.results || []).map(r => ({ ...r, media_type: endpoint }));
 
         if (targetYear) {
           const yearFiltered = validResults.filter(r => (r.release_date || r.first_air_date || '').startsWith(targetYear));
@@ -1085,7 +1119,7 @@
         }
 
         if (targetDirector && validResults.length > 0) {
-          loadingDetails.innerText = "Vérification du réalisateur sur TMDB...";
+          loadingDetails.innerText = "Vérification de l'auteur / réalisateur sur TMDB...";
           const topCandidates = validResults.slice(0, 6);
           for (let cand of topCandidates) {
             try {
@@ -1094,8 +1128,12 @@
               let crewNames = [];
               if (cand.media_type === 'movie' && cData.credits && cData.credits.crew) {
                 crewNames = cData.credits.crew.filter(c => c.job === 'Director').map(d => normalize(d.name));
-              } else if (cand.media_type === 'tv' && cData.created_by) {
-                crewNames = cData.created_by.map(d => normalize(d.name));
+              } else if (cand.media_type === 'tv') {
+                if (cData.created_by) crewNames = cData.created_by.map(d => normalize(d.name));
+                if (cData.credits && cData.credits.crew) {
+                  const others = cData.credits.crew.filter(x => x.job === 'Original Story' || x.job === 'Comic Book' || x.job === 'Series Director' || x.job === 'Director').map(d => normalize(d.name));
+                  crewNames = [...crewNames, ...others];
+                }
               }
               if (crewNames.some(n => n.includes(targetDirector))) {
                 bestResult = cand;
@@ -1127,7 +1165,16 @@
         if (dirObjs.length > 0) { director = dirObjs.map(d => d.name).join(', '); directorId = dirObjs[0].id; }
         if (itemData.release_date) year = itemData.release_date.split('-')[0]; runtimeMinutes = itemData.runtime || 0; 
       } else {
-        if (itemData.created_by && itemData.created_by.length > 0) { director = itemData.created_by.map(c => c.name).join(', '); directorId = itemData.created_by[0].id; }
+        if (itemData.created_by && itemData.created_by.length > 0) { 
+          director = itemData.created_by.map(c => c.name).join(', '); 
+          directorId = itemData.created_by[0].id; 
+        } else if (itemData.credits && itemData.credits.crew) {
+          const animeCreators = itemData.credits.crew.filter(x => x.job === 'Original Story' || x.job === 'Comic Book' || x.job === 'Series Director' || x.job === 'Director');
+          if (animeCreators.length > 0) {
+            director = animeCreators.map(c => c.name).join(', ');
+            directorId = animeCreators[0].id;
+          }
+        }
         if (itemData.first_air_date) year = itemData.first_air_date.split('-')[0];
         const validSeasons = (itemData.seasons || []).filter(s => s.season_number > 0);
         seasonsData = validSeasons.map(s => ({ s: s.season_number, e: s.episode_count }));
