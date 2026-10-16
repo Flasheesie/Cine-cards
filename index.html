@@ -322,8 +322,13 @@
 
 <!-- LE RESTE DE L'APPLICATION -->
 <div id="app-content">
-    <header>
+    <header style="position: relative;">
       <h1>Ciné Cards</h1>
+      <!-- BOUTON JOURNAL DE BORD (CHANGELOG) EN HAUT À DROITE -->
+      <div id="changelog-btn" onclick="openChangelogModal()" style="position: absolute; top: 20px; right: 30px; background: rgba(0, 243, 255, 0.15); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px); z-index: 100;">
+        📢 Nouveautés <span id="changelog-badge" style="background: var(--neon-pink); width: 8px; height: 8px; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px var(--neon-pink);"></span>
+      </div>
+      
       <nav class="tabs">
         <button class="tab-btn active" onclick="switchTab('vitrine')">Vitrine</button>
         <button class="tab-btn" onclick="switchTab('gestion')">Gestion</button>
@@ -458,6 +463,34 @@
 <div id="collection-binder-overlay" class="overlay"><span class="overlay-close" onclick="closeBinder()">×</span><div class="selector-modal" style="width: 90%; max-width: 1300px; height: 85vh; background: var(--bg-dark);"><div id="collection-binder-content" style="overflow-y: auto; height: 100%; padding-right: 15px;"></div></div></div>
 <div id="episode-manager-overlay" class="overlay"><span class="overlay-close" onclick="closeEpisodeManager()">×</span><div class="episodes-modal"><div style="text-align: center; margin-bottom: 20px;"><h2 id="episode-manager-title" style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0; font-size: 32px;">Épisodes</h2><p style="color:#888; font-size:14px; text-transform:uppercase; letter-spacing:1px; margin-top: 5px;">Clique sur les épisodes visionnés</p></div><div id="episode-manager-content" style="flex-grow: 1; overflow-y: hidden; display: flex; flex-direction: column;"></div></div></div>
 
+<!-- MODALE JOURNAL DE BORD (CHANGELOG) -->
+<div id="changelog-overlay" class="overlay">
+  <span class="overlay-close" onclick="closeChangelogModal()">×</span>
+  <div class="selector-modal" style="max-width: 650px; height: auto; max-height: 80vh;">
+    <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">📢 Journal de Bord - Mises à Jour</h2></div>
+    <div style="overflow-y: auto; text-align: left; padding: 10px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85);">
+      <div style="margin-bottom: 20px; border-left: 3px solid var(--neon-pink); padding-left: 12px;">
+        <h3 style="color: var(--neon-pink); font-family: 'Rajdhani'; margin: 0 0 5px 0; font-size: 18px;">✨ Version Actuelle - Anti-Latence & Admin</h3>
+        <p style="margin: 0; color: #aaa; font-size: 11px;">Mise à jour système</p>
+        <ul style="margin: 8px 0 0 -15px; padding-left: 20px;">
+          <li><strong>Mode Admin Exclusif ("Mr. Bonnet")</strong> : Ajout d'un bouton de suppression sécurisé dans le Panthéon pour nettoyer les faux comptes.</li>
+          <li><strong>Scores d'Arcade Indépendants</strong> : Correction du bug où les scores des mini-jeux étaient partagés entre tous les utilisateurs.</li>
+          <li><strong>Performance & Anti-Latence</strong> : Suppression des temps de latence lors du cochage des épisodes et de la saisie des notes personnelles (sauvegarde instantanée en arrière-plan).</li>
+          <li><strong>Support Animes Longs</strong> : Optimisation de la recherche TMDB pour les séries au long cours comme <em>One Piece</em>.</li>
+        </ul>
+      </div>
+      <div style="margin-bottom: 10px; border-left: 3px solid var(--neon-blue); padding-left: 12px;">
+        <h3 style="color: var(--neon-blue); font-family: 'Rajdhani'; margin: 0 0 5px 0; font-size: 18px;">🎯 Version Précédente - Recherche Ultra-Précise</h3>
+        <ul style="margin: 8px 0 0 -15px; padding-left: 20px;">
+          <li>Ajout du mode de recherche précise avec champs Année et Réalisateur/Créateur.</li>
+          <li>Barres de recherche rapide intégrées directement sur les podiums Films et Séries.</li>
+        </ul>
+      </div>
+    </div>
+    <button onclick="closeChangelogModal()" class="btn-submit" style="margin-top: 15px;">J'ai tout lu !</button>
+  </div>
+</div>
+
 <div id="settings-overlay" class="overlay">
   <span class="overlay-close" onclick="closeSettingsModal()">×</span>
   <div class="selector-modal" style="height: auto; max-width: 550px;">
@@ -489,6 +522,7 @@
 <script>
   const API_KEY = 'fb195a905bf531daf7eb642dbf16c455'; 
   const OMDB_KEY = 'bb349eee';
+  const CURRENT_CHANGELOG_VERSION = 'v7.5';
 
   // --- INITIALISATION DE LA BASE DE DONNÉES CLOUD (FIREBASE) ---
   const firebaseConfig = {
@@ -534,7 +568,7 @@
   };
   let myMovies = []; let myTop3 = { Film: [null, null, null], Série: [null, null, null] };
   let notesVisible = true; let recentlyAddedTitle = null; let currentPodiumSelectionType = null; let currentPodiumSelectionRank = null;
-  let saveCloudTimeout = null; // Anti-latence pour le Cloud
+  let saveCloudTimeout = null;
 
   // --- DÉMARRAGE ET CONNEXION CLOUD ---
   document.addEventListener("DOMContentLoaded", () => {
@@ -559,7 +593,25 @@
         document.getElementById('login-pin').value = appSettings.pin;
         attemptAuth('login');
     }
+
+    // Gestion de l'affichage du badge du journal de bord
+    const lastReadVersion = localStorage.getItem('cinecards_last_changelog');
+    if (lastReadVersion === CURRENT_CHANGELOG_VERSION) {
+      const badge = document.getElementById('changelog-badge');
+      if (badge) badge.style.display = 'none';
+    }
   });
+
+  window.openChangelogModal = function() {
+    document.getElementById('changelog-overlay').classList.add('show');
+    localStorage.setItem('cinecards_last_changelog', CURRENT_CHANGELOG_VERSION);
+    const badge = document.getElementById('changelog-badge');
+    if (badge) badge.style.display = 'none';
+  };
+
+  window.closeChangelogModal = function() {
+    document.getElementById('changelog-overlay').classList.remove('show');
+  };
 
   window.attemptAuth = async function(action) {
       const pseudo = document.getElementById('login-pseudo').value.trim();
@@ -655,7 +707,6 @@
       localStorage.setItem('thomasTop3_v74', JSON.stringify(myTop3));
   }
 
-  // SAUVEGARDE ULTRA-FLUIDE SANS LATENCE (ANTI-BLOCAGE UI)
   function saveData() {
       saveDataLocalOnly();
       updateApp();
@@ -663,7 +714,7 @@
       if (saveCloudTimeout) clearTimeout(saveCloudTimeout);
       saveCloudTimeout = setTimeout(() => {
           syncProfileToCloud(true);
-      }, 1500); // Envoi en arrière-plan après 1.5s d'inactivité
+      }, 1500);
   }
 
   async function syncProfileToCloud(includeMovies = false) {
@@ -721,7 +772,7 @@
 
   function generateRankCard(title, users, sortKey, unit, color) {
       let sorted = [...users].sort((a,b) => (b[sortKey] || 0) - (a[sortKey] || 0)).filter(u => u[sortKey] > 0).slice(0, 5);
-      const isAdmin = (appSettings.pseudo === "Mr. Bonnet");
+      let isAdmin = (appSettings.pseudo === "Mr. Bonnet");
 
       let listHtml = sorted.map((u, i) => {
           let badgeClass = i === 0 ? 'border-left: 4px solid var(--gold); background: rgba(255, 215, 0, 0.1); color: var(--gold); font-weight:bold;' : i === 1 ? 'border-left: 4px solid var(--silver); background: rgba(192, 192, 192, 0.1); color: var(--silver);' : i === 2 ? 'border-left: 4px solid var(--bronze); background: rgba(205, 127, 50, 0.1); color: var(--bronze);' : 'border-left: 4px solid rgba(255,255,255,0.2); color: #fff;';
@@ -732,7 +783,6 @@
       return `<div class="glass-panel" style="padding: 25px;"><h3 style="color:${color}; font-family:'Rajdhani'; text-transform:uppercase; margin-top:0; border-bottom:1px dashed rgba(255,255,255,0.2); padding-bottom:10px; font-size:22px; text-shadow: 0 0 10px ${color};">${title}</h3><div style="margin-top:15px;">${listHtml}</div></div>`;
   }
 
-  // SUPPRESSION DE FAUX COMPTE (RÉSERVÉ À MR. BONNET)
   window.deleteFakeAccount = async function(pseudoTarget) {
       if (!confirm(`Es-tu sûr de vouloir supprimer définitivement le faux compte "${pseudoTarget}" du Panthéon ?`)) return;
       try {
@@ -1228,11 +1278,10 @@
 
   function openModal(index) { const movie = myMovies[index]; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const awardsHTML = getAwardsHTML(movie.awards); const synopsisText = movie.synopsis || "Clique sur 'Synchroniser les données'."; const userNoteText = movie.userNote || ""; const notesHiddenClass = notesVisible ? '' : 'hidden'; const toggleButtonText = notesVisible ? '📝 Masquer les notes' : '📝 Afficher les notes'; let epBadge = ''; let percentage = 100; let btnManager = ''; if (isSerie) { btnManager = `<button class="btn-sync" style="border-color: var(--neon-pink); color: var(--neon-pink); font-size: 12px; padding: 6px 12px; margin-top: 10px;" onclick="openEpisodeManager(${index})">📺 Gérer les épisodes</button>`; if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } const fullModalHTML = `<div class="modal-container-box"><button class="btn-toggle-notes" onclick="toggleNotes(${index})">${toggleButtonText}</button><div class="modal-wrapper"><div class="modal-notes ${notesHiddenClass}" id="modal-notes-panel"><h3>📝 Mes Notes</h3><textarea class="post-it" placeholder="Écris tes critiques..." oninput="saveNote(${index}, this.value)">${userNoteText}</textarea><span style="font-size: 10px; color: #888; margin-top: 5px; text-align:right;">* Sauvegarde en temps réel</span></div><div class="modal-card-container"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel} :</span> ${movie.director}</p><p><span>Année :</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre :</span> ${movie.genre}</p>${btnManager}</div>${awardsHTML}<div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div><p class="quote">"${movie.quote}"</p></div></div></div><div class="modal-synopsis"><h3>Synopsis</h3><p>${synopsisText}</p></div></div></div>`; document.getElementById('modal-content-area').innerHTML = fullModalHTML; document.getElementById('card-modal-overlay').classList.add('show'); }
   
-  // SAUVEGARDE INSTANTANÉE LOCALE POUR SUPPRIMER TOUTE LATENCE DES NOTES
   window.saveNote = function(index, text) { 
       if (myMovies[index]) { 
           myMovies[index].userNote = text; 
-          saveDataLocalOnly(); // Sans attendre le Cloud
+          saveDataLocalOnly(); 
       } 
   }
 
@@ -1243,7 +1292,6 @@
   window.openEpisodeManager = function(index) { const overlay = document.getElementById('episode-manager-overlay'); const content = document.getElementById('episode-manager-content'); const titleObj = document.getElementById('episode-manager-title'); let movie = myMovies[index]; titleObj.innerText = `Épisodes : ${movie.title}`; let oldScrollX = 0; let oldScrollY = []; let isSameMovie = (content.dataset.activeIndex == index); if (isSameMovie) { const oldContainer = content.querySelector('.seasons-container'); if (oldContainer) { oldScrollX = oldContainer.scrollLeft; const oldLists = content.querySelectorAll('.episodes-list'); oldLists.forEach(list => oldScrollY.push(list.scrollTop)); } } content.dataset.activeIndex = index; if (!movie.seasonsData || movie.seasonsData.length === 0) { content.innerHTML = `<p style="text-align:center; color:#888; margin-top:50px;">Aucune donnée de saison.</p>`; } else { let html = '<div class="seasons-container">'; movie.seasonsData.forEach(season => { let sNum = season.s; let epCount = season.e; let watched = movie.watchedEpisodes[sNum] || []; html += `<div class="season-col"><div style="flex-shrink:0; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><h4 style="margin:0; color:var(--neon-blue); font-family:'Rajdhani'; font-size: 18px;">Saison ${sNum}</h4><button onclick="toggleAllEpisodes(${index}, ${sNum})" style="background:var(--glass-bg); border:1px solid var(--neon-pink); border-radius:5px; color:var(--neon-pink); cursor:pointer; font-size:10px; padding:3px 6px;">TOUT</button></div><div class="episodes-list">`; for (let e = 1; e <= epCount; e++) { let isW = watched.includes(e); let btnClass = isW ? 'ep-btn watched' : 'ep-btn'; let icon = isW ? '✔ ' : ''; html += `<button class="${btnClass}" onclick="toggleEpisode(${index}, ${sNum}, ${e})">${icon}S${sNum} E${e}</button>`; } html += `</div></div>`; }); html += '</div>'; content.innerHTML = html; if (isSameMovie) { const newContainer = content.querySelector('.seasons-container'); if (newContainer) { newContainer.scrollLeft = oldScrollX; const newLists = content.querySelectorAll('.episodes-list'); newLists.forEach((list, i) => { if (oldScrollY[i] !== undefined) list.scrollTop = oldScrollY[i]; }); } } } overlay.classList.add('show'); };
   window.closeEpisodeManager = function() { document.getElementById('episode-manager-overlay').classList.remove('show'); };
   
-  // ACTIONS D'ÉPISODES INSTANTANÉES SANS LATENCE
   window.toggleEpisode = function(mIndex, sNum, eNum) { 
       let movie = myMovies[mIndex]; 
       if(!movie.watchedEpisodes[sNum]) movie.watchedEpisodes[sNum] = []; 
