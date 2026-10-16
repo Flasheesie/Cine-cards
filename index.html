@@ -386,8 +386,8 @@
             <h2 style="margin:0; color:var(--neon-blue); font-family: 'Rajdhani'; text-transform: uppercase;">✚ Forger une Carte</h2>
             <span style="font-size: 24px; cursor: pointer; transition: 0.3s;" onclick="openSettingsModal()" onmouseover="this.style.transform='rotate(90deg)'" onmouseout="this.style.transform='rotate(0deg)'" title="Paramètres">⚙️</span>
           </div>
-          <p style="font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 20px; margin-top:-10px;">Indique le numéro ou l'année si tu veux cibler une version précise.</p>
-        <form id="movieForm">
+          <p style="font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 20px; margin-top:-10px;">Indique le numéro ou l'année (ou active le mode Ultra-Précis dans ⚙️) pour cibler une œuvre exacte.</p>
+          <form id="movieForm">
             <div class="form-group title-search-wrapper" id="title-search-box">
               <label>Titre exact <span id="precision-badge" style="display:none; color:var(--neon-pink); font-size:10px; margin-left:6px;">🎯 MODE ULTRA-PRÉCIS ACTIF</span></label>
               <input type="text" id="m-title" required placeholder="Ex: 2012, Toy Story 2..." autocomplete="off" oninput="onPrecisionInput()">
@@ -528,7 +528,7 @@
 
   // VARIABLES GLOBALES
   let appSettings = JSON.parse(localStorage.getItem('thomasSettings_v74')) || {
-    skipAnimation: false, dateMode: 'manual', searchMode: 'multi', universeCounts: {},
+    skipAnimation: false, precisionMode: false, dateMode: 'manual', searchMode: 'multi', universeCounts: {},
     highScores: { mystery: 0, chrono: 0, critic: 0 }, pseudo: "", pin: ""
   };
   let myMovies = []; let myTop3 = { Film: [null, null, null], Série: [null, null, null] };
@@ -566,7 +566,6 @@
       
       if (pseudo.length < 3 || pin.length < 3) { status.innerText = "Le pseudo et le mot de passe doivent faire 3 caractères min."; return; }
       
-      // Désactiver les boutons pour éviter les clics multiples
       document.getElementById('btn-login').disabled = true;
       document.getElementById('btn-register').disabled = true;
       status.innerText = "Connexion au Cloud Firebase en cours...";
@@ -725,7 +724,7 @@
 
   function updateApp() { renderAdminList(); renderAll(); renderPodiums(); updateCollectionsTab(); updateStats(); checkArcadeAvailability(); updateHighScoresDisplay(); }
 
- function applySettingsUI() {
+  function applySettingsUI() {
     const dateInput = document.getElementById('m-unlock'); const dateLabel = document.getElementById('date-label');
     if (appSettings.dateMode === 'auto') { dateInput.style.display = 'none'; dateInput.required = false; dateLabel.innerHTML = 'Date de visionnage <span style="color:var(--neon-pink);">(Automatique)</span>'; } 
     else { dateInput.style.display = 'block'; dateInput.required = true; dateLabel.innerText = 'Date de visionnage (Exigée: Mois Année)'; }
@@ -901,31 +900,217 @@
     setTimeout(() => { status.style.display = 'none'; btn.style.display = 'inline-block'; }, 3000);
   }
 
-  // --- RECHERCHE ET AJOUT (TMDB) ---
+  // --- RECHERCHE ULTRA-PRÉCISE (LIVE PREVIEW) & AJOUT (TMDB) ---
+  let liveSearchTimeout = null;
+  let selectedTmdbTarget = null;
+
+  window.clearSelectedTmdbTarget = function() {
+    selectedTmdbTarget = null;
+    const banner = document.getElementById('selected-tmdb-banner');
+    if (banner) banner.classList.remove('active');
+  };
+
+  window.selectTmdbLiveItem = function(id, mediaType, encodedTitle, year, director) {
+    const decodedTitle = decodeURIComponent(encodedTitle);
+    selectedTmdbTarget = { id, media_type: mediaType };
+    document.getElementById('m-title').value = decodedTitle;
+    if (year && year !== 'N/A') document.getElementById('m-year').value = year;
+    if (director && director !== 'Inconnu') document.getElementById('m-director').value = director;
+
+    const banner = document.getElementById('selected-tmdb-banner');
+    const bannerText = document.getElementById('selected-tmdb-text');
+    if (banner && bannerText) {
+      bannerText.innerText = `🎯 Cible verrouillée : ${decodedTitle} (${year}) - ${director}`;
+      banner.classList.add('active');
+    }
+    document.getElementById('tmdb-live-results').classList.remove('active');
+  };
+
+  window.onPrecisionInput = function() {
+    if (selectedTmdbTarget) clearSelectedTmdbTarget();
+    if (!appSettings.precisionMode) return;
+
+    const titleVal = document.getElementById('m-title').value.trim();
+    const yearVal = document.getElementById('m-year').value.trim();
+    const dirVal = document.getElementById('m-director').value.trim();
+    const drop = document.getElementById('tmdb-live-results');
+
+    if (titleVal.length < 2) {
+      drop.classList.remove('active');
+      drop.innerHTML = '';
+      return;
+    }
+
+    clearTimeout(liveSearchTimeout);
+    liveSearchTimeout = setTimeout(() => fetchLiveTmdbPreview(titleVal, yearVal, dirVal), 350);
+  };
+
+  async function fetchLiveTmdbPreview(titleQuery, yearFilter, dirFilter) {
+    const drop = document.getElementById('tmdb-live-results');
+    if (!drop) return;
+    drop.innerHTML = `<div style="padding:12px; text-align:center; color:var(--neon-blue); font-family:'Rajdhani'; font-size:14px;">🔎 Scan TMDB en direct...</div>`;
+    drop.classList.add('active');
+
+    let endpoint = appSettings.searchMode || 'multi';
+    try {
+      let url = `https://api.themoviedb.org/3/search/${endpoint}?api_key=${API_KEY}&query=${encodeURIComponent(titleQuery)}&language=fr-FR`;
+      if (yearFilter && /^\d{4}$/.test(yearFilter)) {
+        if (endpoint === 'movie') url += `&primary_release_year=${yearFilter}`;
+        else if (endpoint === 'tv') url += `&first_air_date_year=${yearFilter}`;
+      }
+
+      const res = await fetch(url);
+      const data = await res.json();
+      let candidates = (data.results || []).filter(r => endpoint !== 'multi' || r.media_type === 'movie' || r.media_type === 'tv')
+                                           .map(r => ({ ...r, media_type: r.media_type || endpoint }));
+
+      if (yearFilter && /^\d{4}$/.test(yearFilter)) {
+        candidates = candidates.filter(r => (r.release_date || r.first_air_date || '').startsWith(yearFilter));
+      }
+
+      candidates = candidates.slice(0, 6);
+
+      const enriched = await Promise.all(candidates.map(async (c) => {
+        let dirName = "Inconnu";
+        try {
+          const detRes = await fetch(`https://api.themoviedb.org/3/${c.media_type}/${c.id}?api_key=${API_KEY}&language=fr-FR&append_to_response=credits`);
+          const detData = await detRes.json();
+          if (c.media_type === 'movie' && detData.credits && detData.credits.crew) {
+            const dirs = detData.credits.crew.filter(x => x.job === 'Director');
+            if (dirs.length > 0) dirName = dirs.map(d => d.name).join(', ');
+          } else if (c.media_type === 'tv' && detData.created_by && detData.created_by.length > 0) {
+            dirName = detData.created_by.map(d => d.name).join(', ');
+          }
+        } catch(e) {}
+        return { ...c, directorName: dirName };
+      }));
+
+      let finalResults = enriched;
+      if (dirFilter) {
+        const cleanDir = normalize(dirFilter);
+        finalResults = enriched.filter(c => normalize(c.directorName).includes(cleanDir));
+      }
+
+      if (finalResults.length === 0) {
+        drop.innerHTML = `<div style="padding:12px; text-align:center; color:#888; font-size:12px;">Aucun résultat correspondant à ces critères précis.</div>`;
+        return;
+      }
+
+      drop.innerHTML = finalResults.map(item => {
+        const t = item.title || item.name || 'Sans titre';
+        const y = (item.release_date || item.first_air_date || 'N/A').split('-')[0];
+        const poster = item.poster_path ? `https://image.tmdb.org/t/p/w92${item.poster_path}` : 'https://via.placeholder.com/92x138/0a0a16/00f3ff?text=?';
+        const isMovie = item.media_type === 'movie';
+        const badgeStyle = isMovie ? 'background:rgba(0,243,255,0.15); color:var(--neon-blue); border:1px solid var(--neon-blue);' : 'background:rgba(255,0,234,0.15); color:var(--neon-pink); border:1px solid var(--neon-pink);';
+        const badgeLabel = isMovie ? '🎬 Film' : '📺 Série';
+        const encodedT = encodeURIComponent(t).replace(/'/g, "%27");
+        const safeDir = (item.directorName || 'Inconnu').replace(/'/g, "\\'");
+
+        return `
+          <div class="tmdb-live-item" onclick="selectTmdbLiveItem(${item.id}, '${item.media_type}', '${encodedT}', '${y}', '${safeDir}')">
+            <img src="${poster}" alt="">
+            <div class="tmdb-live-info">
+              <div class="tmdb-live-title">${t}</div>
+              <div class="tmdb-live-meta">
+                <span class="tmdb-live-badge" style="${badgeStyle}">${badgeLabel}</span>
+                <span>📅 ${y}</span>
+                <span style="color:var(--gold);">🎬 ${item.directorName}</span>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    } catch (e) {
+      drop.innerHTML = `<div style="padding:12px; text-align:center; color:var(--danger); font-size:12px;">Erreur réseau TMDB.</div>`;
+    }
+  }
+
+  document.addEventListener('click', function(e) {
+    const box = document.getElementById('title-search-box');
+    const drop = document.getElementById('tmdb-live-results');
+    if (box && drop && !box.contains(e.target)) {
+      drop.classList.remove('active');
+    }
+  });
+
   document.getElementById('movieForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     let unlockDate = "";
     if (appSettings.dateMode === 'auto') { const d = new Date(); const monthMapAuto = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']; unlockDate = `${monthMapAuto[d.getMonth()]} ${d.getFullYear()}`; } 
     else { const rawUnlockDate = document.getElementById('m-unlock').value.trim(); if (!/^(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre)\s\d{4}$/i.test(rawUnlockDate)) { alert("⚠️ Format invalide (ex: Juillet 2026)."); return; } const parts = rawUnlockDate.split(/\s+/); const monthMap = { 'janvier': 'Janvier', 'février': 'Février', 'fevrier': 'Février', 'mars': 'Mars', 'avril': 'Avril', 'mai': 'Mai', 'juin': 'Juin', 'juillet': 'Juillet', 'août': 'Août', 'aout': 'Août', 'septembre': 'Septembre', 'octobre': 'Octobre', 'novembre': 'Novembre', 'décembre': 'Décembre', 'decembre': 'Décembre' }; unlockDate = `${monthMap[parts[0].toLowerCase()]} ${parts[1]}`; }
 
-    let rawInput = document.getElementById('m-title').value.trim(); let targetYear = null;
-    const yearMatch = rawInput.match(/\b(19\d{2}|20\d{2})\b$/);
-    if (yearMatch) { targetYear = yearMatch[1]; rawInput = rawInput.replace(targetYear, '').trim(); }
+    let rawInput = document.getElementById('m-title').value.trim();
+    let targetYear = null;
+    let targetDirector = null;
+
+    if (appSettings.precisionMode) {
+      const yInput = document.getElementById('m-year').value.trim();
+      const dInput = document.getElementById('m-director').value.trim();
+      if (yInput && /^\d{4}$/.test(yInput)) targetYear = yInput;
+      if (dInput) targetDirector = normalize(dInput);
+    } else {
+      const yearMatch = rawInput.match(/^(.+?)\s+\b(19\d{2}|20\d{2})\b$/);
+      if (yearMatch) {
+        rawInput = yearMatch[1].trim();
+        targetYear = yearMatch[2];
+      }
+    }
 
     const cleanInputNorm = normalize(rawInput);
     const loadingUI = document.getElementById('loading-overlay'); const loadingDetails = document.getElementById('loading-details'); const submitBtn = document.getElementById('main-submit-btn');
     loadingUI.style.display = 'block'; submitBtn.style.display = 'none'; loadingDetails.innerText = "Recherche...";
+    document.getElementById('tmdb-live-results').classList.remove('active');
     let endpoint = appSettings.searchMode || 'multi';
 
     try {
-      const searchRes = await fetch(`https://api.themoviedb.org/3/search/${endpoint}?api_key=${API_KEY}&query=${encodeURIComponent(rawInput)}&language=fr-FR`);
-      const searchData = await searchRes.json();
-      let validResults = endpoint === 'multi' ? searchData.results.filter(r => r.media_type === 'movie' || r.media_type === 'tv') : searchData.results.map(r => ({...r, media_type: endpoint}));
-
       let bestResult = null;
-      if (targetYear) { bestResult = validResults.find(r => { const name = normalize(r.title || r.name || ''); const resDate = r.release_date || r.first_air_date || ''; return name === cleanInputNorm && resDate.startsWith(targetYear); }) || validResults.find(r => { const resDate = r.release_date || r.first_air_date || ''; return resDate.startsWith(targetYear); }); }
-      if (!bestResult) bestResult = validResults.find(r => { const name = normalize(r.title || r.name || ''); return name === cleanInputNorm; }) || validResults[0];
-      if (!bestResult) { alert("Œuvre introuvable sur TMDB avec ces filtres."); throw new Error("Non trouvé"); }
+
+      if (selectedTmdbTarget && selectedTmdbTarget.id) {
+        bestResult = { id: selectedTmdbTarget.id, media_type: selectedTmdbTarget.media_type };
+      } else {
+        let searchUrl = `https://api.themoviedb.org/3/search/${endpoint}?api_key=${API_KEY}&query=${encodeURIComponent(rawInput)}&language=fr-FR`;
+        if (targetYear) {
+          if (endpoint === 'movie') searchUrl += `&primary_release_year=${targetYear}`;
+          else if (endpoint === 'tv') searchUrl += `&first_air_date_year=${targetYear}`;
+        }
+
+        const searchRes = await fetch(searchUrl);
+        const searchData = await searchRes.json();
+        let validResults = endpoint === 'multi'
+          ? (searchData.results || []).filter(r => r.media_type === 'movie' || r.media_type === 'tv')
+          : (searchData.results || []).map(r => ({ ...r, media_type: endpoint }));
+
+        if (targetYear) {
+          const yearFiltered = validResults.filter(r => (r.release_date || r.first_air_date || '').startsWith(targetYear));
+          if (yearFiltered.length > 0) validResults = yearFiltered;
+        }
+
+        if (targetDirector && validResults.length > 0) {
+          loadingDetails.innerText = "Vérification du réalisateur sur TMDB...";
+          const topCandidates = validResults.slice(0, 6);
+          for (let cand of topCandidates) {
+            try {
+              const cRes = await fetch(`https://api.themoviedb.org/3/${cand.media_type}/${cand.id}?api_key=${API_KEY}&language=fr-FR&append_to_response=credits`);
+              const cData = await cRes.json();
+              let crewNames = [];
+              if (cand.media_type === 'movie' && cData.credits && cData.credits.crew) {
+                crewNames = cData.credits.crew.filter(c => c.job === 'Director').map(d => normalize(d.name));
+              } else if (cand.media_type === 'tv' && cData.created_by) {
+                crewNames = cData.created_by.map(d => normalize(d.name));
+              }
+              if (crewNames.some(n => n.includes(targetDirector))) {
+                bestResult = cand;
+                break;
+              }
+            } catch (err) {}
+          }
+        }
+
+        if (!bestResult) {
+          bestResult = validResults.find(r => normalize(r.title || r.name || '') === cleanInputNorm) || validResults[0];
+        }
+      }
+
+      if (!bestResult) { alert("Œuvre introuvable sur TMDB avec ces filtres précis."); throw new Error("Non trouvé"); }
 
       const mediaType = bestResult.media_type;
       const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${bestResult.id}?api_key=${API_KEY}&language=fr-FR&append_to_response=credits,external_ids`);
@@ -961,7 +1146,7 @@
       if (awards.length === 0 && imdbId) { try { const omdbRes = await fetch(`https://www.omdbapi.com/?i=${imdbId}&apikey=${OMDB_KEY}`); const omdbData = await omdbRes.json(); if (omdbData.Awards && omdbData.Awards !== "N/A" && omdbData.Awards.includes("Won")) { let wonText = omdbData.Awards.split('.')[0]; if (wonText.includes("Won")) awards = [`${wonText} (${year})`]; } } catch(e) {} }
 
       const newMovie = { title: title, type: mediaType === 'movie' ? 'Film' : 'Série', director: director, directorTotal: directorTotal, universe: universe, universeTotal: universeTotal, genre: itemData.genres.map(g => g.name).join(' / '), rarity: rarity, rating: rating.toFixed(1), poster: itemData.poster_path ? `https://image.tmdb.org/t/p/w500${itemData.poster_path}` : 'https://via.placeholder.com/500x750/0a0a16/00f3ff?text=Image+Manquante', year: year, unlockDate: unlockDate, quote: itemData.tagline || "Une œuvre mémorable.", awards: awards, runtime: runtimeMinutes, synopsis: itemData.overview || "Synopsis non disponible.", userNote: "", seasonsData: seasonsData, watchedEpisodes: watchedEpisodes, episodeRuntime: episodeRuntime };
-      myMovies.unshift(newMovie); recentlyAddedTitle = title; this.reset(); saveData();
+      myMovies.unshift(newMovie); recentlyAddedTitle = title; this.reset(); clearSelectedTmdbTarget(); saveData();
       if (!appSettings.skipAnimation) { if (mediaType === 'movie') document.querySelectorAll('.tab-btn')[2].click(); else document.querySelectorAll('.tab-btn')[3].click(); } 
       else { const originalText = submitBtn.innerText; submitBtn.innerText = `✅ Ajouté : ${title}`; submitBtn.style.background = "#28a745"; setTimeout(() => { submitBtn.innerText = originalText; submitBtn.style.background = ""; }, 2000); }
     } catch (error) {} finally { loadingUI.style.display = 'none'; submitBtn.style.display = 'block'; }
