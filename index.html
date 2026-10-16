@@ -85,19 +85,51 @@
   .stat-value { font-size: 48px; color: #fff; font-weight: 700; margin: 15px 0; text-shadow: 0 0 10px var(--neon-pink); line-height: 1.1; }
   .stat-detail { font-size: 14px; color: rgba(255,255,255,0.6); }
 
-  /* PODIUM MANUEL */
-  .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 15px; margin-top: 20px; height: 280px; }
-  .podium-place { display: flex; flex-direction: column; align-items: center; width: 100px; animation: slideUp 0.8s ease-out; }
+  /* PODIUM MANUEL & RECHERCHE RAPIDE */
+  .podium-container { display: flex; align-items: flex-end; justify-content: center; gap: 15px; margin-top: 15px; height: 270px; }
+  .podium-place { display: flex; flex-direction: column; align-items: center; width: 100px; animation: slideUp 0.8s ease-out; position: relative; }
   @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-  .podium-poster { width: 90px; height: 135px; background-size: cover; background-position: center; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); margin-bottom: 10px; border: 2px solid; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden;}
-  .podium-poster:hover { transform: scale(1.1); }
-  .podium-empty { background: rgba(0,0,0,0.4); border: 2px dashed rgba(255,255,255,0.3); display: flex; flex-direction: column; align-items: center; justify-content: center; color: rgba(255,255,255,0.5); font-weight: bold;}
+  .podium-poster { width: 90px; height: 135px; background-size: cover; background-position: center; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); margin-bottom: 10px; border: 2px solid; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
+  .podium-poster:hover { transform: scale(1.08); }
+  .podium-remove-btn { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 0, 60, 0.9); color: #fff; border: 1px solid #fff; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: 0.2s; z-index: 5; }
+  .podium-poster:hover .podium-remove-btn { opacity: 1; }
+  .podium-empty { background: rgba(0,0,0,0.4); border: 2px dashed rgba(255,255,255,0.3); display: flex; flex-direction: column; align-items: center; justify-content: center; color: rgba(255,255,255,0.5); font-weight: bold; }
   .podium-empty:hover { border-color: var(--neon-blue); color: var(--neon-blue); box-shadow: 0 0 15px rgba(0, 243, 255, 0.3); }
   .podium-empty span { font-size: 32px; }
-  .podium-step { width: 100%; border-radius: 10px 10px 0 0; display: flex; justify-content: center; font-size: 32px; font-weight: bold; font-family: 'Rajdhani'; padding-top: 10px; color: #000; text-shadow: 0 0 5px rgba(255,255,255,0.5);}
-  .step-1 { height: 110px; background: linear-gradient(180deg, var(--gold) 0%, transparent 100%); border: 1px solid var(--gold); border-bottom: none; color: var(--gold); text-shadow: none;}
-  .step-2 { height: 80px; background: linear-gradient(180deg, var(--silver) 0%, transparent 100%); border: 1px solid var(--silver); border-bottom: none; color: var(--silver); text-shadow: none;}
-  .step-3 { height: 50px; background: linear-gradient(180deg, var(--bronze) 0%, transparent 100%); border: 1px solid var(--bronze); border-bottom: none; color: var(--bronze); text-shadow: none;}
+  .podium-step { width: 100%; border-radius: 10px 10px 0 0; display: flex; justify-content: center; font-size: 32px; font-weight: bold; font-family: 'Rajdhani'; padding-top: 10px; color: #000; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+  .step-1 { height: 110px; background: linear-gradient(180deg, var(--gold) 0%, transparent 100%); border: 1px solid var(--gold); border-bottom: none; color: var(--gold); text-shadow: none; }
+  .step-2 { height: 80px; background: linear-gradient(180deg, var(--silver) 0%, transparent 100%); border: 1px solid var(--silver); border-bottom: none; color: var(--silver); text-shadow: none; }
+  .step-3 { height: 50px; background: linear-gradient(180deg, var(--bronze) 0%, transparent 100%); border: 1px solid var(--bronze); border-bottom: none; color: var(--bronze); text-shadow: none; }
+
+  /* BARRE DE RECHERCHE RAPIDE SUR CHAQUE PODIUM */
+  .podium-quick-search { position: relative; margin: 10px auto 5px auto; max-width: 320px; text-align: left; }
+  .podium-quick-input { width: 100%; padding: 10px 14px; border-radius: 20px; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; font-family: 'Inter', sans-serif; font-size: 13px; box-sizing: border-box; transition: 0.3s; outline: none; }
+  .podium-quick-input:focus { border-color: var(--neon-blue); box-shadow: 0 0 12px rgba(0, 243, 255, 0.3); }
+  .podium-quick-input.serie-input:focus { border-color: var(--neon-pink); box-shadow: 0 0 12px rgba(255, 0, 234, 0.3); }
+  .podium-dropdown { display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: rgba(10, 10, 22, 0.98); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 12px; max-height: 240px; overflow-y: auto; z-index: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.9); }
+  .podium-dropdown.active { display: block; }
+  .podium-drop-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.06); gap: 8px; transition: 0.2s; }
+  .podium-drop-item:hover { background: rgba(255,255,255,0.07); }
+  .podium-drop-info { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+  .podium-drop-info img { width: 32px; height: 48px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+  .podium-drop-title { font-size: 12px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .podium-drop-btns { display: flex; gap: 4px; flex-shrink: 0; }
+  .podium-rank-btn { padding: 4px 7px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.6); color: #fff; font-family: 'Rajdhani'; font-weight: bold; font-size: 12px; cursor: pointer; transition: 0.2s; }
+  .podium-rank-btn.r1:hover { background: var(--gold); color: #000; border-color: var(--gold); }
+  .podium-rank-btn.r2:hover { background: var(--silver); color: #000; border-color: var(--silver); }
+  .podium-rank-btn.r3:hover { background: var(--bronze); color: #000; border-color: var(--bronze); }
+
+  /* MODALE DE SÉLECTION DU PODIUM (CORRIGÉE) */
+  .selector-modal { background: var(--bg-dark); border: 1px solid var(--neon-blue); border-radius: 20px; width: 90%; max-width: 900px; height: 80vh; display: flex; flex-direction: column; padding: 25px; box-sizing: border-box; box-shadow: 0 0 30px rgba(0, 243, 255, 0.2); }
+  .selector-header { text-align: center; margin-bottom: 15px; }
+  .selector-header h2 { font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0 0 12px 0; font-size: 28px; }
+  .selector-search-input { width: 100%; max-width: 400px; padding: 12px 18px; border-radius: 25px; border: 1px solid var(--neon-blue); background: rgba(0,0,0,0.6); color: #fff; font-family: 'Inter'; font-size: 14px; outline: none; box-sizing: border-box; }
+  .selector-search-input:focus { border-color: var(--neon-pink); box-shadow: 0 0 12px rgba(255, 0, 234, 0.3); }
+  .selector-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; overflow-y: auto; flex-grow: 1; padding: 10px 5px; }
+  .selector-item { height: 195px; border-radius: 10px; background-size: cover; background-position: center; position: relative; cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: 0.25s; overflow: hidden; display: flex; align-items: flex-end; }
+  .selector-item:hover { transform: translateY(-5px) scale(1.03); border-color: var(--gold); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); }
+  .selector-title { width: 100%; background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 70%, transparent 100%); color: #fff; font-size: 11px; font-weight: bold; text-align: center; padding: 18px 6px 8px 6px; box-sizing: border-box; }
+  .setting-row { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-main); margin-bottom: 10px; cursor: pointer; }
 
   /* JAUGES DE PROGRESSION */
   .progress-block { margin-bottom: 20px; }
@@ -291,8 +323,22 @@
         <div class="glass-panel stat-card"><h3 style="margin:0; color: var(--neon-pink);">Réal / Créateur Favori</h3><div class="stat-value" id="stat-director" style="font-size: 28px; margin: 10px 0; color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink);">...</div><div class="stat-detail">L'artiste le plus présent dans ta base</div></div>
       </div>
       <div style="display: flex; gap: 30px; margin-top: 30px; flex-wrap: wrap;">
-        <div class="glass-panel" style="flex: 1; min-width: 300px; text-align: center;"><h3 style="color: var(--neon-blue); font-family: 'Rajdhani'; font-size: 24px; margin-top:0;">Top 3 Films (Personnalisé)</h3><div id="podium-films" class="podium-container"></div></div>
-        <div class="glass-panel" style="flex: 1; min-width: 300px; text-align: center;"><h3 style="color: var(--neon-pink); font-family: 'Rajdhani'; font-size: 24px; margin-top:0;">Top 3 Séries (Personnalisé)</h3><div id="podium-series" class="podium-container"></div></div>
+        <div class="glass-panel" style="flex: 1; min-width: 300px; text-align: center;">
+          <h3 style="color: var(--neon-blue); font-family: 'Rajdhani'; font-size: 24px; margin-top:0; margin-bottom: 8px;">🏆 Top 3 Films (Personnalisé)</h3>
+          <div class="podium-quick-search" id="quick-box-Film">
+            <input type="text" id="quick-search-Film" class="podium-quick-input" placeholder="🔍 Recherche rapide d'un film (#1, #2, #3)..." autocomplete="off" oninput="handleQuickPodiumSearch('Film', this.value)" onfocus="handleQuickPodiumSearch('Film', this.value)">
+            <div id="quick-drop-Film" class="podium-dropdown"></div>
+          </div>
+          <div id="podium-films" class="podium-container"></div>
+        </div>
+        <div class="glass-panel" style="flex: 1; min-width: 300px; text-align: center;">
+          <h3 style="color: var(--neon-pink); font-family: 'Rajdhani'; font-size: 24px; margin-top:0; margin-bottom: 8px;">📺 Top 3 Séries (Personnalisé)</h3>
+          <div class="podium-quick-search" id="quick-box-Série">
+            <input type="text" id="quick-search-Série" class="podium-quick-input serie-input" placeholder="🔍 Recherche rapide d'une série (#1, #2, #3)..." autocomplete="off" oninput="handleQuickPodiumSearch('Série', this.value)" onfocus="handleQuickPodiumSearch('Série', this.value)">
+            <div id="quick-drop-Série" class="podium-dropdown"></div>
+          </div>
+          <div id="podium-series" class="podium-container"></div>
+        </div>
       </div>
       <div class="glass-panel" style="margin-top: 30px; text-align: center;">
         <h3 style="color: var(--gold); font-family: 'Rajdhani'; font-size: 28px; margin:0; text-shadow: 0 0 15px var(--gold); letter-spacing: 2px;">🕹️ Arcade Ciné</h3>
@@ -358,7 +404,16 @@
 
 <!-- OVERLAYS SYSTÈME -->
 <div id="card-modal-overlay" class="overlay"><span class="overlay-close" onclick="closeModal()">×</span><div id="modal-content-area"></div></div>
-<div id="podium-selection-overlay" class="overlay"><span class="overlay-close" onclick="closePodiumSelector()">×</span><div class="selector-modal"><div class="selector-header"><h2 id="selector-title">Sélectionne une œuvre</h2></div><div class="selector-grid" id="selector-grid"></div></div></div>
+<div id="podium-selection-overlay" class="overlay">
+  <span class="overlay-close" onclick="closePodiumSelector()">×</span>
+  <div class="selector-modal">
+    <div class="selector-header">
+      <h2 id="selector-title">Sélectionne une œuvre</h2>
+      <input type="text" id="podium-modal-search" class="selector-search-input" placeholder="🔍 Filtrer par titre..." autocomplete="off" oninput="renderPodiumModalGrid(this.value)">
+    </div>
+    <div class="selector-grid" id="selector-grid"></div>
+  </div>
+</div>
 <div id="collection-binder-overlay" class="overlay"><span class="overlay-close" onclick="closeBinder()">×</span><div class="selector-modal" style="width: 90%; max-width: 1300px; height: 85vh; background: var(--bg-dark);"><div id="collection-binder-content" style="overflow-y: auto; height: 100%; padding-right: 15px;"></div></div></div>
 <div id="episode-manager-overlay" class="overlay"><span class="overlay-close" onclick="closeEpisodeManager()">×</span><div class="episodes-modal"><div style="text-align: center; margin-bottom: 20px;"><h2 id="episode-manager-title" style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0; font-size: 32px;">Épisodes</h2><p style="color:#888; font-size:14px; text-transform:uppercase; letter-spacing:1px; margin-top: 5px;">Clique sur les épisodes visionnés</p></div><div id="episode-manager-content" style="flex-grow: 1; overflow-y: hidden; display: flex; flex-direction: column;"></div></div></div>
 
@@ -438,7 +493,7 @@
 
   // --- DÉMARRAGE ET CONNEXION CLOUD ---
   document.addEventListener("DOMContentLoaded", () => {
-    for (let i = 73; i >= 1; i--) {
+    for (let i = 74; i >= 1; i--) {
       let oldData = JSON.parse(localStorage.getItem('thomasMovieCollection_v' + i));
       if (oldData && oldData.length > 0) {
         myMovies = oldData; myTop3 = JSON.parse(localStorage.getItem('thomasTop3_v' + i)) || myTop3;
@@ -838,8 +893,8 @@
       if (itemData.belongs_to_collection) { universe = itemData.belongs_to_collection.name; const collId = itemData.belongs_to_collection.id; try { const collRes = await fetch(`https://api.themoviedb.org/3/collection/${collId}?api_key=${API_KEY}&language=fr-FR`); const collData = await collRes.json(); if (collData.parts) universeTotal = collData.parts.length; } catch(e) {} }
 
       let awards = []; const wikidataId = itemData.external_ids ? itemData.external_ids.wikidata_id : null; const imdbId = itemData.external_ids ? itemData.external_ids.imdb_id : itemData.imdb_id;
-      if (wikidataId) { try { const sparqlQuery = `SELECT DISTINCT ?awardLabel (YEAR(?date) as ?year) WHERE { wd:${wikidataId} p:P166 ?statement . ?statement ps:P166 ?award . OPTIONAL { ?statement pq:P585 ?date . } SERVICE wikibase:label { bd:serviceParam wikibase:language "en,fr". } } LIMIT 3`; const wikiRes = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(sparqlQuery)}&format=json`, { headers: { 'Accept': 'application/sparql-results+json' } }); const wikiData = await wikiRes.json(); if (wikiData.results && wikiData.results.bindings.length > 0) { const validAwards = wikiData.results.bindings.filter(b => b.awardLabel && !/^Q\d+$/.test(b.awardLabel.value)).map(b => { let name = b.awardLabel.value.charAt(0).toUpperCase() + b.awardLabel.value.slice(1); return `${name} (${b.year ? b.year.value : movie.year})`; }); if (validAwards.length > 0) awards = validAwards; } } catch(e) {} }
-      if (awards.length === 0 && imdbId) { try { const omdbRes = await fetch(`https://www.omdbapi.com/?i=${imdbId}&apikey=${OMDB_KEY}`); const omdbData = await omdbRes.json(); if (omdbData.Awards && omdbData.Awards !== "N/A" && omdbData.Awards.includes("Won")) { let wonText = omdbData.Awards.split('.')[0]; if (wonText.includes("Won")) awards = [`${wonText} (${movie.year})`]; } } catch(e) {} }
+      if (wikidataId) { try { const sparqlQuery = `SELECT DISTINCT ?awardLabel (YEAR(?date) as ?year) WHERE { wd:${wikidataId} p:P166 ?statement . ?statement ps:P166 ?award . OPTIONAL { ?statement pq:P585 ?date . } SERVICE wikibase:label { bd:serviceParam wikibase:language "en,fr". } } LIMIT 3`; const wikiRes = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(sparqlQuery)}&format=json`, { headers: { 'Accept': 'application/sparql-results+json' } }); const wikiData = await wikiRes.json(); if (wikiData.results && wikiData.results.bindings.length > 0) { const validAwards = wikiData.results.bindings.filter(b => b.awardLabel && !/^Q\d+$/.test(b.awardLabel.value)).map(b => { let name = b.awardLabel.value.charAt(0).toUpperCase() + b.awardLabel.value.slice(1); return `${name} (${b.year ? b.year.value : year})`; }); if (validAwards.length > 0) awards = validAwards; } } catch(e) {} }
+      if (awards.length === 0 && imdbId) { try { const omdbRes = await fetch(`https://www.omdbapi.com/?i=${imdbId}&apikey=${OMDB_KEY}`); const omdbData = await omdbRes.json(); if (omdbData.Awards && omdbData.Awards !== "N/A" && omdbData.Awards.includes("Won")) { let wonText = omdbData.Awards.split('.')[0]; if (wonText.includes("Won")) awards = [`${wonText} (${year})`]; } } catch(e) {} }
 
       const newMovie = { title: title, type: mediaType === 'movie' ? 'Film' : 'Série', director: director, directorTotal: directorTotal, universe: universe, universeTotal: universeTotal, genre: itemData.genres.map(g => g.name).join(' / '), rarity: rarity, rating: rating.toFixed(1), poster: itemData.poster_path ? `https://image.tmdb.org/t/p/w500${itemData.poster_path}` : 'https://via.placeholder.com/500x750/0a0a16/00f3ff?text=Image+Manquante', year: year, unlockDate: unlockDate, quote: itemData.tagline || "Une œuvre mémorable.", awards: awards, runtime: runtimeMinutes, synopsis: itemData.overview || "Synopsis non disponible.", userNote: "", seasonsData: seasonsData, watchedEpisodes: watchedEpisodes, episodeRuntime: episodeRuntime };
       myMovies.unshift(newMovie); recentlyAddedTitle = title; this.reset(); saveData();
@@ -864,11 +919,176 @@
   window.toggleEpisode = function(mIndex, sNum, eNum) { let movie = myMovies[mIndex]; if(!movie.watchedEpisodes[sNum]) movie.watchedEpisodes[sNum] = []; let arr = movie.watchedEpisodes[sNum]; let idx = arr.indexOf(eNum); if(idx > -1) arr.splice(idx, 1); else arr.push(eNum); saveData(); openModal(mIndex); openEpisodeManager(mIndex); };
   window.toggleAllEpisodes = function(mIndex, sNum) { let movie = myMovies[mIndex]; if(!movie.watchedEpisodes[sNum]) movie.watchedEpisodes[sNum] = []; let season = movie.seasonsData.find(s => s.s === sNum); if (movie.watchedEpisodes[sNum].length === season.e) { movie.watchedEpisodes[sNum] = []; } else { movie.watchedEpisodes[sNum] = Array.from({length: season.e}, (_, i) => i + 1); } saveData(); openModal(mIndex); openEpisodeManager(mIndex); };
 
-  function renderPodiums() { renderPodiumCategory('Film', 'podium-films'); renderPodiumCategory('Série', 'podium-series'); }
-  function renderPodiumCategory(type, containerId) { const container = document.getElementById(containerId); let html = ''; const ranks = [2, 1, 3]; ranks.forEach(rank => { const selectedTitle = myTop3[type][rank - 1]; const movie = myMovies.find(m => m.title === selectedTitle && m.type === type); let cssClass = rank === 1 ? 'step-1' : (rank === 2 ? 'step-2' : 'step-3'); let color = rank === 1 ? 'var(--gold)' : (rank === 2 ? 'var(--silver)' : 'var(--bronze)'); if (movie) { let title = movie.title; if(title.length > 15) title = title.substring(0,13) + '...'; html += `<div class="podium-place"><div class="podium-poster" style="background-image: url('${movie.poster}'); border-color: ${color};" onclick="openPodiumSelector('${type}', ${rank})"></div><div style="font-size: 11px; margin-bottom: 5px; font-weight:bold; color: #fff; text-align:center;">${title}</div><div class="podium-step ${cssClass}">${rank}</div></div>`; } else { html += `<div class="podium-place"><div class="podium-poster podium-empty" onclick="openPodiumSelector('${type}', ${rank})"><span>+</span></div><div style="font-size: 11px; margin-bottom: 5px; font-weight:bold; color: #888; text-align:center;">Vide</div><div class="podium-step ${cssClass}">${rank}</div></div>`; } }); container.innerHTML = html; }
-  function openPodiumSelector(type, rank) { currentPodiumSelectionType = type; currentPodiumSelectionRank = rank; document.getElementById('selector-title').innerText = `Sélectionne le Top ${rank} (${type})`; const grid = document.getElementById('selector-grid'); grid.innerHTML = ''; const options = myMovies.filter(m => m.type === type); if(options.length === 0) { grid.innerHTML = `<p style="color:#888; grid-column: 1 / -1; text-align:center;">Aucun(e) ${type.toLowerCase()} dans ta collection.</p>`; } else { options.sort((a, b) => a.title.localeCompare(b.title)).forEach(movie => { let title = movie.title; if(title.length > 15) title = title.substring(0,13) + '...'; const escapedTitle = movie.title.replace(/'/g, "\\'"); grid.innerHTML += `<div class="selector-item" style="background-image: url('${movie.poster}');" onclick="setPodiumItem('${escapedTitle}')"><div class="selector-title">${title}</div></div>`; }); } document.getElementById('podium-selection-overlay').classList.add('show'); }
-  function setPodiumItem(movieTitle) { const type = currentPodiumSelectionType; const rankIndex = currentPodiumSelectionRank - 1; const existingIndex = myTop3[type].indexOf(movieTitle); if(existingIndex !== -1 && existingIndex !== rankIndex) myTop3[type][existingIndex] = null; myTop3[type][rankIndex] = movieTitle; saveData(); closePodiumSelector(); }
-  function closePodiumSelector() { document.getElementById('podium-selection-overlay').classList.remove('show'); currentPodiumSelectionType = null; currentPodiumSelectionRank = null; }
+  // --- SYSTÈME DE PODIUMS TOP 3 & RECHERCHE RAPIDE ---
+  function ensureValidTop3() {
+    if (!myTop3 || typeof myTop3 !== 'object') myTop3 = { Film: [null, null, null], Série: [null, null, null] };
+    if (!Array.isArray(myTop3['Film'])) myTop3['Film'] = [null, null, null];
+    if (!Array.isArray(myTop3['Série'])) myTop3['Série'] = [null, null, null];
+  }
+
+  function renderPodiums() {
+    ensureValidTop3();
+    renderPodiumCategory('Film', 'podium-films');
+    renderPodiumCategory('Série', 'podium-series');
+  }
+
+  function renderPodiumCategory(type, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    let html = '';
+    const ranks = [2, 1, 3];
+
+    ranks.forEach(rank => {
+      const selectedTitle = myTop3[type][rank - 1];
+      const movie = selectedTitle
+        ? myMovies.find(m => m.type === type && (m.title === selectedTitle || normalize(m.title) === normalize(selectedTitle)))
+        : null;
+
+      let cssClass = rank === 1 ? 'step-1' : (rank === 2 ? 'step-2' : 'step-3');
+      let color = rank === 1 ? 'var(--gold)' : (rank === 2 ? 'var(--silver)' : 'var(--bronze)');
+
+      if (movie) {
+        let displayTitle = movie.title.length > 15 ? movie.title.substring(0, 13) + '...' : movie.title;
+        html += `
+          <div class="podium-place">
+            <div class="podium-poster" style="background-image: url('${movie.poster}'); border-color: ${color};" onclick="openPodiumSelector('${type}', ${rank})" title="Changer le Top ${rank}">
+              <button class="podium-remove-btn" onclick="event.stopPropagation(); removePodiumItem('${type}', ${rank})" title="Retirer du podium">✕</button>
+            </div>
+            <div style="font-size: 11px; margin-bottom: 5px; font-weight:bold; color: #fff; text-align:center;" title="${movie.title.replace(/"/g, '&quot;')}">${displayTitle}</div>
+            <div class="podium-step ${cssClass}">${rank}</div>
+          </div>`;
+      } else {
+        html += `
+          <div class="podium-place">
+            <div class="podium-poster podium-empty" onclick="openPodiumSelector('${type}', ${rank})" title="Choisir le Top ${rank}">
+              <span>+</span>
+            </div>
+            <div style="font-size: 11px; margin-bottom: 5px; font-weight:bold; color: #888; text-align:center;">Vide</div>
+            <div class="podium-step ${cssClass}">${rank}</div>
+          </div>`;
+      }
+    });
+    container.innerHTML = html;
+  }
+
+  window.handleQuickPodiumSearch = function(type, query) {
+    const drop = document.getElementById(`quick-drop-${type}`);
+    if (!drop) return;
+    const cleanQ = normalize(query);
+
+    if (!cleanQ) {
+      drop.classList.remove('active');
+      drop.innerHTML = '';
+      return;
+    }
+
+    const matches = myMovies
+      .map((movie, idx) => ({ movie, idx }))
+      .filter(item => item.movie.type === type && normalize(item.movie.title).includes(cleanQ))
+      .slice(0, 8);
+
+    if (matches.length === 0) {
+      drop.innerHTML = `<div style="padding: 12px; text-align: center; color: #888; font-size: 12px;">Aucun(e) ${type.toLowerCase()} trouvé(e) dans ta collection.</div>`;
+      drop.classList.add('active');
+      return;
+    }
+
+    drop.innerHTML = matches.map(({ movie, idx }) => `
+      <div class="podium-drop-item">
+        <div class="podium-drop-info">
+          <img src="${movie.poster}" alt="">
+          <div>
+            <div class="podium-drop-title">${movie.title}</div>
+            <div style="font-size: 10px; color: #888;">${movie.year || ''} • ★ ${movie.rating || '-'}</div>
+          </div>
+        </div>
+        <div class="podium-drop-btns">
+          <button class="podium-rank-btn r1" onclick="assignPodiumByIndex('${type}', 1, ${idx})">#1</button>
+          <button class="podium-rank-btn r2" onclick="assignPodiumByIndex('${type}', 2, ${idx})">#2</button>
+          <button class="podium-rank-btn r3" onclick="assignPodiumByIndex('${type}', 3, ${idx})">#3</button>
+        </div>
+      </div>
+    `).join('');
+
+    drop.classList.add('active');
+  };
+
+  window.assignPodiumByIndex = function(type, rank, movieIndex) {
+    ensureValidTop3();
+    const movie = myMovies[movieIndex];
+    if (!movie) return;
+
+    const rankIndex = rank - 1;
+    myTop3[type] = myTop3[type].map((t, i) => (t && normalize(t) === normalize(movie.title) && i !== rankIndex) ? null : t);
+    myTop3[type][rankIndex] = movie.title;
+
+    const input = document.getElementById(`quick-search-${type}`);
+    const drop = document.getElementById(`quick-drop-${type}`);
+    if (input) input.value = '';
+    if (drop) drop.classList.remove('active');
+
+    saveData();
+    closePodiumSelector();
+  };
+
+  window.removePodiumItem = function(type, rank) {
+    ensureValidTop3();
+    myTop3[type][rank - 1] = null;
+    saveData();
+  };
+
+  window.openPodiumSelector = function(type, rank) {
+    currentPodiumSelectionType = type;
+    currentPodiumSelectionRank = rank;
+    document.getElementById('selector-title').innerText = `Sélectionne le Top ${rank} (${type})`;
+    const searchInput = document.getElementById('podium-modal-search');
+    if (searchInput) searchInput.value = '';
+    renderPodiumModalGrid('');
+    document.getElementById('podium-selection-overlay').classList.add('show');
+    if (searchInput) setTimeout(() => searchInput.focus(), 100);
+  };
+
+  window.renderPodiumModalGrid = function(query = '') {
+    const grid = document.getElementById('selector-grid');
+    if (!grid || !currentPodiumSelectionType) return;
+    grid.innerHTML = '';
+
+    const cleanQ = normalize(query);
+    const options = myMovies
+      .map((movie, idx) => ({ movie, idx }))
+      .filter(item => item.movie.type === currentPodiumSelectionType && (!cleanQ || normalize(item.movie.title).includes(cleanQ)))
+      .sort((a, b) => a.movie.title.localeCompare(b.movie.title));
+
+    if (options.length === 0) {
+      grid.innerHTML = `<p style="color:#888; grid-column: 1 / -1; text-align:center; margin-top: 30px;">Aucun(e) ${currentPodiumSelectionType.toLowerCase()} correspondant(e).</p>`;
+      return;
+    }
+
+    options.forEach(({ movie, idx }) => {
+      let displayTitle = movie.title.length > 18 ? movie.title.substring(0, 16) + '...' : movie.title;
+      grid.innerHTML += `
+        <div class="selector-item" style="background-image: url('${movie.poster}');" onclick="assignPodiumByIndex('${currentPodiumSelectionType}', ${currentPodiumSelectionRank}, ${idx})">
+          <div class="selector-title">${displayTitle}</div>
+        </div>`;
+    });
+  };
+
+  window.closePodiumSelector = function() {
+    document.getElementById('podium-selection-overlay').classList.remove('show');
+    currentPodiumSelectionType = null;
+    currentPodiumSelectionRank = null;
+  };
+
+  document.addEventListener('click', function(e) {
+    ['Film', 'Série'].forEach(type => {
+      const box = document.getElementById(`quick-box-${type}`);
+      const drop = document.getElementById(`quick-drop-${type}`);
+      if (box && drop && !box.contains(e.target)) {
+        drop.classList.remove('active');
+      }
+    });
+  });
+  document.getElementById('podium-selection-overlay').addEventListener('click', function(e) { if (e.target === this) closePodiumSelector(); });
 
   function updateCollectionsTab() {
     const uniMap = {}; const dirMap = {};
