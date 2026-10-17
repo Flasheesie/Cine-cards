@@ -323,12 +323,17 @@
 <!-- LE RESTE DE L'APPLICATION -->
 <div id="app-content">
     <header style="position: relative;">
-      <h1>Ciné Cards</h1>
+      <!-- BOUTON DASHBOARD ADMIN (EN HAUT À GAUCHE, VISIBLE UNIQUEMENT POUR MR. BONNET) -->
+      <div id="admin-dash-btn" onclick="openAdminModal()" style="display: none; position: absolute; top: 20px; left: 30px; background: rgba(255, 0, 60, 0.15); border: 1px solid var(--danger); color: var(--danger); padding: 8px 16px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px); z-index: 100;">
+        🛡️ Panel Admin
+      </div>
+
       <!-- BOUTON JOURNAL DE BORD (CHANGELOG) EN HAUT À DROITE -->
       <div id="changelog-btn" onclick="openChangelogModal()" style="position: absolute; top: 20px; right: 30px; background: rgba(0, 243, 255, 0.15); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px); z-index: 100;">
         📢 Nouveautés <span id="changelog-badge" style="background: var(--neon-pink); width: 8px; height: 8px; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px var(--neon-pink);"></span>
       </div>
-      
+
+      <h1>Ciné Cards</h1>
       <nav class="tabs">
         <button class="tab-btn active" onclick="switchTab('vitrine')">Vitrine</button>
         <button class="tab-btn" onclick="switchTab('gestion')">Gestion</button>
@@ -463,27 +468,42 @@
 <div id="collection-binder-overlay" class="overlay"><span class="overlay-close" onclick="closeBinder()">×</span><div class="selector-modal" style="width: 90%; max-width: 1300px; height: 85vh; background: var(--bg-dark);"><div id="collection-binder-content" style="overflow-y: auto; height: 100%; padding-right: 15px;"></div></div></div>
 <div id="episode-manager-overlay" class="overlay"><span class="overlay-close" onclick="closeEpisodeManager()">×</span><div class="episodes-modal"><div style="text-align: center; margin-bottom: 20px;"><h2 id="episode-manager-title" style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0; font-size: 32px;">Épisodes</h2><p style="color:#888; font-size:14px; text-transform:uppercase; letter-spacing:1px; margin-top: 5px;">Clique sur les épisodes visionnés</p></div><div id="episode-manager-content" style="flex-grow: 1; overflow-y: hidden; display: flex; flex-direction: column;"></div></div></div>
 
+<!-- MODALE DASHBOARD ADMIN (EXCLUSIF MR. BONNET) -->
+<div id="admin-dashboard-overlay" class="overlay">
+  <span class="overlay-close" onclick="closeAdminModal()">×</span>
+  <div class="selector-modal" style="max-width: 750px; height: auto; max-height: 85vh;">
+    <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--danger); text-transform: uppercase; margin: 0;">🛡️ Panneau de Contrôle Admin</h2></div>
+    <p style="color: #aaa; font-size: 13px; text-align: center; margin-top: 0;">Gestion des utilisateurs enregistrés et nettoyage des faux comptes.</p>
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+      <button class="btn-sync" onclick="loadAdminUsersList()" style="border-color: var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; font-size: 12px; margin-bottom: 0;">🔄 Rafraîchir la liste</button>
+    </div>
+    <div id="admin-users-list-container" style="overflow-y: auto; max-height: 50vh; text-align: left; padding: 5px;">
+      <!-- Rempli dynamiquement -->
+    </div>
+    <button onclick="closeAdminModal()" class="btn-submit" style="margin-top: 20px;">Fermer le Panel</button>
+  </div>
+</div>
+
 <!-- MODALE JOURNAL DE BORD (CHANGELOG) -->
 <div id="changelog-overlay" class="overlay">
   <span class="overlay-close" onclick="closeChangelogModal()">×</span>
   <div class="selector-modal" style="max-width: 650px; height: auto; max-height: 80vh;">
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">📢 Journal de Bord - Mises à Jour</h2></div>
     <div style="overflow-y: auto; text-align: left; padding: 10px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85);">
-      <div style="margin-bottom: 20px; border-left: 3px solid var(--neon-pink); padding-left: 12px;">
-        <h3 style="color: var(--neon-pink); font-family: 'Rajdhani'; margin: 0 0 5px 0; font-size: 18px;">✨ Version Actuelle - Anti-Latence & Admin</h3>
-        <p style="margin: 0; color: #aaa; font-size: 11px;">Mise à jour système</p>
+      <div style="margin-bottom: 20px; border-left: 3px solid var(--danger); padding-left: 12px;">
+        <h3 style="color: var(--danger); font-family: 'Rajdhani'; margin: 0 0 5px 0; font-size: 18px;">🛡️ Version v7.6 - Panel Admin & Nettoyage</h3>
+        <p style="margin: 0; color: #aaa; font-size: 11px;">Mise à jour sécurité & ergonomie</p>
         <ul style="margin: 8px 0 0 -15px; padding-left: 20px;">
-          <li><strong>Mode Admin Exclusif ("Mr. Bonnet")</strong> : Ajout d'un bouton de suppression sécurisé dans le Panthéon pour nettoyer les faux comptes.</li>
-          <li><strong>Scores d'Arcade Indépendants</strong> : Correction du bug où les scores des mini-jeux étaient partagés entre tous les utilisateurs.</li>
-          <li><strong>Performance & Anti-Latence</strong> : Suppression des temps de latence lors du cochage des épisodes et de la saisie des notes personnelles (sauvegarde instantanée en arrière-plan).</li>
-          <li><strong>Support Animes Longs</strong> : Optimisation de la recherche TMDB pour les séries au long cours comme <em>One Piece</em>.</li>
+          <li><strong>Bouton Admin Dédié</strong> : Ajout d'un accès sécurisé "Panel Admin" en haut à gauche visible uniquement pour le compte <em>Mr. Bonnet</em>.</li>
+          <li><strong>Gestion des Faux Comptes</strong> : Interface complète dans le panel admin pour lister et supprimer instantanément les comptes indésirables.</li>
+          <li><strong>Anti-Latence Généralisé</strong> : Sauvegarde instantanée des notes et des épisodes en local sans blocage UI.</li>
         </ul>
       </div>
-      <div style="margin-bottom: 10px; border-left: 3px solid var(--neon-blue); padding-left: 12px;">
-        <h3 style="color: var(--neon-blue); font-family: 'Rajdhani'; margin: 0 0 5px 0; font-size: 18px;">🎯 Version Précédente - Recherche Ultra-Précise</h3>
+      <div style="margin-bottom: 10px; border-left: 3px solid var(--neon-pink); padding-left: 12px;">
+        <h3 style="color: var(--neon-pink); font-family: 'Rajdhani'; margin: 0 0 5px 0; font-size: 18px;">✨ Version v7.5 - Anti-Latence & Animes</h3>
         <ul style="margin: 8px 0 0 -15px; padding-left: 20px;">
-          <li>Ajout du mode de recherche précise avec champs Année et Réalisateur/Créateur.</li>
-          <li>Barres de recherche rapide intégrées directement sur les podiums Films et Séries.</li>
+          <li>Correction des scores d'arcade partagés entre utilisateurs.</li>
+          <li>Optimisation de la recherche TMDB pour les séries au long cours comme <em>One Piece</em>.</li>
         </ul>
       </div>
     </div>
@@ -522,7 +542,7 @@
 <script>
   const API_KEY = 'fb195a905bf531daf7eb642dbf16c455'; 
   const OMDB_KEY = 'bb349eee';
-  const CURRENT_CHANGELOG_VERSION = 'v7.5';
+  const CURRENT_CHANGELOG_VERSION = 'v7.6';
 
   // --- INITIALISATION DE LA BASE DE DONNÉES CLOUD (FIREBASE) ---
   const firebaseConfig = {
@@ -594,7 +614,6 @@
         attemptAuth('login');
     }
 
-    // Gestion de l'affichage du badge du journal de bord
     const lastReadVersion = localStorage.getItem('cinecards_last_changelog');
     if (lastReadVersion === CURRENT_CHANGELOG_VERSION) {
       const badge = document.getElementById('changelog-badge');
@@ -611,6 +630,60 @@
 
   window.closeChangelogModal = function() {
     document.getElementById('changelog-overlay').classList.remove('show');
+  };
+
+  // --- PANEL ADMIN (MR. BONNET) ---
+  window.openAdminModal = async function() {
+    document.getElementById('admin-dashboard-overlay').classList.add('show');
+    await loadAdminUsersList();
+  };
+
+  window.closeAdminModal = function() {
+    document.getElementById('admin-dashboard-overlay').classList.remove('show');
+  };
+
+  window.loadAdminUsersList = async function() {
+    const container = document.getElementById('admin-users-list-container');
+    container.innerHTML = `<div style="text-align:center; color:var(--neon-blue); padding:20px;">Chargement des utilisateurs inscrits...</div>`;
+    try {
+      const snapshot = await db.collection('users').get();
+      let users = [];
+      snapshot.forEach(doc => users.push(doc.data()));
+
+      if (users.length === 0) {
+        container.innerHTML = `<p style="text-align:center; color:#888;">Aucun utilisateur enregistré.</p>`;
+        return;
+      }
+
+      container.innerHTML = users.map(u => {
+        const isMe = (u.pseudo === "Mr. Bonnet");
+        return `
+          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.08); padding:12px 15px; border-radius:10px; margin-bottom:10px;">
+            <div>
+              <div style="font-weight:bold; color:#fff; font-size:15px;">${u.pseudo} ${isMe ? '<span style="color:var(--gold); font-size:12px;">(Admin Principal)</span>' : ''}</div>
+              <div style="font-size:12px; color:rgba(255,255,255,0.6); margin-top:3px;">📚 ${u.totalCards || 0} cartes • 📺 ${u.totalHours || 0}h visionnées</div>
+            </div>
+            <div>
+              ${!isMe ? `<button onclick="deleteUserAccount('${u.pseudo.replace(/'/g, "\\'")}')" class="btn-delete" style="padding:6px 14px;">Supprimer le compte</button>` : `<span style="color:var(--success); font-size:12px; font-weight:bold;">Protégé</span>`}
+            </div>
+          </div>`;
+      }).join('');
+    } catch(e) {
+      container.innerHTML = `<p style="text-align:center; color:var(--danger);">Erreur lors de la récupération de la liste.</p>`;
+    }
+  };
+
+  window.deleteUserAccount = async function(targetPseudo) {
+    if (!confirm(`⚠️ Attention : Voulez-vous supprimer définitivement le compte "${targetPseudo}" ainsi que toutes ses sauvegardes ?`)) return;
+    try {
+      await db.collection('users').doc(targetPseudo).delete();
+      await db.collection('saves').doc(targetPseudo).delete();
+      alert(`✅ Le compte "${targetPseudo}" a été supprimé avec succès.`);
+      await loadAdminUsersList();
+      loadGlobalLeaderboard();
+    } catch(e) {
+      alert(`❌ Erreur : ${e.message}`);
+    }
   };
 
   window.attemptAuth = async function(action) {
@@ -688,6 +761,16 @@
         }
       });
       myMovies = uniqueMovies;
+
+      // Affichage du bouton Panel Admin si c'est Mr. Bonnet
+      const adminBtn = document.getElementById('admin-dash-btn');
+      if (adminBtn) {
+        if (appSettings.pseudo === "Mr. Bonnet") {
+          adminBtn.style.display = 'flex';
+        } else {
+          adminBtn.style.display = 'none';
+        }
+      }
       
       setTimeout(() => {
           document.getElementById('login-overlay').classList.remove('show');
@@ -772,28 +855,14 @@
 
   function generateRankCard(title, users, sortKey, unit, color) {
       let sorted = [...users].sort((a,b) => (b[sortKey] || 0) - (a[sortKey] || 0)).filter(u => u[sortKey] > 0).slice(0, 5);
-      let isAdmin = (appSettings.pseudo === "Mr. Bonnet");
 
       let listHtml = sorted.map((u, i) => {
           let badgeClass = i === 0 ? 'border-left: 4px solid var(--gold); background: rgba(255, 215, 0, 0.1); color: var(--gold); font-weight:bold;' : i === 1 ? 'border-left: 4px solid var(--silver); background: rgba(192, 192, 192, 0.1); color: var(--silver);' : i === 2 ? 'border-left: 4px solid var(--bronze); background: rgba(205, 127, 50, 0.1); color: var(--bronze);' : 'border-left: 4px solid rgba(255,255,255,0.2); color: #fff;';
-          let adminDeleteBtn = (isAdmin && u.pseudo !== "Mr. Bonnet") ? `<button onclick="deleteFakeAccount('${u.pseudo.replace(/'/g, "\\'")}')" style="background:transparent; border:1px solid #ff4c4c; color:#ff4c4c; padding:2px 6px; border-radius:4px; font-size:10px; cursor:pointer; margin-left:8px;" title="Supprimer ce faux compte">🗑️ Supprimer</button>` : '';
-          return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 15px; border-radius:8px; margin-bottom:8px; font-family:'Inter'; font-size:14px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.05); ${badgeClass}"><span style="display:flex; align-items:center;"><strong>${i+1}.</strong>&nbsp;${u.pseudo}&nbsp;${u.pseudo === appSettings.pseudo ? '<i>(Toi)</i>' : ''}&nbsp;${adminDeleteBtn}</span><strong>${u[sortKey]} ${unit}</strong></div>`;
+          return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 15px; border-radius:8px; margin-bottom:8px; font-family:'Inter'; font-size:14px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.05); ${badgeClass}"><span><strong>${i+1}.</strong>&nbsp;${u.pseudo}&nbsp;${u.pseudo === appSettings.pseudo ? '<i>(Toi)</i>' : ''}</span><strong>${u[sortKey]} ${unit}</strong></div>`;
       }).join('');
       if(sorted.length === 0) listHtml = `<div style="text-align:center; color:#888; font-size:12px; margin-top:20px;">Aucun record défini.</div>`;
       return `<div class="glass-panel" style="padding: 25px;"><h3 style="color:${color}; font-family:'Rajdhani'; text-transform:uppercase; margin-top:0; border-bottom:1px dashed rgba(255,255,255,0.2); padding-bottom:10px; font-size:22px; text-shadow: 0 0 10px ${color};">${title}</h3><div style="margin-top:15px;">${listHtml}</div></div>`;
   }
-
-  window.deleteFakeAccount = async function(pseudoTarget) {
-      if (!confirm(`Es-tu sûr de vouloir supprimer définitivement le faux compte "${pseudoTarget}" du Panthéon ?`)) return;
-      try {
-          await db.collection('users').doc(pseudoTarget).delete();
-          await db.collection('saves').doc(pseudoTarget).delete();
-          alert(`✅ Le compte ${pseudoTarget} a été supprimé avec succès !`);
-          loadGlobalLeaderboard();
-      } catch(e) {
-          alert(`❌ Erreur lors de la suppression : ${e.message}`);
-      }
-  };
 
   function updateApp() { renderAdminList(); renderAll(); renderPodiums(); updateCollectionsTab(); updateStats(); checkArcadeAvailability(); updateHighScoresDisplay(); }
 
