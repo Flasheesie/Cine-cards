@@ -473,7 +473,7 @@
   <span class="overlay-close" onclick="closeAdminModal()">×</span>
   <div class="selector-modal" style="max-width: 750px; height: auto; max-height: 85vh;">
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--danger); text-transform: uppercase; margin: 0;">🛡️ Panneau de Contrôle Admin</h2></div>
-    <p style="color: #aaa; font-size: 13px; text-align: center; margin-top: 0;">Gestion des utilisateurs enregistrés et nettoyage des faux comptes.</p>
+    <p style="color: #aaa; font-size: 13px; text-align: center; margin-top: 0;">Gestion des utilisateurs, suppression des faux comptes et réinitialisation des scores d'arcade.</p>
     <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
       <button class="btn-sync" onclick="loadAdminUsersList()" style="border-color: var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; font-size: 12px; margin-bottom: 0;">🔄 Rafraîchir la liste</button>
     </div>
@@ -484,28 +484,43 @@
   </div>
 </div>
 
-<!-- MODALE JOURNAL DE BORD (CHANGELOG) -->
+<!-- MODALE JOURNAL DE BORD (CHANGELOG) PAR VERSION -->
 <div id="changelog-overlay" class="overlay">
   <span class="overlay-close" onclick="closeChangelogModal()">×</span>
   <div class="selector-modal" style="max-width: 650px; height: auto; max-height: 80vh;">
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">📢 Journal de Bord - Mises à Jour</h2></div>
     <div style="overflow-y: auto; text-align: left; padding: 10px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85);">
+      
+      <!-- VERSION 7.6 -->
       <div style="margin-bottom: 20px; border-left: 3px solid var(--danger); padding-left: 12px;">
-        <h3 style="color: var(--danger); font-family: 'Rajdhani'; margin: 0 0 5px 0; font-size: 18px;">🛡️ Version v7.6 - Panel Admin & Nettoyage</h3>
-        <p style="margin: 0; color: #aaa; font-size: 11px;">Mise à jour sécurité & ergonomie</p>
+        <h3 style="color: var(--danger); font-family: 'Rajdhani'; margin: 0 0 5px 0; font-size: 18px;">v7.6 - Panel Admin & Reset de Scores</h3>
+        <p style="margin: 0; color: #aaa; font-size: 11px;">Sortie récente</p>
         <ul style="margin: 8px 0 0 -15px; padding-left: 20px;">
-          <li><strong>Bouton Admin Dédié</strong> : Ajout d'un accès sécurisé "Panel Admin" en haut à gauche visible uniquement pour le compte <em>Mr. Bonnet</em>.</li>
-          <li><strong>Gestion des Faux Comptes</strong> : Interface complète dans le panel admin pour lister et supprimer instantanément les comptes indésirables.</li>
-          <li><strong>Anti-Latence Généralisé</strong> : Sauvegarde instantanée des notes et des épisodes en local sans blocage UI.</li>
+          <li>Création d'un bouton "Panel Admin" dédié en haut à gauche (exclusif au compte <em>Mr. Bonnet</em>).</li>
+          <li>Ajout d'outils de modération : suppression des faux comptes et réinitialisation des scores des mini-jeux d'arcade par utilisateur.</li>
         </ul>
       </div>
-      <div style="margin-bottom: 10px; border-left: 3px solid var(--neon-pink); padding-left: 12px;">
-        <h3 style="color: var(--neon-pink); font-family: 'Rajdhani'; margin: 0 0 5px 0; font-size: 18px;">✨ Version v7.5 - Anti-Latence & Animes</h3>
+
+      <!-- VERSION 7.5 -->
+      <div style="margin-bottom: 20px; border-left: 3px solid var(--neon-pink); padding-left: 12px;">
+        <h3 style="color: var(--neon-pink); font-family: 'Rajdhani'; margin: 0 0 5px 0; font-size: 18px;">v7.5 - Anti-Latence & Support Animes</h3>
+        <p style="margin: 0; color: #aaa; font-size: 11px;</p>
         <ul style="margin: 8px 0 0 -15px; padding-left: 20px;">
-          <li>Correction des scores d'arcade partagés entre utilisateurs.</li>
-          <li>Optimisation de la recherche TMDB pour les séries au long cours comme <em>One Piece</em>.</li>
+          <li>Suppression des temps de latence lors du cochage des épisodes et de la saisie des notes.</li>
+          <li>Correction de l'isolation des scores d'arcade et prise en charge des séries longues (comme <em>One Piece</em>).</li>
         </ul>
       </div>
+
+      <!-- VERSION 7.4 -->
+      <div style="margin-bottom: 10px; border-left: 3px solid var(--neon-blue); padding-left: 12px;">
+        <h3 style="color: var(--neon-blue); font-family: 'Rajdhani'; margin: 0 0 5px 0; font-size: 18px;">v7.4 - Mode Recherche Ultra-Précise</h3>
+        <p style="margin: 0; color: #aaa; font-size: 11px;</p>
+        <ul style="margin: 8px 0 0 -15px; padding-left: 20px;">
+          <li>Ajout des champs Année et Réalisateur/Créateur dans le formulaire de création de cartes.</li>
+          <li>Barres de recherche rapide intégrées directement sur les podiums Films et Séries.</li>
+        </ul>
+      </div>
+
     </div>
     <button onclick="closeChangelogModal()" class="btn-submit" style="margin-top: 15px;">J'ai tout lu !</button>
   </div>
@@ -632,7 +647,7 @@
     document.getElementById('changelog-overlay').classList.remove('show');
   };
 
-  // --- PANEL ADMIN (MR. BONNET) ---
+  // --- GESTION DU PANEL ADMIN ---
   window.openAdminModal = async function() {
     document.getElementById('admin-dashboard-overlay').classList.add('show');
     await loadAdminUsersList();
@@ -660,11 +675,12 @@
         return `
           <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.08); padding:12px 15px; border-radius:10px; margin-bottom:10px;">
             <div>
-              <div style="font-weight:bold; color:#fff; font-size:15px;">${u.pseudo} ${isMe ? '<span style="color:var(--gold); font-size:12px;">(Admin Principal)</span>' : ''}</div>
-              <div style="font-size:12px; color:rgba(255,255,255,0.6); margin-top:3px;">📚 ${u.totalCards || 0} cartes • 📺 ${u.totalHours || 0}h visionnées</div>
+              <div style="font-weight:bold; color:#fff; font-size:15px;">${u.pseudo}${isMe ? '<span style="color:var(--gold); font-size:12px;">(Admin Principal)</span>' : ''}</div>
+              <div style="font-size:12px; color:rgba(255,255,255,0.6); margin-top:3px;">📚 ${u.totalCards || 0} cartes • 📺 ${u.totalHours \vert{}\vert{} 0}h • 🏆 Mystère: ${u.hsMystery || 0} | Chrono: ${u.hsChrono \vert{}\vert{} 0} \vert{} Critique:${u.hsCritic || 0}</div>
             </div>
-            <div>
-              ${!isMe ? `<button onclick="deleteUserAccount('${u.pseudo.replace(/'/g, "\\'")}')" class="btn-delete" style="padding:6px 14px;">Supprimer le compte</button>` : `<span style="color:var(--success); font-size:12px; font-weight:bold;">Protégé</span>`}
+            <div style="display:flex; gap:8px; align-items:center;">
+              <button onclick="resetUserScores('${u.pseudo.replace(/'/g, "\\'")}')" class="btn-sync" style="border-color:var(--gold); color:var(--gold); padding:5px 10px; font-size:11px; margin-bottom:0;" title="Remettre les scores d'arcade à zéro">🔄 Reset Scores</button>
+              ${!isMe ? `<button onclick="deleteUserAccount('${u.pseudo.replace(/'/g, "\\'")}')" class="btn-delete" style="padding:6px 12px;">Supprimer</button>` : `<span style="color:var(--success); font-size:12px; font-weight:bold;">Protégé</span>`}
             </div>
           </div>`;
       }).join('');
@@ -673,8 +689,27 @@
     }
   };
 
+  window.resetUserScores = async function(targetPseudo) {
+    if (!confirm(`Voulez-vous réinitialiser tous les scores d'arcade (Mystère, Chrono, Critique) de "${targetPseudo}" ?`)) return;
+    try {
+      await db.collection('users').doc(targetPseudo).set({
+        hsMystery: 0,
+        hsChrono: 0,
+        hsCritic: 0
+      }, { merge: true });
+      alert(`✅ Scores d'arcade réinitialisés à 0 pour ${targetPseudo} !`);
+      await loadAdminUsersList();
+      if (targetPseudo === appSettings.pseudo) {
+        appSettings.highScores = { mystery: 0, chrono: 0, critic: 0 };
+        updateHighScoresDisplay();
+      }
+    } catch(e) {
+      alert(`❌ Erreur : ${e.message}`);
+    }
+  };
+
   window.deleteUserAccount = async function(targetPseudo) {
-    if (!confirm(`⚠️ Attention : Voulez-vous supprimer définitivement le compte "${targetPseudo}" ainsi que toutes ses sauvegardes ?`)) return;
+    if (!confirm(`⚠️ Attention : Voulez-vous supprimer définitivement le compte "${targetPseudo}" ainsi que toutes ses données ?`)) return;
     try {
       await db.collection('users').doc(targetPseudo).delete();
       await db.collection('saves').doc(targetPseudo).delete();
@@ -762,7 +797,6 @@
       });
       myMovies = uniqueMovies;
 
-      // Affichage du bouton Panel Admin si c'est Mr. Bonnet
       const adminBtn = document.getElementById('admin-dash-btn');
       if (adminBtn) {
         if (appSettings.pseudo === "Mr. Bonnet") {
@@ -858,7 +892,7 @@
 
       let listHtml = sorted.map((u, i) => {
           let badgeClass = i === 0 ? 'border-left: 4px solid var(--gold); background: rgba(255, 215, 0, 0.1); color: var(--gold); font-weight:bold;' : i === 1 ? 'border-left: 4px solid var(--silver); background: rgba(192, 192, 192, 0.1); color: var(--silver);' : i === 2 ? 'border-left: 4px solid var(--bronze); background: rgba(205, 127, 50, 0.1); color: var(--bronze);' : 'border-left: 4px solid rgba(255,255,255,0.2); color: #fff;';
-          return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 15px; border-radius:8px; margin-bottom:8px; font-family:'Inter'; font-size:14px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.05); ${badgeClass}"><span><strong>${i+1}.</strong>&nbsp;${u.pseudo}&nbsp;${u.pseudo === appSettings.pseudo ? '<i>(Toi)</i>' : ''}</span><strong>${u[sortKey]} ${unit}</strong></div>`;
+          return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 15px; border-radius:8px; margin-bottom:8px; font-family:'Inter'; font-size:14px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.05); ${badgeClass}"><span><strong>${i+1}.</strong>&nbsp;${u.pseudo}&nbsp;${u.pseudo === appSettings.pseudo ? '<i>(Toi)</i>' : ''}</span><strong>${u[sortKey]}${unit}</strong></div>`;
       }).join('');
       if(sorted.length === 0) listHtml = `<div style="text-align:center; color:#888; font-size:12px; margin-top:20px;">Aucun record défini.</div>`;
       return `<div class="glass-panel" style="padding: 25px;"><h3 style="color:${color}; font-family:'Rajdhani'; text-transform:uppercase; margin-top:0; border-bottom:1px dashed rgba(255,255,255,0.2); padding-bottom:10px; font-size:22px; text-shadow: 0 0 10px ${color};">${title}</h3><div style="margin-top:15px;">${listHtml}</div></div>`;
@@ -956,7 +990,7 @@
 
     for (let i = 0; i < myMovies.length; i++) {
       let movie = myMovies[i];
-      status.innerText = `Synchronisation (${i + 1}/${myMovies.length}) : ${movie.title}...`;
+      status.innerText = `Synchronisation (${i + 1}/${myMovies.length}) :${movie.title}...`;
       try {
         const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(movie.title)}&language=fr-FR`);
         const searchData = await searchRes.json();
@@ -1062,7 +1096,7 @@
     const banner = document.getElementById('selected-tmdb-banner');
     const bannerText = document.getElementById('selected-tmdb-text');
     if (banner && bannerText) {
-      bannerText.innerText = `🎯 Cible verrouillée : ${decodedTitle} (${year}) - ${director}`;
+      bannerText.innerText = `🎯 Cible verrouillée : ${decodedTitle} (${year}) -${director}`;
       banner.classList.add('active');
     }
     document.getElementById('tmdb-live-results').classList.remove('active');
@@ -1197,8 +1231,8 @@
   document.getElementById('movieForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     let unlockDate = "";
-    if (appSettings.dateMode === 'auto') { const d = new Date(); const monthMapAuto = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']; unlockDate = `${monthMapAuto[d.getMonth()]} ${d.getFullYear()}`; } 
-    else { const rawUnlockDate = document.getElementById('m-unlock').value.trim(); if (!/^(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre)\s\d{4}$/i.test(rawUnlockDate)) { alert("⚠️ Format invalide (ex: Juillet 2026)."); return; } const parts = rawUnlockDate.split(/\s+/); const monthMap = { 'janvier': 'Janvier', 'février': 'Février', 'fevrier': 'Février', 'mars': 'Mars', 'avril': 'Avril', 'mai': 'Mai', 'juin': 'Juin', 'juillet': 'Juillet', 'août': 'Août', 'aout': 'Août', 'septembre': 'Septembre', 'octobre': 'Octobre', 'novembre': 'Novembre', 'décembre': 'Décembre', 'decembre': 'Décembre' }; unlockDate = `${monthMap[parts[0].toLowerCase()]} ${parts[1]}`; }
+    if (appSettings.dateMode === 'auto') { const d = new Date(); const monthMapAuto = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']; unlockDate = `${monthMapAuto[d.getMonth()]}${d.getFullYear()}`; } 
+    else { const rawUnlockDate = document.getElementById('m-unlock').value.trim(); if (!/^(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre)\s\d{4}$/i.test(rawUnlockDate)) { alert("⚠️ Format invalide (ex: Juillet 2026)."); return; } const parts = rawUnlockDate.split(/\s+/); const monthMap = { 'janvier': 'Janvier', 'février': 'Février', 'fevrier': 'Février', 'mars': 'Mars', 'avril': 'Avril', 'mai': 'Mai', 'juin': 'Juin', 'juillet': 'Juillet', 'août': 'Août', 'aout': 'Août', 'septembre': 'Septembre', 'octobre': 'Octobre', 'novembre': 'Novembre', 'décembre': 'Décembre', 'decembre': 'Décembre' }; unlockDate = `${monthMap[parts[0].toLowerCase()]}${parts[1]}`; }
 
     let rawInput = document.getElementById('m-title').value.trim();
     let targetYear = null;
@@ -1343,9 +1377,9 @@
   // --- RENDU & MODALS ---
   function getAwardsHTML(awardsArray) { if (!awardsArray) return ''; if (typeof awardsArray === 'string') { if(awardsArray.trim() === '') return ''; return `<ul class="awards-list"><li>🏆 ${awardsArray.replace('🏆 ', '')}</li></ul>`; } if (Array.isArray(awardsArray) && awardsArray.length > 0) { const listItems = awardsArray.map(a => `<li>🏆 ${a}</li>`).join(''); return `<ul class="awards-list">${listItems}</ul>`; } return ''; }
   function renderAll() { renderGallery('Film', 'gallery-films', 'sort-select-films', 'search-filter-films'); renderGallery('Série', 'gallery-series', 'sort-select-series', 'search-filter-series'); }
-  function renderGallery(type, containerId, sortId, searchId) { const gallery = document.getElementById(containerId); gallery.innerHTML = ''; let sortedMovies = myMovies.map((movie, originalIndex) => ({ movie, originalIndex })).filter(item => item.movie.type === type); const searchVal = document.getElementById(searchId).value.toLowerCase(); if (searchVal) { sortedMovies = sortedMovies.filter(item => item.movie.title.toLowerCase().includes(searchVal)); } const sortValue = document.getElementById(sortId).value; if (sortValue === 'title-asc') sortedMovies.sort((a, b) => a.movie.title.localeCompare(b.movie.title)); else if (sortValue === 'rarity-desc') { const scores = { legendaire: 4, epique: 3, rare: 2, commune: 1 }; sortedMovies.sort((a, b) => scores[b.movie.rarity] - scores[a.movie.rarity]); } else if (sortValue === 'year-asc') { sortedMovies.sort((a, b) => parseInt(a.movie.year || 9999) - parseInt(b.movie.year || 9999)); } sortedMovies.forEach(item => { const movie = item.movie; const index = item.originalIndex; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const animClass = (movie.title === recentlyAddedTitle && !appSettings.skipAnimation) ? 'new-card-anim' : ''; let epBadge = ''; let percentage = 100; if (isSerie) { if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } const cardHTML = `<div class="card-container ${animClass}" onclick="openModal(${index})"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel}:</span> ${movie.director}</p><p><span>Année:</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre:</span> ${movie.genre}</p></div><div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div></div></div></div>`; gallery.innerHTML += cardHTML; }); if(type === 'Série' || type === 'Film') { setTimeout(() => { recentlyAddedTitle = null; }, 100); } }
+  function renderGallery(type, containerId, sortId, searchId) { const gallery = document.getElementById(containerId); gallery.innerHTML = ''; let sortedMovies = myMovies.map((movie, originalIndex) => ({ movie, originalIndex })).filter(item => item.movie.type === type); const searchVal = document.getElementById(searchId).value.toLowerCase(); if (searchVal) { sortedMovies = sortedMovies.filter(item => item.movie.title.toLowerCase().includes(searchVal)); } const sortValue = document.getElementById(sortId).value; if (sortValue === 'title-asc') sortedMovies.sort((a, b) => a.movie.title.localeCompare(b.movie.title)); else if (sortValue === 'rarity-desc') { const scores = { legendaire: 4, epique: 3, rare: 2, commune: 1 }; sortedMovies.sort((a, b) => scores[b.movie.rarity] - scores[a.movie.rarity]); } else if (sortValue === 'year-asc') { sortedMovies.sort((a, b) => parseInt(a.movie.year || 9999) - parseInt(b.movie.year || 9999)); } sortedMovies.forEach(item => { const movie = item.movie; const index = item.originalIndex; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const animClass = (movie.title === recentlyAddedTitle && !appSettings.skipAnimation) ? 'new-card-anim' : ''; let epBadge = ''; let percentage = 100; if (isSerie) { if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } const cardHTML = `<div class="card-container ${animClass}" onclick="openModal(${index})"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100\% -${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel}:</span> ${movie.director}</p><p><span>Année:</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre:</span>${movie.genre}</p></div><div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div></div></div></div>`; gallery.innerHTML += cardHTML; }); if(type === 'Série' || type === 'Film') { setTimeout(() => { recentlyAddedTitle = null; }, 100); } }
 
-  function openModal(index) { const movie = myMovies[index]; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const awardsHTML = getAwardsHTML(movie.awards); const synopsisText = movie.synopsis || "Clique sur 'Synchroniser les données'."; const userNoteText = movie.userNote || ""; const notesHiddenClass = notesVisible ? '' : 'hidden'; const toggleButtonText = notesVisible ? '📝 Masquer les notes' : '📝 Afficher les notes'; let epBadge = ''; let percentage = 100; let btnManager = ''; if (isSerie) { btnManager = `<button class="btn-sync" style="border-color: var(--neon-pink); color: var(--neon-pink); font-size: 12px; padding: 6px 12px; margin-top: 10px;" onclick="openEpisodeManager(${index})">📺 Gérer les épisodes</button>`; if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } const fullModalHTML = `<div class="modal-container-box"><button class="btn-toggle-notes" onclick="toggleNotes(${index})">${toggleButtonText}</button><div class="modal-wrapper"><div class="modal-notes ${notesHiddenClass}" id="modal-notes-panel"><h3>📝 Mes Notes</h3><textarea class="post-it" placeholder="Écris tes critiques..." oninput="saveNote(${index}, this.value)">${userNoteText}</textarea><span style="font-size: 10px; color: #888; margin-top: 5px; text-align:right;">* Sauvegarde en temps réel</span></div><div class="modal-card-container"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel} :</span> ${movie.director}</p><p><span>Année :</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre :</span> ${movie.genre}</p>${btnManager}</div>${awardsHTML}<div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div><p class="quote">"${movie.quote}"</p></div></div></div><div class="modal-synopsis"><h3>Synopsis</h3><p>${synopsisText}</p></div></div></div>`; document.getElementById('modal-content-area').innerHTML = fullModalHTML; document.getElementById('card-modal-overlay').classList.add('show'); }
+  function openModal(index) { const movie = myMovies[index]; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const awardsHTML = getAwardsHTML(movie.awards); const synopsisText = movie.synopsis || "Clique sur 'Synchroniser les données'."; const userNoteText = movie.userNote || ""; const notesHiddenClass = notesVisible ? '' : 'hidden'; const toggleButtonText = notesVisible ? '📝 Masquer les notes' : '📝 Afficher les notes'; let epBadge = ''; let percentage = 100; let btnManager = ''; if (isSerie) { btnManager = `<button class="btn-sync" style="border-color: var(--neon-pink); color: var(--neon-pink); font-size: 12px; padding: 6px 12px; margin-top: 10px;" onclick="openEpisodeManager(${index})">📺 Gérer les épisodes</button>`; if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } const fullModalHTML = `<div class="modal-container-box"><button class="btn-toggle-notes" onclick="toggleNotes(${index})">${toggleButtonText}</button><div class="modal-wrapper"><div class="modal-notes ${notesHiddenClass}" id="modal-notes-panel"><h3>📝 Mes Notes</h3><textarea class="post-it" placeholder="Écris tes critiques..." oninput="saveNote(${index}, this.value)">${userNoteText}</textarea><span style="font-size: 10px; color: #888; margin-top: 5px; text-align:right;">* Sauvegarde en temps réel</span></div><div class="modal-card-container"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100\% -${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel} :</span> ${movie.director}</p><p><span>Année :</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre :</span>${movie.genre}</p>${btnManager}</div>${awardsHTML}<div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div><p class="quote">"${movie.quote}"</p></div></div></div><div class="modal-synopsis"><h3>Synopsis</h3><p>${synopsisText}</p></div></div></div>`; document.getElementById('modal-content-area').innerHTML = fullModalHTML; document.getElementById('card-modal-overlay').classList.add('show'); }
   
   window.saveNote = function(index, text) { 
       if (myMovies[index]) { 
@@ -1358,7 +1392,7 @@
   function closeModal() { document.getElementById('card-modal-overlay').classList.remove('show'); setTimeout(() => { document.getElementById('modal-content-area').innerHTML = ''; }, 300); }
   document.getElementById('card-modal-overlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 
-  window.openEpisodeManager = function(index) { const overlay = document.getElementById('episode-manager-overlay'); const content = document.getElementById('episode-manager-content'); const titleObj = document.getElementById('episode-manager-title'); let movie = myMovies[index]; titleObj.innerText = `Épisodes : ${movie.title}`; let oldScrollX = 0; let oldScrollY = []; let isSameMovie = (content.dataset.activeIndex == index); if (isSameMovie) { const oldContainer = content.querySelector('.seasons-container'); if (oldContainer) { oldScrollX = oldContainer.scrollLeft; const oldLists = content.querySelectorAll('.episodes-list'); oldLists.forEach(list => oldScrollY.push(list.scrollTop)); } } content.dataset.activeIndex = index; if (!movie.seasonsData || movie.seasonsData.length === 0) { content.innerHTML = `<p style="text-align:center; color:#888; margin-top:50px;">Aucune donnée de saison.</p>`; } else { let html = '<div class="seasons-container">'; movie.seasonsData.forEach(season => { let sNum = season.s; let epCount = season.e; let watched = movie.watchedEpisodes[sNum] || []; html += `<div class="season-col"><div style="flex-shrink:0; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><h4 style="margin:0; color:var(--neon-blue); font-family:'Rajdhani'; font-size: 18px;">Saison ${sNum}</h4><button onclick="toggleAllEpisodes(${index}, ${sNum})" style="background:var(--glass-bg); border:1px solid var(--neon-pink); border-radius:5px; color:var(--neon-pink); cursor:pointer; font-size:10px; padding:3px 6px;">TOUT</button></div><div class="episodes-list">`; for (let e = 1; e <= epCount; e++) { let isW = watched.includes(e); let btnClass = isW ? 'ep-btn watched' : 'ep-btn'; let icon = isW ? '✔ ' : ''; html += `<button class="${btnClass}" onclick="toggleEpisode(${index}, ${sNum}, ${e})">${icon}S${sNum} E${e}</button>`; } html += `</div></div>`; }); html += '</div>'; content.innerHTML = html; if (isSameMovie) { const newContainer = content.querySelector('.seasons-container'); if (newContainer) { newContainer.scrollLeft = oldScrollX; const newLists = content.querySelectorAll('.episodes-list'); newLists.forEach((list, i) => { if (oldScrollY[i] !== undefined) list.scrollTop = oldScrollY[i]; }); } } } overlay.classList.add('show'); };
+  window.openEpisodeManager = function(index) { const overlay = document.getElementById('episode-manager-overlay'); const content = document.getElementById('episode-manager-content'); const titleObj = document.getElementById('episode-manager-title'); let movie = myMovies[index]; titleObj.innerText = `Épisodes : ${movie.title}`; let oldScrollX = 0; let oldScrollY = []; let isSameMovie = (content.dataset.activeIndex == index); if (isSameMovie) { const oldContainer = content.querySelector('.seasons-container'); if (oldContainer) { oldScrollX = oldContainer.scrollLeft; const oldLists = content.querySelectorAll('.episodes-list'); oldLists.forEach(list => oldScrollY.push(list.scrollTop)); } } content.dataset.activeIndex = index; if (!movie.seasonsData || movie.seasonsData.length === 0) { content.innerHTML = `<p style="text-align:center; color:#888; margin-top:50px;">Aucune donnée de saison.</p>`; } else { let html = '<div class="seasons-container">'; movie.seasonsData.forEach(season => { let sNum = season.s; let epCount = season.e; let watched = movie.watchedEpisodes[sNum] || []; html += `<div class="season-col"><div style="flex-shrink:0; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><h4 style="margin:0; color:var(--neon-blue); font-family:'Rajdhani'; font-size: 18px;">Saison ${sNum}</h4><button onclick="toggleAllEpisodes(${index},${sNum})" style="background:var(--glass-bg); border:1px solid var(--neon-pink); border-radius:5px; color:var(--neon-pink); cursor:pointer; font-size:10px; padding:3px 6px;">TOUT</button></div><div class="episodes-list">`; for (let e = 1; e <= epCount; e++) { let isW = watched.includes(e); let btnClass = isW ? 'ep-btn watched' : 'ep-btn'; let icon = isW ? '✔ ' : ''; html += `<button class="${btnClass}" onclick="toggleEpisode(${index},${sNum}, ${e})">${icon}S${sNum} E${e}</button>`; } html += `</div></div>`; }); html += '</div>'; content.innerHTML = html; if (isSameMovie) { const newContainer = content.querySelector('.seasons-container'); if (newContainer) { newContainer.scrollLeft = oldScrollX; const newLists = content.querySelectorAll('.episodes-list'); newLists.forEach((list, i) => { if (oldScrollY[i] !== undefined) list.scrollTop = oldScrollY[i]; }); } } } overlay.classList.add('show'); };
   window.closeEpisodeManager = function() { document.getElementById('episode-manager-overlay').classList.remove('show'); };
   
   window.toggleEpisode = function(mIndex, sNum, eNum) { 
@@ -1419,8 +1453,8 @@
         let displayTitle = movie.title.length > 15 ? movie.title.substring(0, 13) + '...' : movie.title;
         html += `
           <div class="podium-place">
-            <div class="podium-poster" style="background-image: url('${movie.poster}'); border-color: ${color};" onclick="openPodiumSelector('${type}', ${rank})" title="Changer le Top ${rank}">
-              <button class="podium-remove-btn" onclick="event.stopPropagation(); removePodiumItem('${type}', ${rank})" title="Retirer du podium">✕</button>
+            <div class="podium-poster" style="background-image: url('${movie.poster}'); border-color:${color};" onclick="openPodiumSelector('${type}',${rank})" title="Changer le Top ${rank}">
+              <button class="podium-remove-btn" onclick="event.stopPropagation(); removePodiumItem('${type}',${rank})" title="Retirer du podium">✕</button>
             </div>
             <div style="font-size: 11px; margin-bottom: 5px; font-weight:bold; color: #fff; text-align:center;" title="${movie.title.replace(/"/g, '&quot;')}">${displayTitle}</div>
             <div class="podium-step ${cssClass}">${rank}</div>
@@ -1428,7 +1462,7 @@
       } else {
         html += `
           <div class="podium-place">
-            <div class="podium-poster podium-empty" onclick="openPodiumSelector('${type}', ${rank})" title="Choisir le Top ${rank}">
+            <div class="podium-poster podium-empty" onclick="openPodiumSelector('${type}',${rank})" title="Choisir le Top ${rank}">
               <span>+</span>
             </div>
             <div style="font-size: 11px; margin-bottom: 5px; font-weight:bold; color: #888; text-align:center;">Vide</div>
@@ -1467,13 +1501,13 @@
           <img src="${movie.poster}" alt="">
           <div>
             <div class="podium-drop-title">${movie.title}</div>
-            <div style="font-size: 10px; color: #888;">${movie.year || ''} • ★ ${movie.rating || '-'}</div>
+            <div style="font-size: 10px; color: #888;">${movie.year \vert{}\vert{} ''} • ★ ${movie.rating || '-'}</div>
           </div>
         </div>
         <div class="podium-drop-btns">
-          <button class="podium-rank-btn r1" onclick="assignPodiumByIndex('${type}', 1, ${idx})">#1</button>
-          <button class="podium-rank-btn r2" onclick="assignPodiumByIndex('${type}', 2, ${idx})">#2</button>
-          <button class="podium-rank-btn r3" onclick="assignPodiumByIndex('${type}', 3, ${idx})">#3</button>
+          <button class="podium-rank-btn r1" onclick="assignPodiumByIndex('${type}', 1,${idx})">#1</button>
+          <button class="podium-rank-btn r2" onclick="assignPodiumByIndex('${type}', 2,${idx})">#2</button>
+          <button class="podium-rank-btn r3" onclick="assignPodiumByIndex('${type}', 3,${idx})">#3</button>
         </div>
       </div>
     `).join('');
@@ -1535,7 +1569,7 @@
     options.forEach(({ movie, idx }) => {
       let displayTitle = movie.title.length > 18 ? movie.title.substring(0, 16) + '...' : movie.title;
       grid.innerHTML += `
-        <div class="selector-item" style="background-image: url('${movie.poster}');" onclick="assignPodiumByIndex('${currentPodiumSelectionType}', ${currentPodiumSelectionRank}, ${idx})">
+        <div class="selector-item" style="background-image: url('${movie.poster}');" onclick="assignPodiumByIndex('${currentPodiumSelectionType}', ${currentPodiumSelectionRank},${idx})">
           <div class="selector-title">${displayTitle}</div>
         </div>`;
     });
@@ -1624,7 +1658,7 @@
                 epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`;
              }
           }
-          html += `<div style="display: flex; flex-direction: column;"><div class="card-container" onclick="closeBinder(); openModal(${index})"><div class="card" style="transform: none;"><div class="card-face card-front ${userMovie.rarity} ${userMovie.type === 'Série' ? 'in-progress' : ''}" style="background-image: url('${userMovie.poster}');">${badgeHTML} ${epBadge}</div><div class="card-face card-front ${userMovie.rarity}" style="background-image: url('${userMovie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML} ${epBadge}</div></div></div><div style="text-align:center; margin-top:12px; font-size:14px; color:var(--neon-blue); font-family:'Rajdhani'; font-weight:bold; text-shadow:0 0 5px var(--neon-blue); text-transform:uppercase;">✔ Vu en ${userMovie.unlockDate}</div></div>`;
+          html += `<div style="display: flex; flex-direction: column;"><div class="card-container" onclick="closeBinder(); openModal(${index})"><div class="card" style="transform: none;"><div class="card-face card-front ${userMovie.rarity} ${userMovie.type === 'Série' ? 'in-progress' : ''}" style="background-image: url('${userMovie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${userMovie.rarity}" style="background-image: url('${userMovie.poster}'); clip-path: inset(calc(100\% -${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div></div></div><div style="text-align:center; margin-top:12px; font-size:14px; color:var(--neon-blue); font-family:'Rajdhani'; font-weight:bold; text-shadow:0 0 5px var(--neon-blue); text-transform:uppercase;">✔ Vu en ${userMovie.unlockDate}</div></div>`;
         } else {
           html += `<div style="display: flex; flex-direction: column;"><div class="card-container" style="cursor: default;"><div class="card" style="transform: none;"><div class="card-face card-front" style="background-image: url('${posterUrl}'); filter: grayscale(100%) brightness(0.25); border: 2px dashed rgba(255,255,255,0.2);"></div><div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; width:100%; z-index:5;"><div style="font-size:24px; margin-bottom:5px;">🔒</div><div style="color:var(--text-main); font-family:'Inter'; font-weight:bold; font-size:13px; text-shadow:0 0 5px #000; padding:0 10px; line-height:1.2;">${title}</div><div style="color:var(--neon-pink); font-size:12px; font-weight:bold; margin-top:8px; font-family:'Rajdhani'; text-shadow:0 0 5px var(--neon-pink);">${year}</div></div></div></div><div style="text-align:center; margin-top:12px; font-size:12px; color:#555; font-family:'Rajdhani'; font-weight:bold; text-transform:uppercase;">Non visionné</div></div>`;
         }
@@ -1748,7 +1782,7 @@
                     epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`;
                  }
               }
-              html += `<div style="display: flex; flex-direction: column;"><div class="card-container" onclick="closeBinder(); openModal(${index})"><div class="card" style="transform: none;"><div class="card-face card-front ${userMovie.rarity} ${userMovie.type === 'Série' ? 'in-progress' : ''}" style="background-image: url('${userMovie.poster}');">${badgeHTML} ${epBadge}</div><div class="card-face card-front ${userMovie.rarity}" style="background-image: url('${userMovie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML} ${epBadge}</div></div></div><div style="text-align:center; margin-top:12px; font-size:14px; color:var(--neon-blue); font-family:'Rajdhani'; font-weight:bold; text-shadow:0 0 5px var(--neon-blue); text-transform:uppercase;">✔ Vu en ${userMovie.unlockDate}</div></div>`;
+              html += `<div style="display: flex; flex-direction: column;"><div class="card-container" onclick="closeBinder(); openModal(${index})"><div class="card" style="transform: none;"><div class="card-face card-front ${userMovie.rarity} ${userMovie.type === 'Série' ? 'in-progress' : ''}" style="background-image: url('${userMovie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${userMovie.rarity}" style="background-image: url('${userMovie.poster}'); clip-path: inset(calc(100\% -${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div></div></div><div style="text-align:center; margin-top:12px; font-size:14px; color:var(--neon-blue); font-family:'Rajdhani'; font-weight:bold; text-shadow:0 0 5px var(--neon-blue); text-transform:uppercase;">✔ Vu en ${userMovie.unlockDate}</div></div>`;
           } else {
               html += `<div style="display: flex; flex-direction: column;"><div class="card-container" style="cursor: default;"><div class="card" style="transform: none;"><div class="card-face card-front" style="background-image: url('${posterUrl}'); filter: grayscale(100%) brightness(0.25); border: 2px dashed rgba(255,255,255,0.2);"></div><div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; width:100%; z-index:5;"><div style="font-size:24px; margin-bottom:5px;">🔒</div><div style="color:var(--text-main); font-family:'Inter'; font-weight:bold; font-size:13px; text-shadow:0 0 5px #000; padding:0 10px; line-height:1.2;">${title}</div><div style="color:var(--neon-pink); font-size:12px; font-weight:bold; margin-top:8px; font-family:'Rajdhani'; text-shadow:0 0 5px var(--neon-pink);">${year}</div></div></div></div><div style="text-align:center; margin-top:12px; font-size:12px; color:#555; font-family:'Rajdhani'; font-weight:bold; text-transform:uppercase;">Non visionné</div></div>`;
           }
@@ -1760,28 +1794,8 @@
 
   function updateStats() { document.getElementById('stat-total').innerText = myMovies.length; let totalMinutes = 0; myMovies.forEach(m => { if (m.type === 'Série' && m.episodeRuntime) { let epsWatched = 0; if (m.watchedEpisodes) { for (let s in m.watchedEpisodes) { epsWatched += m.watchedEpisodes[s].length; } } else if (m.episodesWatched !== undefined) { epsWatched = m.episodesWatched; } totalMinutes += m.episodeRuntime * epsWatched; } else if (m.runtime) { totalMinutes += m.runtime; } }); document.getElementById('stat-runtime').innerText = Math.round(totalMinutes / 60) + " h"; if (myMovies.length > 0) { const counts = {}; let maxCount = 0; let topDirector = "-"; myMovies.forEach(m => { if (m.director && m.director !== "Inconnu") { const dirs = m.director.split(', '); dirs.forEach(d => { counts[d] = (counts[d] || 0) + 1; if (counts[d] > maxCount) { maxCount = counts[d]; topDirector = d; } }); } }); if (maxCount > 0) document.getElementById('stat-director').innerHTML = `${topDirector}<div style="font-size: 18px; color: #e0e6ed; text-shadow: none; margin-top: 5px;">(${maxCount} visionnages)</div>`; else document.getElementById('stat-director').innerText = "-"; } else { document.getElementById('stat-director').innerText = "-"; } }
 
-  function renderAdminList() { const listContainer = document.getElementById('admin-movie-list'); const searchVal = document.getElementById('admin-search-input') ? document.getElementById('admin-search-input').value.toLowerCase() : ""; listContainer.innerHTML = ''; let moviesToRender = myMovies.map((movie, index) => ({ movie, index })); if (searchVal) { moviesToRender = moviesToRender.filter(item => item.movie.title.toLowerCase().includes(searchVal)); } moviesToRender.forEach(item => { listContainer.innerHTML += `<div class="movie-list-item"><div><strong>${item.movie.title}</strong> <span style="color:#888; font-size:12px;">(${item.movie.type} - ${item.movie.year})</span></div><button class="btn-delete" onclick="deleteMovie(${item.index})">Effacer</button></div>`; }); }
+  function renderAdminList() { const listContainer = document.getElementById('admin-movie-list'); const searchVal = document.getElementById('admin-search-input') ? document.getElementById('admin-search-input').value.toLowerCase() : ""; listContainer.innerHTML = ''; let moviesToRender = myMovies.map((movie, index) => ({ movie, index })); if (searchVal) { moviesToRender = moviesToRender.filter(item => item.movie.title.toLowerCase().includes(searchVal)); } moviesToRender.forEach(item => { listContainer.innerHTML += `<div class="movie-list-item"><div><strong>${item.movie.title}</strong> <span style="color:#888; font-size:12px;">(${item.movie.type} -${item.movie.year})</span></div><button class="btn-delete" onclick="deleteMovie(${item.index})">Effacer</button></div>`; }); }
   window.deleteMovie = function(index) { if(confirm("Détruire cette carte ?")) { const movieTitle = myMovies[index].title; const movieType = myMovies[index].type; const podiumIndex = myTop3[movieType].indexOf(movieTitle); if(podiumIndex !== -1) myTop3[movieType][podiumIndex] = null; myMovies.splice(index, 1); saveData(); renderAdminList(); } }
 
   // --- LOGIQUE DES MINI JEUX ARCADE ---
-  function checkArcadeAvailability() { const arcadeContainer = document.getElementById('arcade-container'); if (myMovies.length < 4) { arcadeContainer.innerHTML = `<div style="grid-column: 1 / -1; padding: 30px; border: 2px dashed rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); border-radius: 15px;">Pour allumer les bornes d'arcade, tu dois forger au moins 4 cartes dans ta collection.</div>`; } }
-  let mysteryScore = 0; let currentMysteryMovie = null;
-  window.initMysteryGame = function() { if (myMovies.length < 4) return; mysteryScore = 0; document.getElementById('mystery-score').innerText = mysteryScore; document.getElementById('game-mystery-overlay').classList.add('show'); nextMysteryRound(); };
-  function nextMysteryRound() { const choices = [...myMovies].sort(() => 0.5 - Math.random()).slice(0, 4); currentMysteryMovie = choices[Math.floor(Math.random() * 4)]; const poster = document.getElementById('mystery-image'); poster.style.backgroundImage = `url('${currentMysteryMovie.poster}')`; poster.className = 'mystery-poster blurred'; const choicesContainer = document.getElementById('mystery-choices'); choicesContainer.innerHTML = ''; choices.forEach(c => { const btn = document.createElement('button'); btn.className = 'mystery-btn'; btn.innerText = c.title; btn.onclick = () => handleMysteryGuess(btn, c.title === currentMysteryMovie.title); choicesContainer.appendChild(btn); }); }
-  function handleMysteryGuess(btn, isCorrect) { document.querySelectorAll('#mystery-choices .mystery-btn').forEach(b => b.disabled = true); if (isCorrect) { btn.classList.add('correct'); mysteryScore++; document.getElementById('mystery-score').innerText = mysteryScore; document.getElementById('mystery-image').className = 'mystery-poster revealed'; setTimeout(nextMysteryRound, 1200); } else { btn.classList.add('wrong'); const container = document.getElementById('mystery-container'); container.classList.add('shake-effect'); document.getElementById('mystery-image').className = 'mystery-poster revealed'; document.querySelectorAll('#mystery-choices .mystery-btn').forEach(b => { if(b.innerText === currentMysteryMovie.title) b.classList.add('correct'); }); setTimeout(() => { container.classList.remove('shake-effect'); if (mysteryScore > (appSettings.highScores.mystery || 0)) { appSettings.highScores.mystery = mysteryScore; saveData(); } alert(`Game Over ! Score final : ${mysteryScore}`); closeGame('mystery'); }, 1800); } }
-
-  let chronoScore = 0; let currentChronoMovie = null;
-  window.initChronoGame = function() { const validMovies = myMovies.filter(m => m.year && m.year !== "N/A" && !isNaN(parseInt(m.year))); if (validMovies.length < 4) { alert("Pas assez d'œuvres avec une date de sortie valide."); return; } chronoScore = 0; document.getElementById('chrono-score').innerText = chronoScore; document.getElementById('game-chrono-overlay').classList.add('show'); nextChronoRound(validMovies); };
-  function nextChronoRound(validMovies) { currentChronoMovie = validMovies[Math.floor(Math.random() * validMovies.length)]; document.getElementById('chrono-poster').style.backgroundImage = `url('${currentChronoMovie.poster}')`; document.getElementById('chrono-title').innerText = currentChronoMovie.title; const realYear = parseInt(currentChronoMovie.year); const yearSet = new Set([realYear]); const offsets = [-7, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 7].sort(() => 0.5 - Math.random()); for (let offset of offsets) { let candidate = realYear + offset; if (candidate > 1950 && candidate <= 2030) yearSet.add(candidate); if (yearSet.size === 4) break; } while (yearSet.size < 4) { yearSet.add(parseInt(validMovies[Math.floor(Math.random() * validMovies.length)].year)); } const choices = Array.from(yearSet).sort(() => 0.5 - Math.random()); const choicesContainer = document.getElementById('chrono-choices'); choicesContainer.innerHTML = ''; choices.forEach(y => { const btn = document.createElement('button'); btn.className = 'mystery-btn'; btn.innerText = y; btn.onclick = () => handleChronoGuess(btn, y === realYear, validMovies); choicesContainer.appendChild(btn); }); }
-  function handleChronoGuess(btn, isCorrect, validMovies) { document.querySelectorAll('#chrono-choices .mystery-btn').forEach(b => b.disabled = true); if (isCorrect) { btn.classList.add('correct'); chronoScore++; document.getElementById('chrono-score').innerText = chronoScore; setTimeout(() => nextChronoRound(validMovies), 1000); } else { btn.classList.add('wrong'); const container = document.getElementById('chrono-container'); container.classList.add('shake-effect'); document.querySelectorAll('#chrono-choices .mystery-btn').forEach(b => { if(parseInt(b.innerText) === parseInt(currentChronoMovie.year)) b.classList.add('correct'); }); setTimeout(() => { container.classList.remove('shake-effect'); if (chronoScore > (appSettings.highScores.chrono || 0)) { appSettings.highScores.chrono = chronoScore; saveData(); } alert(`Raté ! L'année de sortie était ${currentChronoMovie.year}.\nScore final : ${chronoScore}`); closeGame('chrono'); }, 1800); } }
-
-  let criticScore = 0; let currentCriticMovie = null;
-  window.initCriticGame = function() { if (myMovies.length < 1) return; criticScore = 0; document.getElementById('critic-score').innerText = criticScore; document.getElementById('game-critic-overlay').classList.add('show'); nextCriticRound(); }
-  function nextCriticRound() { currentCriticMovie = myMovies[Math.floor(Math.random() * myMovies.length)]; document.getElementById('critic-poster').style.backgroundImage = `url('${currentCriticMovie.poster}')`; document.getElementById('critic-title').innerText = currentCriticMovie.title; const slider = document.getElementById('critic-slider'); slider.value = 5.0; document.getElementById('critic-slider-val').innerText = "5.0"; slider.disabled = false; const btn = document.getElementById('critic-validate-btn'); btn.innerText = "Valider ma note"; btn.onclick = () => validateCriticGuess(); btn.className = 'btn-submit'; document.getElementById('critic-result').innerText = ""; }
-  window.updateCriticSlider = function(val) { document.getElementById('critic-slider-val').innerText = parseFloat(val).toFixed(1); }
-  window.validateCriticGuess = function() { const slider = document.getElementById('critic-slider'); const guessed = parseFloat(slider.value); const realRating = parseFloat(currentCriticMovie.rating); slider.disabled = true; const diff = Math.abs(guessed - realRating); const resDiv = document.getElementById('critic-result'); if (diff <= 0.5) { resDiv.innerHTML = `<span style="color: var(--success); font-weight: bold; font-size: 20px;">Exact ! La note est de ${realRating}</span>`; criticScore++; document.getElementById('critic-score').innerText = criticScore; const btn = document.getElementById('critic-validate-btn'); btn.innerText = "Suivant ➔"; btn.onclick = nextCriticRound; } else { resDiv.innerHTML = `<span style="color: var(--danger); font-weight: bold; font-size: 20px;">Raté ! La vraie note est de ${realRating}</span>`; setTimeout(() => { if (criticScore > (appSettings.highScores.critic || 0)) { appSettings.highScores.critic = criticScore; saveData(); } alert(`Game Over ! Score final : ${criticScore}`); closeGame('critic'); }, 1800); } }
-
-  window.closeGame = function(gameId) { document.getElementById(`game-${gameId}-overlay`).classList.remove('show'); };
-</script>
-</body>
-</html>
+  function checkArcadeAvailability() { const arcadeContainer = document.getElementById('arcade-container'); if (myMovies.length < 4) { arcadeContainer.innerHTML = `<div style="grid-column: 1 / -1; padding: 30px; border: 2px dashed rgba(255,255,255,0.2); color: rgba(255,
