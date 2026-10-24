@@ -491,6 +491,17 @@
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">📢 Journal de Bord - Mises à Jour</h2></div>
     <div style="overflow-y: auto; text-align: left; padding: 10px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85);">
       
+      <!-- VERSION 7.7 -->
+      <div style="margin-bottom: 25px; border-left: 3px solid var(--gold); padding-left: 12px;">
+        <h3 style="color: var(--gold); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v7.7 - Support des Homonymes, Remakes & Live-Actions</h3>
+        <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Mise à jour système anti-doublons</p>
+        <ul style="margin: 0; padding-left: 18px;">
+          <li><strong>Détection Intelligente des Doublons</strong> : Le système ne bloque plus une œuvre simplement parce qu'elle porte le même nom qu'une autre. Il vérifie désormais l'identifiant TMDB unique, le type (Film/Série) ET l'année de sortie.</li>
+          <li><strong>Compatibilité Remakes & Adaptations</strong> : Tu peux désormais collectionner un animé original et son adaptation Live-Action (ex: <em>One Piece 1999</em> et <em>One Piece 2023</em>) ou deux films homonymes de dates différentes sans conflit !</li>
+          <li><strong>Podiums Multi-Versions</strong> : Le Top 3 distingue désormais les œuvres homonymes grâce à leur année de sortie.</li>
+        </ul>
+      </div>
+
       <!-- VERSION 7.6 -->
       <div style="margin-bottom: 25px; border-left: 3px solid var(--danger); padding-left: 12px;">
         <h3 style="color: var(--danger); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v7.6 - Panel Admin & Reset de Scores</h3>
@@ -558,7 +569,7 @@
 <script>
   const API_KEY = 'fb195a905bf531daf7eb642dbf16c455'; 
   const OMDB_KEY = 'bb349eee';
-  const CURRENT_CHANGELOG_VERSION = 'v7.6';
+  const CURRENT_CHANGELOG_VERSION = 'v7.7';
 
   // --- INITIALISATION DE LA BASE DE DONNÉES CLOUD (FIREBASE) ---
   const firebaseConfig = {
@@ -603,8 +614,42 @@
     highScores: { mystery: 0, chrono: 0, critic: 0 }, pseudo: "", pin: ""
   };
   let myMovies = []; let myTop3 = { Film: [null, null, null], Série: [null, null, null] };
-  let notesVisible = true; let recentlyAddedTitle = null; let currentPodiumSelectionType = null; let currentPodiumSelectionRank = null;
+  let notesVisible = true; let recentlyAddedKey = null; let currentPodiumSelectionType = null; let currentPodiumSelectionRank = null;
   let saveCloudTimeout = null;
+
+  // --- FONCTIONS UTILITAIRES D'IDENTIFICATION UNIQUE (ANTI-DOUBLONS HOMONYMES) ---
+  const normalize = str => {
+    if (!str) return '';
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
+  };
+
+  function getMovieUniqueKey(m) {
+    if (m.tmdbId) return `tmdb_${m.type}_${m.tmdbId}`;
+    return `${normalize(m.title)}|${m.type}|${m.year || 'NA'}`;
+  }
+
+  function getPodiumToken(m) {
+    return `${m.title}|||${m.year || 'N/A'}`;
+  }
+
+  function findMovieByPodiumToken(type, token) {
+    if (!token) return null;
+    if (token.includes('|||')) {
+      const [tTitle, tYear] = token.split('|||');
+      return myMovies.find(m => m.type === type && (m.title === tTitle || normalize(m.title) === normalize(tTitle)) && String(m.year || 'N/A') === String(tYear))
+          || myMovies.find(m => m.type === type && (m.title === tTitle || normalize(m.title) === normalize(tTitle)));
+    }
+    return myMovies.find(m => m.type === type && (m.title === token || normalize(m.title) === normalize(token)));
+  }
+
+  function isMovieMatchingPodiumToken(movie, token) {
+    if (!token || !movie) return false;
+    if (token.includes('|||')) {
+      const [tTitle, tYear] = token.split('|||');
+      return (movie.title === tTitle || normalize(movie.title) === normalize(tTitle)) && String(movie.year || 'N/A') === String(tYear);
+    }
+    return movie.title === token || normalize(movie.title) === normalize(token);
+  }
 
   // --- DÉMARRAGE ET CONNEXION CLOUD ---
   document.addEventListener("DOMContentLoaded", () => {
@@ -785,9 +830,10 @@
       document.getElementById('login-status').innerText = message;
       localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
       
+      // Dédoublonnage intelligent prenant en compte l'ID TMDB ou (Titre + Type + Année)
       const uniqueMovies = []; const seenKeys = new Set();
       myMovies.forEach(movie => {
-        const key = movie.title.toLowerCase() + '|' + movie.type;
+        const key = getMovieUniqueKey(movie);
         if (!seenKeys.has(key)) {
           seenKeys.add(key);
           if (movie.userNote === undefined) movie.userNote = "";
@@ -978,11 +1024,6 @@
     reader.readAsText(file); event.target.value = '';
   }
 
-  const normalize = str => {
-    if (!str) return '';
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
-  };
-
   async function syncCollection() {
     const btn = document.getElementById('sync-btn');
     const status = document.getElementById('sync-status');
@@ -991,18 +1032,29 @@
 
     for (let i = 0; i < myMovies.length; i++) {
       let movie = myMovies[i];
-      status.innerText = `Synchronisation (${i + 1}/${myMovies.length}) : ${movie.title}...`;
+      status.innerText = `Synchronisation (${i + 1}/${myMovies.length}) : ${movie.title} (${movie.year || 'N/A'})...`;
       try {
-        const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(movie.title)}&language=fr-FR`);
-        const searchData = await searchRes.json();
-        const cleanTitleNorm = normalize(movie.title);
-        
-        const bestResult = searchData.results.find(r => (r.media_type === 'movie' || r.media_type === 'tv') && (r.poster_path && movie.poster && movie.poster.includes(r.poster_path))) || searchData.results.find(r => (r.media_type === 'movie' || r.media_type === 'tv') && (normalize(r.title || r.name) === cleanTitleNorm)) || searchData.results.find(r => r.media_type === 'movie' || r.media_type === 'tv');
+        let bestResult = null;
+        if (movie.tmdbId) {
+          bestResult = { id: movie.tmdbId, media_type: movie.type === 'Film' ? 'movie' : 'tv' };
+        } else {
+          const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(movie.title)}&language=fr-FR`);
+          const searchData = await searchRes.json();
+          const cleanTitleNorm = normalize(movie.title);
+          const targetMediaType = movie.type === 'Film' ? 'movie' : 'tv';
+          
+          bestResult = searchData.results.find(r => r.media_type === targetMediaType && (r.poster_path && movie.poster && movie.poster.includes(r.poster_path)))
+            || searchData.results.find(r => r.media_type === targetMediaType && normalize(r.title || r.name) === cleanTitleNorm && (r.release_date || r.first_air_date || '').startsWith(movie.year))
+            || searchData.results.find(r => r.media_type === targetMediaType && normalize(r.title || r.name) === cleanTitleNorm)
+            || searchData.results.find(r => r.media_type === 'movie' || r.media_type === 'tv');
+        }
 
         if (bestResult) {
           const mediaType = bestResult.media_type;
           const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${bestResult.id}?api_key=${API_KEY}&language=fr-FR&append_to_response=credits,external_ids`);
           const itemData = await detailsRes.json();
+
+          movie.tmdbId = itemData.id;
 
           let directorId = null;
           if (mediaType === 'movie') {
@@ -1010,6 +1062,10 @@
             if (dirObjs.length > 0) { movie.director = dirObjs.map(d => d.name).join(', '); directorId = dirObjs[0].id; }
           } else {
             if (itemData.created_by && itemData.created_by.length > 0) { movie.director = itemData.created_by.map(c => c.name).join(', '); directorId = itemData.created_by[0].id; }
+            else if (itemData.credits && itemData.credits.crew) {
+              const animeCreators = itemData.credits.crew.filter(x => x.job === 'Original Story' || x.job === 'Comic Book' || x.job === 'Series Director' || x.job === 'Director');
+              if (animeCreators.length > 0) { movie.director = animeCreators.map(c => c.name).join(', '); directorId = animeCreators[0].id; }
+            }
           }
 
           if (directorId) {
@@ -1077,7 +1133,7 @@
     setTimeout(() => { status.style.display = 'none'; btn.style.display = 'inline-block'; }, 3000);
   }
 
-  // --- RECHERCHE ULTRA-PRÉCISE (LIVE PREVIEW) & AJOUT (TMDB) OPTIMISÉE ANIMES ---
+  // --- RECHERCHE ULTRA-PRÉCISE (LIVE PREVIEW) & AJOUT (TMDB) OPTIMISÉE ANIMES & HOMONYMES ---
   let liveSearchTimeout = null;
   let selectedTmdbTarget = null;
 
@@ -1294,6 +1350,20 @@
           if (yearFiltered.length > 0) validResults = yearFiltered;
         }
 
+        // Fonction locale pour vérifier si un candidat de recherche est DÉJÀ dans notre collection
+        const isCandidateAlreadyOwned = (cand) => {
+          const candType = cand.media_type === 'movie' ? 'Film' : 'Série';
+          const candYear = (cand.release_date || cand.first_air_date || 'N/A').split('-')[0];
+          const candTitleNorm = normalize(cand.title || cand.name || '');
+          const candPosterHash = cand.poster_path ? cand.poster_path.split('/').pop() : null;
+          return myMovies.some(m => {
+            if (m.type !== candType) return false;
+            if (m.tmdbId && cand.id) return m.tmdbId === cand.id;
+            if (candPosterHash && m.poster && m.poster.includes(candPosterHash)) return true;
+            return normalize(m.title) === candTitleNorm && String(m.year || 'N/A') === String(candYear);
+          });
+        };
+
         if (targetDirector && validResults.length > 0) {
           loadingDetails.innerText = "Vérification de l'auteur / réalisateur sur TMDB...";
           const topCandidates = validResults.slice(0, 6);
@@ -1320,7 +1390,13 @@
         }
 
         if (!bestResult) {
-          bestResult = validResults.find(r => normalize(r.title || r.name || '') === cleanInputNorm) || validResults[0];
+          const exactMatches = validResults.filter(r => normalize(r.title || r.name || '') === cleanInputNorm);
+          if (exactMatches.length > 0) {
+            // Si une version exacte existe déjà dans la collection, on privilégie l'homonyme / remake non possédé !
+            bestResult = exactMatches.find(r => !isCandidateAlreadyOwned(r)) || exactMatches[0];
+          } else {
+            bestResult = validResults.find(r => !isCandidateAlreadyOwned(r)) || validResults[0];
+          }
         }
       }
 
@@ -1331,15 +1407,35 @@
       const itemData = await detailsRes.json();
 
       let title = mediaType === 'movie' ? itemData.title : itemData.name;
-      if (myMovies.some(m => m.title.toLowerCase() === title.toLowerCase() && m.type === (mediaType === 'movie' ? 'Film' : 'Série'))) { alert(`⚠️ L'œuvre "${title}" est déjà dans ta collection !`); loadingUI.style.display = 'none'; submitBtn.style.display = 'block'; return; }
+      let cardType = mediaType === 'movie' ? 'Film' : 'Série';
+      let year = "N/A";
+      if (mediaType === 'movie' && itemData.release_date) year = itemData.release_date.split('-')[0];
+      else if (mediaType === 'tv' && itemData.first_air_date) year = itemData.first_air_date.split('-')[0];
+
+      const newPosterHash = itemData.poster_path ? itemData.poster_path.split('/').pop() : null;
+
+      // VÉRIFICATION ANTI-DOUBLONS STRICTE (Basée sur ID TMDB, Affiche ou Titre + Type + Année)
+      const isDuplicate = myMovies.some(m => {
+        if (m.type !== cardType) return false;
+        if (m.tmdbId && itemData.id) return m.tmdbId === itemData.id;
+        if (newPosterHash && m.poster && m.poster.includes(newPosterHash)) return true;
+        return normalize(m.title) === normalize(title) && String(m.year || 'N/A') === String(year);
+      });
+
+      if (isDuplicate) {
+        alert(`⚠️ Cette version exacte de "${title}" (${cardType} - ${year}) est déjà dans ta collection !\n💡 Astuce : Pour ajouter un remake, un live-action ou un homonyme d'une autre date, précise son année (ex: "${title} 2023") ou utilise le mode Ultra-Précis dans ⚙️.`);
+        loadingUI.style.display = 'none';
+        submitBtn.style.display = 'block';
+        return;
+      }
 
       const rating = itemData.vote_average || 0; let rarity = "commune"; if (rating >= 8.0) rarity = "legendaire"; else if (rating >= 7.0) rarity = "epique"; else if (rating >= 6.0) rarity = "rare";
 
-      let director = "Inconnu"; let directorId = null; let directorTotal = 0; let year = "N/A"; let runtimeMinutes = 0; let seasonsData = []; let watchedEpisodes = {}; let episodeRuntime = 0;
+      let director = "Inconnu"; let directorId = null; let directorTotal = 0; let runtimeMinutes = 0; let seasonsData = []; let watchedEpisodes = {}; let episodeRuntime = 0;
       if (mediaType === 'movie') {
         const dirObjs = itemData.credits.crew.filter(c => c.job === 'Director');
         if (dirObjs.length > 0) { director = dirObjs.map(d => d.name).join(', '); directorId = dirObjs[0].id; }
-        if (itemData.release_date) year = itemData.release_date.split('-')[0]; runtimeMinutes = itemData.runtime || 0; 
+        runtimeMinutes = itemData.runtime || 0; 
       } else {
         if (itemData.created_by && itemData.created_by.length > 0) { 
           director = itemData.created_by.map(c => c.name).join(', '); 
@@ -1351,7 +1447,6 @@
             directorId = animeCreators[0].id;
           }
         }
-        if (itemData.first_air_date) year = itemData.first_air_date.split('-')[0];
         const validSeasons = (itemData.seasons || []).filter(s => s.season_number > 0);
         seasonsData = validSeasons.map(s => ({ s: s.season_number, e: s.episode_count }));
         seasonsData.forEach(s => { watchedEpisodes[s.s] = Array.from({length: s.e}, (_, idx) => idx + 1); }); 
@@ -1368,17 +1463,17 @@
       if (wikidataId) { try { const sparqlQuery = `SELECT DISTINCT ?awardLabel (YEAR(?date) as ?year) WHERE { wd:${wikidataId} p:P166 ?statement . ?statement ps:P166 ?award . OPTIONAL { ?statement pq:P585 ?date . } SERVICE wikibase:label { bd:serviceParam wikibase:language "en,fr". } } LIMIT 3`; const wikiRes = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(sparqlQuery)}&format=json`, { headers: { 'Accept': 'application/sparql-results+json' } }); const wikiData = await wikiRes.json(); if (wikiData.results && wikiData.results.bindings.length > 0) { const validAwards = wikiData.results.bindings.filter(b => b.awardLabel && !/^Q\d+$/.test(b.awardLabel.value)).map(b => { let name = b.awardLabel.value.charAt(0).toUpperCase() + b.awardLabel.value.slice(1); return `${name} (${b.year ? b.year.value : year})`; }); if (validAwards.length > 0) awards = validAwards; } } catch(e) {} }
       if (awards.length === 0 && imdbId) { try { const omdbRes = await fetch(`https://www.omdbapi.com/?i=${imdbId}&apikey=${OMDB_KEY}`); const omdbData = await omdbRes.json(); if (omdbData.Awards && omdbData.Awards !== "N/A" && omdbData.Awards.includes("Won")) { let wonText = omdbData.Awards.split('.')[0]; if (wonText.includes("Won")) awards = [`${wonText} (${year})`]; } } catch(e) {} }
 
-      const newMovie = { title: title, type: mediaType === 'movie' ? 'Film' : 'Série', director: director, directorTotal: directorTotal, universe: universe, universeTotal: universeTotal, genre: itemData.genres.map(g => g.name).join(' / '), rarity: rarity, rating: rating.toFixed(1), poster: itemData.poster_path ? `https://image.tmdb.org/t/p/w500${itemData.poster_path}` : 'https://via.placeholder.com/500x750/0a0a16/00f3ff?text=Image+Manquante', year: year, unlockDate: unlockDate, quote: itemData.tagline || "Une œuvre mémorable.", awards: awards, runtime: runtimeMinutes, synopsis: itemData.overview || "Synopsis non disponible.", userNote: "", seasonsData: seasonsData, watchedEpisodes: watchedEpisodes, episodeRuntime: episodeRuntime };
-      myMovies.unshift(newMovie); recentlyAddedTitle = title; this.reset(); clearSelectedTmdbTarget(); saveData();
+      const newMovie = { tmdbId: itemData.id, title: title, type: cardType, director: director, directorTotal: directorTotal, universe: universe, universeTotal: universeTotal, genre: itemData.genres.map(g => g.name).join(' / '), rarity: rarity, rating: rating.toFixed(1), poster: itemData.poster_path ? `https://image.tmdb.org/t/p/w500${itemData.poster_path}` : 'https://via.placeholder.com/500x750/0a0a16/00f3ff?text=Image+Manquante', year: year, unlockDate: unlockDate, quote: itemData.tagline || "Une œuvre mémorable.", awards: awards, runtime: runtimeMinutes, synopsis: itemData.overview || "Synopsis non disponible.", userNote: "", seasonsData: seasonsData, watchedEpisodes: watchedEpisodes, episodeRuntime: episodeRuntime };
+      myMovies.unshift(newMovie); recentlyAddedKey = getMovieUniqueKey(newMovie); this.reset(); clearSelectedTmdbTarget(); saveData();
       if (!appSettings.skipAnimation) { if (mediaType === 'movie') document.querySelectorAll('.tab-btn')[2].click(); else document.querySelectorAll('.tab-btn')[3].click(); } 
-      else { const originalText = submitBtn.innerText; submitBtn.innerText = `✅ Ajouté : ${title}`; submitBtn.style.background = "#28a745"; setTimeout(() => { submitBtn.innerText = originalText; submitBtn.style.background = ""; }, 2000); }
+      else { const originalText = submitBtn.innerText; submitBtn.innerText = `✅ Ajouté : ${title} (${year})`; submitBtn.style.background = "#28a745"; setTimeout(() => { submitBtn.innerText = originalText; submitBtn.style.background = ""; }, 2000); }
     } catch (error) {} finally { loadingUI.style.display = 'none'; submitBtn.style.display = 'block'; }
   });
 
   // --- RENDU & MODALS ---
   function getAwardsHTML(awardsArray) { if (!awardsArray) return ''; if (typeof awardsArray === 'string') { if(awardsArray.trim() === '') return ''; return `<ul class="awards-list"><li>🏆 ${awardsArray.replace('🏆 ', '')}</li></ul>`; } if (Array.isArray(awardsArray) && awardsArray.length > 0) { const listItems = awardsArray.map(a => `<li>🏆 ${a}</li>`).join(''); return `<ul class="awards-list">${listItems}</ul>`; } return ''; }
   function renderAll() { renderGallery('Film', 'gallery-films', 'sort-select-films', 'search-filter-films'); renderGallery('Série', 'gallery-series', 'sort-select-series', 'search-filter-series'); }
-  function renderGallery(type, containerId, sortId, searchId) { const gallery = document.getElementById(containerId); gallery.innerHTML = ''; let sortedMovies = myMovies.map((movie, originalIndex) => ({ movie, originalIndex })).filter(item => item.movie.type === type); const searchVal = document.getElementById(searchId).value.toLowerCase(); if (searchVal) { sortedMovies = sortedMovies.filter(item => item.movie.title.toLowerCase().includes(searchVal)); } const sortValue = document.getElementById(sortId).value; if (sortValue === 'title-asc') sortedMovies.sort((a, b) => a.movie.title.localeCompare(b.movie.title)); else if (sortValue === 'rarity-desc') { const scores = { legendaire: 4, epique: 3, rare: 2, commune: 1 }; sortedMovies.sort((a, b) => scores[b.movie.rarity] - scores[a.movie.rarity]); } else if (sortValue === 'year-asc') { sortedMovies.sort((a, b) => parseInt(a.movie.year || 9999) - parseInt(b.movie.year || 9999)); } sortedMovies.forEach(item => { const movie = item.movie; const index = item.originalIndex; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const animClass = (movie.title === recentlyAddedTitle && !appSettings.skipAnimation) ? 'new-card-anim' : ''; let epBadge = ''; let percentage = 100; if (isSerie) { if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } const cardHTML = `<div class="card-container ${animClass}" onclick="openModal(${index})"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel}:</span> ${movie.director}</p><p><span>Année:</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre:</span> ${movie.genre}</p></div><div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div></div></div></div>`; gallery.innerHTML += cardHTML; }); if(type === 'Série' || type === 'Film') { setTimeout(() => { recentlyAddedTitle = null; }, 100); } }
+  function renderGallery(type, containerId, sortId, searchId) { const gallery = document.getElementById(containerId); gallery.innerHTML = ''; let sortedMovies = myMovies.map((movie, originalIndex) => ({ movie, originalIndex })).filter(item => item.movie.type === type); const searchVal = document.getElementById(searchId).value.toLowerCase(); if (searchVal) { sortedMovies = sortedMovies.filter(item => item.movie.title.toLowerCase().includes(searchVal)); } const sortValue = document.getElementById(sortId).value; if (sortValue === 'title-asc') sortedMovies.sort((a, b) => a.movie.title.localeCompare(b.movie.title)); else if (sortValue === 'rarity-desc') { const scores = { legendaire: 4, epique: 3, rare: 2, commune: 1 }; sortedMovies.sort((a, b) => scores[b.movie.rarity] - scores[a.movie.rarity]); } else if (sortValue === 'year-asc') { sortedMovies.sort((a, b) => parseInt(a.movie.year || 9999) - parseInt(b.movie.year || 9999)); } sortedMovies.forEach(item => { const movie = item.movie; const index = item.originalIndex; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const animClass = (getMovieUniqueKey(movie) === recentlyAddedKey && !appSettings.skipAnimation) ? 'new-card-anim' : ''; let epBadge = ''; let percentage = 100; if (isSerie) { if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } const cardHTML = `<div class="card-container ${animClass}" onclick="openModal(${index})"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel}:</span> ${movie.director}</p><p><span>Année:</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre:</span> ${movie.genre}</p></div><div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div></div></div></div>`; gallery.innerHTML += cardHTML; }); if(type === 'Série' || type === 'Film') { setTimeout(() => { recentlyAddedKey = null; }, 100); } }
 
   function openModal(index) { const movie = myMovies[index]; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const awardsHTML = getAwardsHTML(movie.awards); const synopsisText = movie.synopsis || "Clique sur 'Synchroniser les données'."; const userNoteText = movie.userNote || ""; const notesHiddenClass = notesVisible ? '' : 'hidden'; const toggleButtonText = notesVisible ? '📝 Masquer les notes' : '📝 Afficher les notes'; let epBadge = ''; let percentage = 100; let btnManager = ''; if (isSerie) { btnManager = `<button class="btn-sync" style="border-color: var(--neon-pink); color: var(--neon-pink); font-size: 12px; padding: 6px 12px; margin-top: 10px;" onclick="openEpisodeManager(${index})">📺 Gérer les épisodes</button>`; if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } const fullModalHTML = `<div class="modal-container-box"><button class="btn-toggle-notes" onclick="toggleNotes(${index})">${toggleButtonText}</button><div class="modal-wrapper"><div class="modal-notes ${notesHiddenClass}" id="modal-notes-panel"><h3>📝 Mes Notes</h3><textarea class="post-it" placeholder="Écris tes critiques..." oninput="saveNote(${index}, this.value)">${userNoteText}</textarea><span style="font-size: 10px; color: #888; margin-top: 5px; text-align:right;">* Sauvegarde en temps réel</span></div><div class="modal-card-container"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel} :</span> ${movie.director}</p><p><span>Année :</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre :</span> ${movie.genre}</p>${btnManager}</div>${awardsHTML}<div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div><p class="quote">"${movie.quote}"</p></div></div></div><div class="modal-synopsis"><h3>Synopsis</h3><p>${synopsisText}</p></div></div></div>`; document.getElementById('modal-content-area').innerHTML = fullModalHTML; document.getElementById('card-modal-overlay').classList.add('show'); }
   
@@ -1422,7 +1517,7 @@
       openEpisodeManager(mIndex); 
   };
 
-  // --- SYSTÈME DE PODIUMS TOP 3 & RECHERCHE RAPIDE ---
+  // --- SYSTÈME DE PODIUMS TOP 3 & RECHERCHE RAPIDE (SUPPORT MULTI-VERSIONS) ---
   function ensureValidTop3() {
     if (!myTop3 || typeof myTop3 !== 'object') myTop3 = { Film: [null, null, null], Série: [null, null, null] };
     if (!Array.isArray(myTop3['Film'])) myTop3['Film'] = [null, null, null];
@@ -1442,10 +1537,8 @@
     const ranks = [2, 1, 3];
 
     ranks.forEach(rank => {
-      const selectedTitle = myTop3[type][rank - 1];
-      const movie = selectedTitle
-        ? myMovies.find(m => m.type === type && (m.title === selectedTitle || normalize(m.title) === normalize(selectedTitle)))
-        : null;
+      const selectedToken = myTop3[type][rank - 1];
+      const movie = findMovieByPodiumToken(type, selectedToken);
 
       let cssClass = rank === 1 ? 'step-1' : (rank === 2 ? 'step-2' : 'step-3');
       let color = rank === 1 ? 'var(--gold)' : (rank === 2 ? 'var(--silver)' : 'var(--bronze)');
@@ -1457,7 +1550,7 @@
             <div class="podium-poster" style="background-image: url('${movie.poster}'); border-color: ${color};" onclick="openPodiumSelector('${type}', ${rank})" title="Changer le Top ${rank}">
               <button class="podium-remove-btn" onclick="event.stopPropagation(); removePodiumItem('${type}', ${rank})" title="Retirer du podium">✕</button>
             </div>
-            <div style="font-size: 11px; margin-bottom: 5px; font-weight:bold; color: #fff; text-align:center;" title="${movie.title.replace(/"/g, '&quot;')}">${displayTitle}</div>
+            <div style="font-size: 11px; margin-bottom: 5px; font-weight:bold; color: #fff; text-align:center;" title="${movie.title.replace(/"/g, '&quot;')} (${movie.year})">${displayTitle}</div>
             <div class="podium-step ${cssClass}">${rank}</div>
           </div>`;
       } else {
@@ -1522,8 +1615,9 @@
     if (!movie) return;
 
     const rankIndex = rank - 1;
-    myTop3[type] = myTop3[type].map((t, i) => (t && normalize(t) === normalize(movie.title) && i !== rankIndex) ? null : t);
-    myTop3[type][rankIndex] = movie.title;
+    const newToken = getPodiumToken(movie);
+    myTop3[type] = myTop3[type].map((t, i) => (t && isMovieMatchingPodiumToken(movie, t) && i !== rankIndex) ? null : t);
+    myTop3[type][rankIndex] = newToken;
 
     const input = document.getElementById(`quick-search-${type}`);
     const drop = document.getElementById(`quick-drop-${type}`);
@@ -1568,10 +1662,10 @@
     }
 
     options.forEach(({ movie, idx }) => {
-      let displayTitle = movie.title.length > 18 ? movie.title.substring(0, 16) + '...' : movie.title;
+      let displayTitle = movie.title.length > 15 ? movie.title.substring(0, 13) + '...' : movie.title;
       grid.innerHTML += `
         <div class="selector-item" style="background-image: url('${movie.poster}');" onclick="assignPodiumByIndex('${currentPodiumSelectionType}', ${currentPodiumSelectionRank}, ${idx})">
-          <div class="selector-title">${displayTitle}</div>
+          <div class="selector-title">${displayTitle} (${movie.year})</div>
         </div>`;
     });
   };
@@ -1642,6 +1736,7 @@
         const cleanCreditTitle = normalize(title); const itemPosterHash = credit.poster_path ? credit.poster_path.split('/').pop() : null;
         
         const userMovie = myMovies.find(m => {
+            if (m.tmdbId && credit.id && m.tmdbId === credit.id) return true;
             if (itemPosterHash && m.poster && m.poster.includes(itemPosterHash)) return true;
             if (normalize(m.title) === cleanCreditTitle) { let mYear = parseInt(m.year); let iYear = parseInt(year); if (!isNaN(mYear) && !isNaN(iYear) && Math.abs(mYear - iYear) <= 2) return true; return m.director.includes(directorName); }
             return false;
@@ -1732,21 +1827,27 @@
           if (belongs) {
               const cleanT = normalize(m.title); const mYear = parseInt(m.year);
               const isThere = items.find(i => {
+                 if (m.tmdbId && i.id && m.tmdbId === i.id) return true;
                  const iPosterHash = i.poster_path ? i.poster_path.split('/').pop() : null;
                  if (iPosterHash && m.poster && m.poster.includes(iPosterHash)) return true;
                  const iYear = parseInt((i.release_date || i.first_air_date || 'N/A').split('-')[0]);
                  if (normalize(i.title || i.name) === cleanT) { if (!isNaN(mYear) && !isNaN(iYear) && Math.abs(mYear - iYear) <= 2) return true; }
                  return false;
               });
-              if (!isThere) { items.push({ title: m.title, name: m.title, release_date: m.year ? `${m.year}-01-01` : null, first_air_date: m.year ? `${m.year}-01-01` : null, poster_path: m.poster.replace('https://image.tmdb.org/t/p/w500', ''), media_type: m.type === 'Film' ? 'movie' : 'tv' }); }
+              if (!isThere) { items.push({ id: m.tmdbId, title: m.title, name: m.title, release_date: m.year ? `${m.year}-01-01` : null, first_air_date: m.year ? `${m.year}-01-01` : null, poster_path: m.poster.replace('https://image.tmdb.org/t/p/w500', ''), media_type: m.type === 'Film' ? 'movie' : 'tv' }); }
           }
       });
 
-      const uniqueItems = []; const seenPosters = new Set(); const seenTitles = new Set();
+      const uniqueItems = []; const seenPosters = new Set(); const seenKeys = new Set();
       items.forEach(c => {
-          const t = normalize(c.title || c.name); const p = c.poster_path; let isDuplicate = false;
-          if (p && seenPosters.has(p)) isDuplicate = true; else if (t !== "" && seenTitles.has(t)) isDuplicate = true;
-          if(!isDuplicate) { if (p) seenPosters.add(p); if (t) seenTitles.add(t); uniqueItems.push(c); }
+          const t = normalize(c.title || c.name);
+          const y = (c.release_date || c.first_air_date || 'N/A').split('-')[0];
+          const key = `${t}|${c.media_type}|${y}`;
+          const p = c.poster_path;
+          let isDuplicate = false;
+          if (p && seenPosters.has(p)) isDuplicate = true;
+          else if (t !== "" && seenKeys.has(key)) isDuplicate = true;
+          if(!isDuplicate) { if (p) seenPosters.add(p); if (t) seenKeys.add(key); uniqueItems.push(c); }
       });
       uniqueItems.sort((a, b) => { const dateA = a.release_date || a.first_air_date || '9999'; const dateB = b.release_date || b.first_air_date || '9999'; return dateA.localeCompare(dateB); });
 
@@ -1761,12 +1862,11 @@
           const cleanItemTitle = normalize(title); const itemPosterHash = item.poster_path ? item.poster_path.split('/').pop() : null;
           
           let userMovie = myMovies.find(m => {
+             if (m.tmdbId && item.id && m.tmdbId === item.id) return true;
              if (itemPosterHash && m.poster && m.poster.includes(itemPosterHash)) return true;
              if (normalize(m.title) === cleanItemTitle) {
                 let mYear = parseInt(m.year); let iYear = parseInt(year);
                 if (!isNaN(mYear) && !isNaN(iYear) && Math.abs(mYear - iYear) <= 2) return true;
-                if (conf) return conf.localKeys.some(kw => ((m.universe || "") + " " + (m.title || "")).toLowerCase().includes(kw));
-                return m.universe && m.universe.replace(' Collection', '') === universeName;
              }
              return false;
           });
@@ -1795,8 +1895,18 @@
 
   function updateStats() { document.getElementById('stat-total').innerText = myMovies.length; let totalMinutes = 0; myMovies.forEach(m => { if (m.type === 'Série' && m.episodeRuntime) { let epsWatched = 0; if (m.watchedEpisodes) { for (let s in m.watchedEpisodes) { epsWatched += m.watchedEpisodes[s].length; } } else if (m.episodesWatched !== undefined) { epsWatched = m.episodesWatched; } totalMinutes += m.episodeRuntime * epsWatched; } else if (m.runtime) { totalMinutes += m.runtime; } }); document.getElementById('stat-runtime').innerText = Math.round(totalMinutes / 60) + " h"; if (myMovies.length > 0) { const counts = {}; let maxCount = 0; let topDirector = "-"; myMovies.forEach(m => { if (m.director && m.director !== "Inconnu") { const dirs = m.director.split(', '); dirs.forEach(d => { counts[d] = (counts[d] || 0) + 1; if (counts[d] > maxCount) { maxCount = counts[d]; topDirector = d; } }); } }); if (maxCount > 0) document.getElementById('stat-director').innerHTML = `${topDirector}<div style="font-size: 18px; color: #e0e6ed; text-shadow: none; margin-top: 5px;">(${maxCount} visionnages)</div>`; else document.getElementById('stat-director').innerText = "-"; } else { document.getElementById('stat-director').innerText = "-"; } }
 
-  function renderAdminList() { const listContainer = document.getElementById('admin-movie-list'); const searchVal = document.getElementById('admin-search-input') ? document.getElementById('admin-search-input').value.toLowerCase() : ""; listContainer.innerHTML = ''; let moviesToRender = myMovies.map((movie, index) => ({ movie, index })); if (searchVal) { moviesToRender = moviesToRender.filter(item => item.movie.title.toLowerCase().includes(searchVal)); } moviesToRender.forEach(item => { listContainer.innerHTML += `<div class="movie-list-item"><div><strong>${item.movie.title}</strong> <span style="color:#888; font-size:12px;">(${item.movie.type} - ${item.movie.year})</span></div><button class="btn-delete" onclick="deleteMovie(${item.index})">Effacer</button></div>`; }); }
-  window.deleteMovie = function(index) { if(confirm("Détruire cette carte ?")) { const movieTitle = myMovies[index].title; const movieType = myMovies[index].type; const podiumIndex = myTop3[movieType].indexOf(movieTitle); if(podiumIndex !== -1) myTop3[movieType][podiumIndex] = null; myMovies.splice(index, 1); saveData(); renderAdminList(); } }
+  function renderAdminList() { const listContainer = document.getElementById('admin-movie-list'); const searchVal = document.getElementById('admin-search-input') ? document.getElementById('admin-search-input').value.toLowerCase() : ""; listContainer.innerHTML = ''; let moviesToRender = myMovies.map((movie, index) => ({ movie, index })); if (searchVal) { moviesToRender = moviesToRender.filter(item => item.movie.title.toLowerCase().includes(searchVal) || String(item.movie.year).includes(searchVal)); } moviesToRender.forEach(item => { listContainer.innerHTML += `<div class="movie-list-item"><div><strong>${item.movie.title}</strong> <span style="color:#888; font-size:12px;">(${item.movie.type} - ${item.movie.year})</span></div><button class="btn-delete" onclick="deleteMovie(${item.index})">Effacer</button></div>`; }); }
+  window.deleteMovie = function(index) {
+    if(confirm("Détruire cette carte ?")) {
+      const targetMovie = myMovies[index];
+      const movieType = targetMovie.type;
+      ensureValidTop3();
+      myTop3[movieType] = myTop3[movieType].map(token => isMovieMatchingPodiumToken(targetMovie, token) ? null : token);
+      myMovies.splice(index, 1);
+      saveData();
+      renderAdminList();
+    }
+  }
 
   // --- LOGIQUE DES MINI JEUX ARCADE ---
   function checkArcadeAvailability() { const arcadeContainer = document.getElementById('arcade-container'); if (myMovies.length < 4) { arcadeContainer.innerHTML = `<div style="grid-column: 1 / -1; padding: 30px; border: 2px dashed rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); border-radius: 15px;">Pour allumer les bornes d'arcade, tu dois forger au moins 4 cartes dans ta collection.</div>`; } }
