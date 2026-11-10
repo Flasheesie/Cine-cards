@@ -864,16 +864,6 @@
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">📢 Journal de Bord - Mises à Jour</h2></div>
     <div style="overflow-y: auto; text-align: left; padding: 10px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85);">
 
-      <!-- VERSION 8.2 -->
-      <div style="margin-bottom: 25px; border-left: 3px solid var(--neon-blue); padding-left: 12px;">
-        <h3 style="color: var(--neon-blue); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">🛠️ v8.2 - Sécurisation & Robustesse de la Connexion Cloud</h3>
-        <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Mise à jour Anti-Blocage Connexion</p>
-        <ul style="margin: 0; padding-left: 18px;">
-          <li><strong>Refonte de la Connexion</strong> : Sécurisation totale de la synchronisation avec Firebase Firestore pour empêcher tout blocage lors de l'identification.</li>
-          <li><strong>Mode Hors-Ligne Automatique</strong> : Bascule instantanée en local en cas de micro-coupure réseau pour que tu ne sois jamais bloqué sur l'écran de connexion.</li>
-        </ul>
-      </div>
-
       <!-- VERSION 8.1 -->
       <div style="margin-bottom: 25px; border-left: 3px solid var(--neon-pink); padding-left: 12px;">
         <h3 style="color: var(--neon-pink); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">🌟 v8.1 - Liste de Souhaits Plein Écran & Moteur de Tri Total</h3>
@@ -995,7 +985,7 @@
 <script>
   const API_KEY = 'fb195a905bf531daf7eb642dbf16c455'; 
   const OMDB_KEY = 'bb349eee';
-  const CURRENT_CHANGELOG_VERSION = 'v8.2';
+  const CURRENT_CHANGELOG_VERSION = 'v8.1';
 
   // --- INITIALISATION DE LA BASE DE DONNÉES CLOUD (FIREBASE) ---
   const firebaseConfig = {
@@ -1190,58 +1180,44 @@ window.loadAdminUsersList = async function() {
 
       try {
           let resolvedPseudo = pseudoInput;
-          let docSnap = null;
+          let docRef = db.collection('users').doc(resolvedPseudo);
+          let docSnap = await docRef.get();
 
-          try {
-              const docRef = db.collection('users').doc(resolvedPseudo);
-              docSnap = await docRef.get();
-          } catch(netErr) {
-              console.warn("Accès direct échoué, tentative de recherche globale...", netErr);
-          }
-
-          // Recherche souple insensible à la casse/accents si le nom exact n'est pas trouvé ou injoignable directement
-          if (!docSnap || !docSnap.exists) {
-              try {
-                  const allUsersSnap = await db.collection('users').get();
-                  const targetNorm = normalize(pseudoInput);
-                  allUsersSnap.forEach(d => {
-                      const uData = d.data();
-                      const candidateName = uData.pseudo || d.id;
-                      if (normalize(candidateName) === targetNorm) {
-                          resolvedPseudo = d.id;
-                          docSnap = d;
-                      }
-                  });
-              } catch(queryErr) {
-                  console.error("Erreur lors de la requête globale users:", queryErr);
-              }
+          // Recherche souple insensible à la casse/accents si le nom exact n'est pas trouvé
+          if (!docSnap.exists) {
+              const allUsersSnap = await db.collection('users').get();
+              const targetNorm = normalize(pseudoInput);
+              allUsersSnap.forEach(d => {
+                  const uData = d.data();
+                  const candidateName = uData.pseudo || d.id;
+                  if (normalize(candidateName) === targetNorm) {
+                      resolvedPseudo = d.id;
+                      docSnap = d;
+                  }
+              });
           }
           
           if (action === 'login') {
               if (docSnap && docSnap.exists) {
                   const data = docSnap.data();
                   if(String(data.pin).trim() === pin) {
-                      try {
-                          const saveRef = db.collection('saves').doc(resolvedPseudo);
-                          const saveSnap = await saveRef.get();
-                          if(saveSnap.exists) {
-                              const saveData = saveSnap.data();
-                              if(saveData.moviesStr) myMovies = JSON.parse(saveData.moviesStr);
-                              if(saveData.top3Str) myTop3 = JSON.parse(saveData.top3Str);
-                              if(saveData.wishlistStr) myWishlist = JSON.parse(saveData.wishlistStr);
-                          }
-                      } catch(saveErr) {
-                          console.warn("Impossible de récupérer la sauvegarde distant, chargement local...", saveErr);
+                      const saveRef = db.collection('saves').doc(resolvedPseudo);
+                      const saveSnap = await saveRef.get();
+                      if(saveSnap.exists) {
+                          const saveData = saveSnap.data();
+                          if(saveData.moviesStr) myMovies = JSON.parse(saveData.moviesStr);
+                          if(saveData.top3Str) myTop3 = JSON.parse(saveData.top3Str);
+                          if(saveData.wishlistStr) myWishlist = JSON.parse(saveData.wishlistStr);
                       }
                       
                       appSettings.pseudo = resolvedPseudo; appSettings.pin = pin;
                       appSettings.highScores = { mystery: data.hsMystery||0, chrono: data.hsChrono||0, critic: data.hsCritic||0 };
                       if (data.xmasSkinUnlocked) appSettings.xmasSkinUnlocked = true;
                       if (data.activeSkin) appSettings.activeSkin = data.activeSkin;
-                      
+                      if(data.moviesStr) { await syncProfileToCloud(true); } 
                       finishLogin(`Connecté en tant que ${resolvedPseudo} !`);
                   } else {
-                      status.innerText = "❌ Code secret (PIN) incorrect pour ce pseudo !";
+                      status.innerText = "❌ Mot de passe incorrect pour ce pseudo !";
                       document.getElementById('btn-login').disabled = false;
                       document.getElementById('btn-register').disabled = false;
                   }
@@ -1262,12 +1238,46 @@ window.loadAdminUsersList = async function() {
               }
           }
       } catch(e) {
-          console.error("Erreur critique Firebase:", e);
-          status.innerText = "⚠️ Problème de connexion Cloud. Mode hors ligne activé.";
-          appSettings.pseudo = pseudoInput; appSettings.pin = pin;
-          setTimeout(() => finishLogin("Mode hors ligne activé."), 800);
+          console.error("Erreur Firebase:", e);
+          status.innerText = "Erreur réseau. Joue en local pour le moment.";
+          finishLogin("Mode hors ligne activé.");
       }
-  };function finishLogin(message) {
+  };
+
+window.resetUserScores = async function(targetPseudo) {
+    if (!confirm(`Voulez-vous réinitialiser tous les scores d'arcade (Mystère, Chrono, Critique) de "${targetPseudo}" ?`)) return;
+    try {
+      await db.collection('users').doc(targetPseudo).set({
+        hsMystery: 0,
+        hsChrono: 0,
+        hsCritic: 0
+      }, { merge: true });
+      alert(`✅ Scores d'arcade réinitialisés à 0 pour ${targetPseudo} !`);
+      await loadAdminUsersList();
+      if (targetPseudo === appSettings.pseudo) {
+        appSettings.highScores = { mystery: 0, chrono: 0, critic: 0 };
+        updateHighScoresDisplay();
+      }
+    } catch(e) {
+      alert(`❌ Erreur : ${e.message}`);
+    }
+  };
+
+  window.deleteUserAccount = async function(targetPseudo) {
+    if (!confirm(`⚠️ Attention : Voulez-vous supprimer définitivement le compte "${targetPseudo}" ainsi que toutes ses données ?`)) return;
+    try {
+      await db.collection('users').doc(targetPseudo).delete();
+      await db.collection('saves').doc(targetPseudo).delete();
+      alert(`✅ Le compte "${targetPseudo}" a été supprimé avec succès.`);
+      await loadAdminUsersList();
+      loadGlobalLeaderboard();
+    } catch(e) {
+      alert(`❌ Erreur : ${e.message}`);
+    }
+  };
+
+
+  function finishLogin(message) {
       document.getElementById('login-status').innerText = message;
       localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
       
