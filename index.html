@@ -425,9 +425,14 @@
         🛡️ Panel Admin
       </div>
 
-      <!-- BOUTON JOURNAL DE BORD (CHANGELOG) EN HAUT À DROITE -->
-      <div id="changelog-btn" onclick="openChangelogModal()" style="position: absolute; top: 20px; right: 30px; background: rgba(0, 243, 255, 0.15); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px); z-index: 100;">
-        📢 Nouveautés <span id="changelog-badge" style="background: var(--neon-pink); width: 8px; height: 8px; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px var(--neon-pink);"></span>
+      <!-- BOUTONS EN HAUT À DROITE : SKINS & NOUVEAUTÉS -->
+      <div style="position: absolute; top: 20px; right: 30px; display: flex; gap: 10px; z-index: 100; flex-wrap: wrap; justify-content: flex-end;">
+        <div id="skins-vault-btn" onclick="openSkinsModal()" style="background: rgba(255, 215, 0, 0.15); border: 1px solid var(--gold); color: var(--gold); padding: 8px 16px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px);">
+          🎨 Skins
+        </div>
+        <div id="changelog-btn" onclick="openChangelogModal()" style="background: rgba(0, 243, 255, 0.15); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px);">
+          📢 Nouveautés <span id="changelog-badge" style="background: var(--neon-pink); width: 8px; height: 8px; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px var(--neon-pink);"></span>
+        </div>
       </div>
 
       <h1>Ciné Cards</h1>
@@ -600,7 +605,7 @@
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--danger); text-transform: uppercase; margin: 0;">🛡️ Panneau de Contrôle Admin</h2></div>
     <p style="color: #aaa; font-size: 13px; text-align: center; margin-top: 0;">Gestion des utilisateurs, suppression des faux comptes et réinitialisation des scores d'arcade.</p>
     <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
-      <button class="btn-sync" onclick="loadAdminUsersList()" style="border-color: var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; font-size: 12px; margin-bottom: 0;">🔄 Rafraîchir la liste</button><button class="btn-sync" onclick="adminForceUnlockXmasSkin()" style="border-color: var(--gold); color: var(--gold); padding: 8px 16px; font-size: 12px; margin-bottom: 0; margin-right: 10px;">🎄 Débloquer/Tester Skin Noël (Admin)</button>
+      <button class="btn-sync" onclick="loadAdminUsersList()" style="border-color: var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; font-size: 12px; margin-bottom: 0;">🔄 Rafraîchir la liste</button><button class="btn-sync" id="admin-preview-xmas-btn" onclick="adminForceUnlockXmasSkin()" style="border-color: var(--gold); color: var(--gold); padding: 8px 16px; font-size: 12px; margin-bottom: 0; margin-right: 10px;">👁️ Tester Aperçu Skin Noël (Sans débloquer la quête)</button>
     </div>
     <div id="admin-users-list-container" style="overflow-y: auto; max-height: 50vh; text-align: left; padding: 5px;">
       <!-- Rempli dynamiquement -->
@@ -624,12 +629,37 @@
   </div>
 </div>
   
+<!-- MODALE VESTIAIRE DES SKINS (PERMANENT) -->
+<div id="skins-vault-overlay" class="overlay">
+  <span class="overlay-close" onclick="closeSkinsModal()">×</span>
+  <div class="selector-modal" style="max-width: 720px; height: auto; max-height: 85vh; border-color: var(--gold); box-shadow: 0 0 35px rgba(255, 215, 0, 0.25);">
+    <div class="selector-header">
+      <h2 style="font-family: 'Rajdhani'; color: var(--gold); text-transform: uppercase; margin: 0; font-size: 30px;">🎨 Vestiaire des Skins & Thèmes</h2>
+      <p style="color: rgba(255,255,255,0.65); font-size: 13px; margin: 5px 0 0 0;">Tous tes skins d'événements débloqués restent accessibles ici à vie, même une fois les événements terminés !</p>
+    </div>
+    <div id="skins-vault-list" style="overflow-y: auto; max-height: 55vh; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; padding: 10px 5px; text-align: left;">
+      <!-- Généré dynamiquement -->
+    </div>
+    <button onclick="closeSkinsModal()" class="btn-submit" style="margin-top: 20px;">Fermer le Vestiaire</button>
+  </div>
+</div>
+
 <!-- MODALE JOURNAL DE BORD (CHANGELOG) STRUCTURÉ PAR VERSION -->
 <div id="changelog-overlay" class="overlay">
   <span class="overlay-close" onclick="closeChangelogModal()">×</span>
   <div class="selector-modal" style="max-width: 650px; height: auto; max-height: 80vh;">
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">📢 Journal de Bord - Mises à Jour</h2></div>
     <div style="overflow-y: auto; text-align: left; padding: 10px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85);">
+
+      <!-- VERSION 8.0 -->
+      <div style="margin-bottom: 25px; border-left: 3px solid var(--gold); padding-left: 12px;">
+        <h3 style="color: var(--gold); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">🎨 v8.0 - Vestiaire Permanent des Skins & Mode Aperçu Admin</h3>
+        <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Mise à jour Cosmétiques & Quête Admin</p>
+        <ul style="margin: 0; padding-left: 18px;">
+          <li><strong>Nouveau Bouton "🎨 Skins" (Vestiaire Permanent)</strong> : Un menu dédié en haut à droite permet d'équiper ou de déséquiper à tout moment tes skins débloqués (Cyberpunk, Noël Féerique, et les futurs skins d'événements) même après la fin d'un event !</li>
+          <li><strong>Séparation du Mode Test Admin & Quête</strong> : Le bouton de test dans le Panel Admin active désormais un simple <em>Aperçu temporaire</em> sans déverrouiller le skin. L'Admin garde ainsi sa quête des 20 films verrouillée pour pouvoir la compléter légitimement !</li>
+        </ul>
+      </div>
 
 <!-- VERSION 7.9 -->
       <div style="margin-bottom: 25px; border-left: 3px solid #ff1744; padding-left: 12px;">
@@ -731,7 +761,7 @@
 <script>
   const API_KEY = 'fb195a905bf531daf7eb642dbf16c455'; 
   const OMDB_KEY = 'bb349eee';
-  const CURRENT_CHANGELOG_VERSION = 'v7.9';
+  const CURRENT_CHANGELOG_VERSION = 'v8.0';
 
   // --- INITIALISATION DE LA BASE DE DONNÉES CLOUD (FIREBASE) ---
   const firebaseConfig = {
@@ -2169,40 +2199,65 @@ const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${best
     return myMovies.filter(m => m.type === 'Film' && m.addedDuringXmasEvent && m.xmasQuizVerified).length;
   }
 
+  // Variable de session uniquement (non sauvegardée comme déblocage) pour que l'Admin teste le rendu sans déverrouiller la quête
+  let adminPreviewSkin = null;
+
+  function isXmasLegitimatelyUnlocked() {
+    const count = getVerifiedXmasMoviesCount();
+    return count >= 20;
+  }
+
   function updateXmasEventUI() {
     const count = getVerifiedXmasMoviesCount();
     const target = 20;
     const pct = Math.min(Math.round((count / target) * 100), 100);
 
-    if (count >= target && !appSettings.xmasSkinUnlocked) {
+    // Le déblocage permanent dépend STRICTEMENT de la quête des 20 films (même pour l'Admin !)
+    if (count >= target) {
       appSettings.xmasSkinUnlocked = true;
-      localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
+    } else {
+      appSettings.xmasSkinUnlocked = false;
+      if (appSettings.activeSkin === 'noel') appSettings.activeSkin = 'default';
     }
+    localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
 
     const counterEl = document.getElementById('xmas-quest-counter');
     const barEl = document.getElementById('xmas-quest-bar');
     const statusEl = document.getElementById('xmas-unlock-status');
     const toggleBtn = document.getElementById('xmas-skin-toggle-btn');
+    const adminPreviewBtn = document.getElementById('admin-preview-xmas-btn');
 
     if (counterEl) counterEl.innerText = `${count} / ${target} Validés`;
     if (barEl) barEl.style.width = `${pct}%`;
 
+    if (adminPreviewBtn) {
+      adminPreviewBtn.innerText = (adminPreviewSkin === 'noel')
+        ? '🛑 Quitter Aperçu Skin Noël (Admin)'
+        : '👁️ Tester Aperçu Skin Noël (Sans débloquer la quête)';
+    }
+
     if (appSettings.xmasSkinUnlocked) {
-      if (statusEl) statusEl.innerHTML = `🔓 Skin Collector Débloqué !`;
+      if (statusEl) statusEl.innerHTML = `🔓 Skin Collector Débloqué ! (Disponible à vie dans 🎨 Skins)`;
       if (toggleBtn) {
         toggleBtn.style.display = 'inline-block';
         toggleBtn.innerText = (appSettings.activeSkin === 'noel') ? '❄️ Désactiver le Skin Noël' : '🎄 Équiper le Skin Noël';
       }
     } else {
-      if (statusEl) statusEl.innerHTML = `🔒 Encore ${Math.max(0, target - count)} film(s) de Noël à vérifier par Quiz`;
+      const previewNote = (adminPreviewSkin === 'noel') ? ' <span style="color:#00e676;">(👁️ Aperçu Admin Actif)</span>' : '';
+      if (statusEl) statusEl.innerHTML = `🔒 Verrouillé • Encore ${Math.max(0, target - count)} film(s) de Noël à vérifier par Quiz${previewNote}`;
       if (toggleBtn) toggleBtn.style.display = 'none';
     }
 
     applyActiveSkin();
+    renderSkinsVault();
   }
 
   window.toggleChristmasSkin = function() {
-    if (!appSettings.xmasSkinUnlocked && appSettings.pseudo !== "Mr. Bonnet") return;
+    if (!appSettings.xmasSkinUnlocked) {
+      alert("🔒 Tu dois d'abord valider les 20 films de Noël via le Quiz Anti-Triche pour pouvoir équiper ce skin !");
+      return;
+    }
+    adminPreviewSkin = null;
     appSettings.activeSkin = (appSettings.activeSkin === 'noel') ? 'default' : 'noel';
     localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
     updateXmasEventUI();
@@ -2211,21 +2266,117 @@ const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${best
 
   window.adminForceUnlockXmasSkin = function() {
     if (appSettings.pseudo !== "Mr. Bonnet") return;
-    appSettings.xmasSkinUnlocked = true;
-    appSettings.activeSkin = (appSettings.activeSkin === 'noel') ? 'default' : 'noel';
-    localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
+    // Active ou désactive uniquement l'aperçu visuel temporaire : la quête reste 100% verrouillée !
+    adminPreviewSkin = (adminPreviewSkin === 'noel') ? null : 'noel';
     updateXmasEventUI();
-    alert(`🎄 Mode Admin : Skin de Noël ${appSettings.activeSkin === 'noel' ? 'ACTIVÉ' : 'DÉSACTIVÉ'} !`);
+    alert(adminPreviewSkin === 'noel'
+      ? `👁️ Aperçu Admin ACTIVÉ : Tu peux admirer le thème de Noël, mais ta quête (${getVerifiedXmasMoviesCount()}/20) et le skin dans ton vestiaire restent VERROUILLÉS tant que tu n'as pas validé tes 20 films !`
+      : `👁️ Aperçu Admin DÉSACTIVÉ : Retour à ton thème normal.`);
   };
 
   function applyActiveSkin() {
-    if (appSettings.activeSkin === 'noel' && appSettings.xmasSkinUnlocked) {
+    const effectiveSkin = adminPreviewSkin || (appSettings.xmasSkinUnlocked ? appSettings.activeSkin : 'default');
+    if (effectiveSkin === 'noel') {
       document.body.classList.add('skin-noel');
       startSnowEngine();
     } else {
       document.body.classList.remove('skin-noel');
       stopSnowEngine();
     }
+  }
+
+  // --- GESTION DU VESTIAIRE PERMANENT DES SKINS (BOUTON 🎨 SKINS) ---
+  window.openSkinsModal = function() {
+    renderSkinsVault();
+    document.getElementById('skins-vault-overlay').classList.add('show');
+  };
+
+  window.closeSkinsModal = function() {
+    document.getElementById('skins-vault-overlay').classList.remove('show');
+  };
+
+  window.selectSkinFromVault = function(skinId) {
+    if (skinId === 'noel' && !appSettings.xmasSkinUnlocked) {
+      alert("🔒 Ce skin est verrouillé ! Termine la quête des 20 nouveaux films de Noël (avec Quiz Anti-Triche) pour le débloquer à vie.");
+      return;
+    }
+    adminPreviewSkin = null;
+    appSettings.activeSkin = skinId;
+    localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
+    updateXmasEventUI();
+    syncProfileToCloud(false);
+  };
+
+  function renderSkinsVault() {
+    const container = document.getElementById('skins-vault-list');
+    if (!container) return;
+
+    const count = getVerifiedXmasMoviesCount();
+    const xmasUnlocked = !!appSettings.xmasSkinUnlocked;
+    const currentSkin = appSettings.activeSkin || 'default';
+
+    const skinsCatalog = [
+      {
+        id: 'default',
+        name: '🌌 Cyberpunk Néon',
+        badge: 'Thème Original',
+        badgeColor: 'var(--neon-blue)',
+        desc: 'L\'ambiance originelle de Ciné Cards : orbes bleu cyan et rose magenta sur fond abyssal.',
+        unlocked: true,
+        progressText: 'Débloqué de base'
+      },
+      {
+        id: 'noel',
+        name: '🎄 Noël Féerique (60 FPS)',
+        badge: 'Event Hiver 2026',
+        badgeColor: '#ff1744',
+        desc: 'Chute de neige physique interactive, guirlande d\'ampoules lumineuses, givre cristallin et badge 🎅 au Panthéon.',
+        unlocked: xmasUnlocked,
+        progressText: xmasUnlocked ? 'Débloqué à vie ✔' : `Quête en cours : ${count} / 20 films vérifiés`
+      },
+      {
+        id: 'coming_soon',
+        name: '🎃 Prochain Event Saisonnier',
+        badge: 'Bientôt',
+        badgeColor: '#888',
+        desc: 'De nouveaux skins exclusifs seront ajoutés lors des prochains événements spéciaux sur Ciné Cards.',
+        unlocked: false,
+        isPlaceholder: true,
+        progressText: 'À venir prochainement...'
+      }
+    ];
+
+    container.innerHTML = skinsCatalog.map(s => {
+      const isEquipped = !s.isPlaceholder && s.unlocked && ((s.id === 'default' && currentSkin !== 'noel') || (s.id === currentSkin));
+      const borderStyle = isEquipped ? 'border: 2px solid var(--success); box-shadow: 0 0 20px rgba(0,255,115,0.25);' : (s.unlocked ? 'border: 1px solid rgba(255,215,0,0.4);' : 'border: 1px dashed rgba(255,255,255,0.15); opacity: 0.75;');
+
+      let actionBtn = '';
+      if (s.isPlaceholder) {
+        actionBtn = `<button class="btn-sync" disabled style="width:100%; border-color:#555; color:#666; cursor:not-allowed; margin:12px 0 0 0; padding:8px; font-size:13px;">⏳ Indisponible</button>`;
+      } else if (!s.unlocked) {
+        actionBtn = `<button class="btn-sync" onclick="selectSkinFromVault('${s.id}')" style="width:100%; border-color:var(--danger); color:var(--danger); margin:12px 0 0 0; padding:8px; font-size:13px;">🔒 Verrouillé (${count}/20)</button>`;
+      } else if (isEquipped) {
+        actionBtn = `<button class="btn-sync" disabled style="width:100%; border-color:var(--success); color:var(--success); background:rgba(0,255,115,0.1); margin:12px 0 0 0; padding:8px; font-size:13px;">✔ Équipé actuellement</button>`;
+      } else {
+        actionBtn = `<button class="btn-submit" onclick="selectSkinFromVault('${s.id}')" style="width:100%; margin:12px 0 0 0; padding:8px; font-size:14px;">✨ Équiper ce Skin</button>`;
+      }
+
+      return `
+        <div style="background: rgba(0,0,0,0.55); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; ${borderStyle}">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px;">
+              <span style="font-family:'Rajdhani'; font-size:20px; font-weight:bold; color:#fff;">${s.name}</span>
+              <span style="font-size:10px; font-weight:bold; text-transform:uppercase; padding:2px 8px; border-radius:10px; border:1px solid ${s.badgeColor}; color:${s.badgeColor};">${s.badge}</span>
+            </div>
+            <p style="font-size:12px; color:rgba(255,255,255,0.7); line-height:1.4; margin:0 0 10px 0;">${s.desc}</p>
+          </div>
+          <div>
+            <div style="font-size:11px; color:var(--gold); font-weight:bold;">${s.progressText}</div>
+            ${actionBtn}
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   // --- MOTEUR DE PARTICULES DE NEIGE TEMPS RÉEL (60 FPS CANVAS) ---
