@@ -394,114 +394,6 @@
     height: 100%; background: linear-gradient(90deg, var(--success), var(--gold), var(--danger));
     transition: width 1s linear;
   }
-
-  /* =========================================================
-     🌟 LISTE DE SOUHAITS PLEIN ÉCRAN (WISHLIST STUDIO)
-     ========================================================= */
-  .wishlist-fullscreen-modal {
-    width: 96vw; height: 93vh; max-width: 1650px;
-    background: rgba(6, 6, 16, 0.96);
-    border: 1px solid var(--neon-pink);
-    border-radius: 24px;
-    display: flex; flex-direction: column;
-    padding: 25px 30px; box-sizing: border-box;
-    box-shadow: 0 0 50px rgba(255, 0, 234, 0.25), inset 0 0 30px rgba(0, 243, 255, 0.05);
-    overflow: hidden; position: relative;
-  }
-  .wishlist-top-bar {
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 15px; padding-bottom: 18px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  .wishlist-stats-pills {
-    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
-  }
-  .wishlist-pill {
-    background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15);
-    padding: 6px 14px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold;
-    font-size: 13px; color: #fff; display: flex; align-items: center; gap: 6px;
-  }
-  .wishlist-controls-grid {
-    display: grid; grid-template-columns: 1.4fr 2fr; gap: 20px;
-    margin-top: 18px; margin-bottom: 18px; align-items: start;
-  }
-  .wishlist-add-box {
-    background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(0, 243, 255, 0.3);
-    border-radius: 16px; padding: 14px 18px; position: relative; z-index: 200;
-  }
-  .wishlist-filters-box {
-    background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 0, 234, 0.3);
-    border-radius: 16px; padding: 14px 18px;
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;
-  }
-  .wishlist-control-group label {
-    display: block; font-size: 10px; font-family: 'Rajdhani'; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 1px; color: var(--neon-blue); margin-bottom: 5px;
-  }
-  .wishlist-control-group input, .wishlist-control-group select {
-    width: 100%; padding: 9px 12px; border-radius: 10px;
-    background: rgba(10, 10, 22, 0.85); color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.18); font-family: 'Inter'; font-size: 12px;
-    box-sizing: border-box; outline: none; transition: 0.25s;
-  }
-  .wishlist-control-group input:focus, .wishlist-control-group select:focus {
-    border-color: var(--neon-pink); box-shadow: 0 0 10px rgba(255, 0, 234, 0.3);
-  }
-  .wishlist-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
-    gap: 20px; overflow-y: auto; flex-grow: 1; padding: 8px 6px 20px 6px;
-  }
-  .wish-card {
-    background: linear-gradient(160deg, rgba(22, 22, 38, 0.9), rgba(8, 8, 16, 0.95));
-    border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 16px;
-    overflow: hidden; display: flex; flex-direction: column;
-    transition: 0.3s; position: relative; box-shadow: 0 8px 25px rgba(0,0,0,0.6);
-  }
-  .wish-card:hover {
-    transform: translateY(-6px); border-color: var(--neon-blue);
-    box-shadow: 0 12px 30px rgba(0, 243, 255, 0.22);
-  }
-  .wish-card.prio-3 { border-top: 3px solid #ff0055; }
-  .wish-card.prio-2 { border-top: 3px solid var(--gold); }
-  .wish-card.prio-1 { border-top: 3px solid var(--neon-blue); }
-  .wish-poster-wrap {
-    height: 250px; width: 100%; background-size: cover; background-position: center;
-    position: relative; display: flex; align-items: flex-end;
-  }
-  .wish-poster-overlay {
-    width: 100%; background: linear-gradient(0deg, rgba(8,8,16,1) 0%, rgba(8,8,16,0.65) 55%, transparent 100%);
-    padding: 30px 12px 10px 12px; box-sizing: border-box;
-  }
-  .wish-prio-badge {
-    position: absolute; top: 10px; left: 10px; padding: 4px 10px; border-radius: 12px;
-    font-size: 10px; font-weight: 700; font-family: 'Rajdhani'; text-transform: uppercase;
-    letter-spacing: 1px; backdrop-filter: blur(8px); cursor: pointer; z-index: 5;
-    border: 1px solid rgba(255,255,255,0.25); transition: 0.2s;
-  }
-  .wish-prio-badge:hover { transform: scale(1.07); }
-  .prio-badge-3 { background: rgba(255, 0, 85, 0.85); color: #fff; box-shadow: 0 0 12px rgba(255,0,85,0.6); }
-  .prio-badge-2 { background: rgba(255, 215, 0, 0.85); color: #000; box-shadow: 0 0 12px rgba(255,215,0,0.5); }
-  .prio-badge-1 { background: rgba(0, 243, 255, 0.25); color: var(--neon-blue); border-color: var(--neon-blue); }
-  .wish-body {
-    padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; flex-grow: 1; justify-content: space-between;
-  }
-  .wish-meta-line {
-    font-size: 11px; color: rgba(255,255,255,0.7); display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
-  }
-  .wish-actions {
-    display: flex; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08);
-  }
-  .wish-btn-forge {
-    flex: 1; background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
-    color: #fff; border: none; padding: 8px 10px; border-radius: 8px; font-family: 'Rajdhani';
-    font-weight: bold; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
-    cursor: pointer; transition: 0.25s;
-  }
-  .wish-btn-forge:hover { opacity: 0.9; box-shadow: 0 0 15px rgba(0, 243, 255, 0.4); }
-  @media (max-width: 980px) {
-    .wishlist-controls-grid { grid-template-columns: 1fr; }
-    .wishlist-fullscreen-modal { width: 99vw; height: 97vh; padding: 15px; }
-  }
 </style>
 </head>
 <body>
@@ -528,14 +420,9 @@
 <!-- LE RESTE DE L'APPLICATION -->
 <div id="app-content">
     <header style="position: relative;">
-      <!-- BOUTONS EN HAUT À GAUCHE : LISTE DE SOUHAITS & PANEL ADMIN -->
-      <div style="position: absolute; top: 20px; left: 30px; display: flex; gap: 10px; z-index: 100; flex-wrap: wrap; align-items: center;">
-        <div id="wishlist-open-btn" onclick="openWishlistModal()" style="background: rgba(255, 0, 234, 0.15); border: 1px solid var(--neon-pink); color: var(--neon-pink); padding: 8px 16px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px); box-shadow: 0 0 12px rgba(255, 0, 234, 0.25);">
-          🌟 Liste de Souhaits <span id="wishlist-header-count" style="background: var(--neon-pink); color: #000; font-size: 11px; padding: 1px 7px; border-radius: 10px; font-weight: 800;">0</span>
-        </div>
-        <div id="admin-dash-btn" onclick="openAdminModal()" style="display: none; background: rgba(255, 0, 60, 0.15); border: 1px solid var(--danger); color: var(--danger); padding: 8px 16px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px);">
-          🛡️ Panel Admin
-        </div>
+      <!-- BOUTON DASHBOARD ADMIN (EN HAUT À GAUCHE, VISIBLE UNIQUEMENT POUR MR. BONNET) -->
+      <div id="admin-dash-btn" onclick="openAdminModal()" style="display: none; position: absolute; top: 20px; left: 30px; background: rgba(255, 0, 60, 0.15); border: 1px solid var(--danger); color: var(--danger); padding: 8px 16px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px); z-index: 100;">
+        🛡️ Panel Admin
       </div>
 
       <!-- BOUTONS EN HAUT À DROITE : SKINS & NOUVEAUTÉS -->
@@ -742,106 +629,6 @@
   </div>
 </div>
   
-<!-- MODALE PLEIN ÉCRAN : LISTE DE SOUHAITS (PROCHAINES DÉCOUVERTES) -->
-<div id="wishlist-overlay" class="overlay" style="z-index: 10002;">
-  <div class="wishlist-fullscreen-modal">
-    <div class="wishlist-top-bar">
-      <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-        <h2 style="font-family: 'Rajdhani'; font-size: 32px; color: #fff; text-transform: uppercase; margin: 0; letter-spacing: 2px; text-shadow: 0 0 15px var(--neon-pink);">🌟 Sanctuaire des Prochaines Découvertes</h2>
-        <div class="wishlist-stats-pills">
-          <div class="wishlist-pill" style="border-color: var(--neon-pink); color: var(--neon-pink);">📌 Total : <span id="wish-stat-total">0</span></div>
-          <div class="wishlist-pill" style="border-color: var(--neon-blue); color: var(--neon-blue);">🎬 Films : <span id="wish-stat-movies">0</span></div>
-          <div class="wishlist-pill" style="border-color: var(--gold); color: var(--gold);">📺 Séries : <span id="wish-stat-series">0</span></div>
-          <div class="wishlist-pill" style="border-color: var(--success); color: var(--success);">⏱️ Temps estimé : <span id="wish-stat-runtime">0 h</span></div>
-        </div>
-      </div>
-      <div style="display: flex; gap: 10px; align-items: center;">
-        <button class="btn-sync" onclick="pickRandomWish()" style="border-color: var(--gold); color: var(--gold); padding: 8px 16px; font-size: 13px; margin: 0;">🎲 Tirer au sort quoi regarder ce soir</button>
-        <button class="btn-delete" onclick="closeWishlistModal()" style="padding: 8px 18px; font-size: 14px; font-weight: bold;">✕ Fermer</button>
-      </div>
-    </div>
-
-    <!-- BARRE D'AJOUT TMDB EN DIRECT & FILTRES/TRIS ULTRA-COMPLETS -->
-    <div class="wishlist-controls-grid">
-      <div class="wishlist-add-box" id="wish-search-container">
-        <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
-          <div class="wishlist-control-group" style="flex: 2; min-width: 180px; position: relative;">
-            <label style="color: var(--neon-pink);">➕ Ajouter une future découverte (Scan TMDB en direct)</label>
-            <input type="text" id="wish-tmdb-input" placeholder="Tape un film, une série, un animé..." autocomplete="off" oninput="onWishSearchInput(this.value)">
-            <div id="wish-tmdb-dropdown" class="tmdb-live-dropdown"></div>
-          </div>
-          <div class="wishlist-control-group" style="width: 130px;">
-            <label style="color: var(--gold);">🔥 Priorité Hype</label>
-            <select id="wish-add-priority">
-              <option value="3">🔥🔥🔥 Absolue</option>
-              <option value="2" selected>🔥🔥 Moyenne</option>
-              <option value="1">🔥 Tranquille</option>
-            </select>
-          </div>
-          <div class="wishlist-control-group" style="flex: 1; min-width: 140px;">
-            <label>💬 Note / Recommandé par</label>
-            <input type="text" id="wish-add-note" placeholder="Ex: Conseillé par Alex, Sur Netflix...">
-          </div>
-        </div>
-      </div>
-
-      <div class="wishlist-filters-box">
-        <div class="wishlist-control-group">
-          <label>🔍 Filtrer (Titre, Réal, Note...)</label>
-          <input type="text" id="wish-filter-query" placeholder="Rechercher dans la liste..." oninput="renderWishlistGrid()">
-        </div>
-        <div class="wishlist-control-group">
-          <label>🎭 Type d'œuvre</label>
-          <select id="wish-filter-type" onchange="renderWishlistGrid()">
-            <option value="ALL">Tous (Films & Séries)</option>
-            <option value="Film">🎬 Films uniquement</option>
-            <option value="Série">📺 Séries uniquement</option>
-          </select>
-        </div>
-        <div class="wishlist-control-group">
-          <label>🏷️ Genre</label>
-          <select id="wish-filter-genre" onchange="renderWishlistGrid()">
-            <option value="ALL">Tous les genres</option>
-          </select>
-        </div>
-        <div class="wishlist-control-group">
-          <label>🔥 Priorité</label>
-          <select id="wish-filter-prio" onchange="renderWishlistGrid()">
-            <option value="ALL">Toutes les priorités</option>
-            <option value="3">🔥🔥🔥 Hype Absolue</option>
-            <option value="2">🔥🔥 Moyenne</option>
-            <option value="1">🔥 Tranquille</option>
-          </select>
-        </div>
-        <div class="wishlist-control-group" style="grid-column: span 2;">
-          <label style="color: var(--gold);">↕️ Trier par (Tout & N'importe quoi)</label>
-          <select id="wish-sort-mode" onchange="renderWishlistGrid()">
-            <option value="added-desc">📅 Date d'ajout (Plus récents d'abord)</option>
-            <option value="added-asc">📅 Date d'ajout (Plus anciens d'abord)</option>
-            <option value="prio-desc">🔥 Niveau de Hype / Priorité (Plus urgent d'abord)</option>
-            <option value="prio-asc">🧊 Niveau de Hype / Priorité (Moins urgent d'abord)</option>
-            <option value="rating-desc">⭐ Note TMDB (Meilleurs chefs-d'œuvre d'abord)</option>
-            <option value="rating-asc">⭐ Note TMDB (Plus basses d'abord)</option>
-            <option value="rarity-desc">💎 Rareté de Carte (Légendaire ➔ Commune)</option>
-            <option value="year-desc">📆 Année de sortie (Plus récents d'abord)</option>
-            <option value="year-asc">📆 Année de sortie (Plus anciens / Classiques d'abord)</option>
-            <option value="runtime-asc">⏱️ Durée / Format (Plus court & rapide à voir d'abord)</option>
-            <option value="runtime-desc">⏱️ Durée / Format (Plus long d'abord)</option>
-            <option value="title-asc">🔤 Ordre Alphabétique (A ➔ Z)</option>
-            <option value="title-desc">🔤 Ordre Alphabétique Inverse (Z ➔ A)</option>
-            <option value="director-asc">🎬 Réalisateur / Créateur (A ➔ Z)</option>
-            <option value="genre-asc">🎭 Genre principal (A ➔ Z)</option>
-            <option value="random">🎲 Ordre 100% Aléatoire (Surprise)</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- GRILLE DES CARTES DE LA LISTE DE SOUHAITS -->
-    <div id="wishlist-grid-container" class="wishlist-grid"></div>
-  </div>
-</div>
-
 <!-- MODALE VESTIAIRE DES SKINS (PERMANENT) -->
 <div id="skins-vault-overlay" class="overlay">
   <span class="overlay-close" onclick="closeSkinsModal()">×</span>
@@ -863,17 +650,6 @@
   <div class="selector-modal" style="max-width: 650px; height: auto; max-height: 80vh;">
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">📢 Journal de Bord - Mises à Jour</h2></div>
     <div style="overflow-y: auto; text-align: left; padding: 10px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85);">
-
-      <!-- VERSION 8.1 -->
-      <div style="margin-bottom: 25px; border-left: 3px solid var(--neon-pink); padding-left: 12px;">
-        <h3 style="color: var(--neon-pink); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">🌟 v8.1 - Liste de Souhaits Plein Écran & Moteur de Tri Total</h3>
-        <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Mise à jour Prochaines Découvertes</p>
-        <ul style="margin: 0; padding-left: 18px;">
-          <li><strong>Bouton "🌟 Liste de Souhaits" (En haut à gauche)</strong> : Ouvre une interface plein écran dédiée pour entreposer toutes tes prochaines découvertes (films, séries, animés) avec recherche TMDB instantanée, niveau de Hype (🔥) et notes personnelles.</li>
-          <li><strong>Moteur de Tri "Tout & N'importe Quoi" (16 modes)</strong> : Trie et filtre tes envies par Priorité/Hype, Note TMDB, Rareté, Durée (pour trouver un film court ce soir), Année, Réalisateur, Genre, Date d'ajout, A-Z ou même au hasard avec le bouton <em>"🎲 Tirer au sort quoi regarder ce soir"</em> !</li>
-          <li><strong>Transfert 1-Clic vers la Collection</strong> : Dès que tu as vu une œuvre de ta liste de souhaits, clique sur <em>"✔ Vu ! Forger la carte"</em> pour la convertir directement en carte officielle dans ta galerie !</li>
-        </ul>
-      </div>
 
       <!-- VERSION 8.0 -->
       <div style="margin-bottom: 25px; border-left: 3px solid var(--gold); padding-left: 12px;">
@@ -985,7 +761,7 @@
 <script>
   const API_KEY = 'fb195a905bf531daf7eb642dbf16c455'; 
   const OMDB_KEY = 'bb349eee';
-  const CURRENT_CHANGELOG_VERSION = 'v8.1';
+  const CURRENT_CHANGELOG_VERSION = 'v8.0';
 
   // --- INITIALISATION DE LA BASE DE DONNÉES CLOUD (FIREBASE) ---
   const firebaseConfig = {
@@ -1029,7 +805,7 @@
     skipAnimation: false, precisionMode: false, dateMode: 'manual', searchMode: 'multi', universeCounts: {},
     highScores: { mystery: 0, chrono: 0, critic: 0 }, pseudo: "", pin: ""
   };
-  let myMovies = []; let myTop3 = { Film: [null, null, null], Série: [null, null, null] }; let myWishlist = [];
+  let myMovies = []; let myTop3 = { Film: [null, null, null], Série: [null, null, null] };
   let notesVisible = true; let recentlyAddedKey = null; let currentPodiumSelectionType = null; let currentPodiumSelectionRank = null;
   let saveCloudTimeout = null;
 
@@ -1076,7 +852,6 @@
         break;
       }
     }
-    myWishlist = JSON.parse(localStorage.getItem('thomasWishlist_v74')) || [];
     
     let oldSettings = JSON.parse(localStorage.getItem('thomasSettings_v73')) || JSON.parse(localStorage.getItem('thomasSettings_v72'));
     if (oldSettings && !localStorage.getItem('thomasSettings_v74')) {
@@ -1207,7 +982,6 @@ window.loadAdminUsersList = async function() {
                           const saveData = saveSnap.data();
                           if(saveData.moviesStr) myMovies = JSON.parse(saveData.moviesStr);
                           if(saveData.top3Str) myTop3 = JSON.parse(saveData.top3Str);
-                          if(saveData.wishlistStr) myWishlist = JSON.parse(saveData.wishlistStr);
                       }
                       
                       appSettings.pseudo = resolvedPseudo; appSettings.pin = pin;
@@ -1320,7 +1094,6 @@ window.resetUserScores = async function(targetPseudo) {
   function saveDataLocalOnly() {
       localStorage.setItem('thomasMovieCollection_v74', JSON.stringify(myMovies));
       localStorage.setItem('thomasTop3_v74', JSON.stringify(myTop3));
-      localStorage.setItem('thomasWishlist_v74', JSON.stringify(myWishlist));
   }
 
   function saveData() {
@@ -1365,7 +1138,7 @@ window.resetUserScores = async function(targetPseudo) {
       try {
           await db.collection('users').doc(appSettings.pseudo).set(payloadStats, { merge: true });
           if(includeMovies) {
-              let payloadSave = { moviesStr: JSON.stringify(myMovies), top3Str: JSON.stringify(myTop3), wishlistStr: JSON.stringify(myWishlist) };
+              let payloadSave = { moviesStr: JSON.stringify(myMovies), top3Str: JSON.stringify(myTop3) };
               await db.collection('saves').doc(appSettings.pseudo).set(payloadSave, { merge: true });
           }
       } catch(e) {}
@@ -1400,7 +1173,7 @@ window.resetUserScores = async function(targetPseudo) {
       return `<div class="glass-panel" style="padding: 25px;"><h3 style="color:${color}; font-family:'Rajdhani'; text-transform:uppercase; margin-top:0; border-bottom:1px dashed rgba(255,255,255,0.2); padding-bottom:10px; font-size:22px; text-shadow: 0 0 10px ${color};">${title}</h3><div style="margin-top:15px;">${listHtml}</div></div>`;
   }
 
-  function updateApp() { renderAdminList(); renderAll(); renderPodiums(); updateCollectionsTab(); updateStats(); checkArcadeAvailability(); updateHighScoresDisplay(); if (typeof updateXmasEventUI === 'function') updateXmasEventUI(); if (typeof updateWishlistHeaderBadge === 'function') updateWishlistHeaderBadge(); }
+  function updateApp() { renderAdminList(); renderAll(); renderPodiums(); updateCollectionsTab(); updateStats(); checkArcadeAvailability(); updateHighScoresDisplay(); if (typeof updateXmasEventUI === 'function') updateXmasEventUI(); }
 
   function applySettingsUI() {
     const dateInput = document.getElementById('m-unlock'); const dateLabel = document.getElementById('date-label');
@@ -1467,7 +1240,7 @@ window.resetUserScores = async function(targetPseudo) {
   }
 
   function exportData() {
-    const data = { movies: myMovies, top3: myTop3, wishlist: myWishlist }; const jsonStr = JSON.stringify(data);
+    const data = { movies: myMovies, top3: myTop3 }; const jsonStr = JSON.stringify(data);
     const blob = new Blob([jsonStr], { type: "application/json" }); const url = URL.createObjectURL(blob);
     const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.href = url; downloadAnchorNode.download = "cine_cards_sauvegarde.json";
     document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); document.body.removeChild(downloadAnchorNode); URL.revokeObjectURL(url);
@@ -1475,7 +1248,7 @@ window.resetUserScores = async function(targetPseudo) {
 
   function importData(event) {
     const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
-    reader.onload = function(e) { try { const importedData = JSON.parse(e.target.result); if (importedData.movies) { myMovies = importedData.movies; if (importedData.top3) myTop3 = importedData.top3; if (importedData.wishlist) myWishlist = importedData.wishlist; saveData(); alert("✅ Sauvegarde restaurée et synchronisée avec le Cloud !"); } } catch (err) { alert("❌ Erreur de lecture."); } };
+    reader.onload = function(e) { try { const importedData = JSON.parse(e.target.result); if (importedData.movies) { myMovies = importedData.movies; if (importedData.top3) myTop3 = importedData.top3; saveData(); alert("✅ Sauvegarde restaurée et synchronisée avec le Cloud !"); } } catch (err) { alert("❌ Erreur de lecture."); } };
     reader.readAsText(file); event.target.value = '';
   }
 
@@ -2788,411 +2561,6 @@ const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${best
   window.openXmasSuggestions = function() {
     alert("🎅 Idées de films de Noël reconnus automatiquement par l'Event :\n\n• Klaus (2019)\n• Maman, j'ai raté l'avion ! (1990)\n• Le Grinch (2000 ou 2018)\n• Le Pôle Express (2004)\n• L'Étrange Noël de monsieur Jack (1993)\n• Piège de cristal - Die Hard (1988)\n• Love Actually (2003)\n• Elfe (2003)\n• Gremlins (1984)\n• Les Cinq Légendes (2012)\n• Les Chroniques de Noël (2018)\n• Violent Night (2022)\n• Red One (2024)\n• Winter Break / The Holdovers (2023)\n\nForge n'importe quel film contenant l'esprit ou le mot-clé de Noël et réussis son Quiz Anti-Triche !");
   };
-
-  // ============================================================================
-  // 🌟 MOTEUR DE LA LISTE DE SOUHAITS PLEIN ÉCRAN (RECHERCHE TMDB, TRI & TRANSFERT)
-  // ============================================================================
-  let wishSearchTimeout = null;
-
-  function updateWishlistHeaderBadge() {
-    const badge = document.getElementById('wishlist-header-count');
-    if (badge) badge.innerText = myWishlist.length;
-  }
-
-  window.openWishlistModal = function() {
-    populateWishlistGenreFilter();
-    renderWishlistGrid();
-    document.getElementById('wishlist-overlay').classList.add('show');
-  };
-
-  window.closeWishlistModal = function() {
-    document.getElementById('wishlist-overlay').classList.remove('show');
-    const drop = document.getElementById('wish-tmdb-dropdown');
-    if (drop) drop.classList.remove('active');
-  };
-
-  window.onWishSearchInput = function(val) {
-    const q = val.trim();
-    const drop = document.getElementById('wish-tmdb-dropdown');
-    if (q.length < 2) {
-      drop.classList.remove('active');
-      drop.innerHTML = '';
-      return;
-    }
-    clearTimeout(wishSearchTimeout);
-    wishSearchTimeout = setTimeout(() => fetchWishlistTmdbCandidates(q), 320);
-  };
-
-  async function fetchWishlistTmdbCandidates(query) {
-    const drop = document.getElementById('wish-tmdb-dropdown');
-    if (!drop) return;
-    drop.innerHTML = `<div style="padding:12px; text-align:center; color:var(--neon-pink); font-family:'Rajdhani'; font-size:14px;">🔎 Recherche sur TMDB...</div>`;
-    drop.classList.add('active');
-
-    try {
-      const [resTv, resMovie] = await Promise.all([
-        fetch(`https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=fr-FR`).then(r => r.json()),
-        fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=fr-FR`).then(r => r.json())
-      ]);
-      const tvList = (resTv.results || []).map(r => ({ ...r, media_type: 'tv' }));
-      const movieList = (resMovie.results || []).map(r => ({ ...r, media_type: 'movie' }));
-      const combined = [...movieList, ...tvList].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0)).slice(0, 8);
-
-      if (combined.length === 0) {
-        drop.innerHTML = `<div style="padding:12px; text-align:center; color:#888; font-size:12px;">Aucun résultat trouvé sur TMDB.</div>`;
-        return;
-      }
-
-      drop.innerHTML = combined.map(item => {
-        const t = item.title || item.name || 'Sans titre';
-        const y = (item.release_date || item.first_air_date || 'N/A').split('-')[0];
-        const poster = item.poster_path ? `https://image.tmdb.org/t/p/w92${item.poster_path}` : 'https://via.placeholder.com/92x138/0a0a16/ff00ea?text=?';
-        const isMovie = item.media_type === 'movie';
-        const badgeStyle = isMovie ? 'background:rgba(0,243,255,0.15); color:var(--neon-blue); border:1px solid var(--neon-blue);' : 'background:rgba(255,0,234,0.15); color:var(--neon-pink); border:1px solid var(--neon-pink);';
-        const badgeLabel = isMovie ? '🎬 Film' : '📺 Série';
-        const rating = (item.vote_average || 0).toFixed(1);
-
-        return `
-          <div class="tmdb-live-item" onclick="addTmdbItemToWishlist(${item.id}, '${item.media_type}')">
-            <img src="${poster}" alt="">
-            <div class="tmdb-live-info">
-              <div class="tmdb-live-title">${t}</div>
-              <div class="tmdb-live-meta">
-                <span class="tmdb-live-badge" style="${badgeStyle}">${badgeLabel}</span>
-                <span>📅 ${y}</span>
-                <span style="color:var(--gold);">★ ${rating}</span>
-                <span style="color:var(--success); font-weight:bold;">＋ Ajouter</span>
-              </div>
-            </div>
-          </div>`;
-      }).join('');
-    } catch (e) {
-      drop.innerHTML = `<div style="padding:12px; text-align:center; color:var(--danger); font-size:12px;">Erreur réseau TMDB.</div>`;
-    }
-  }
-
-  window.addTmdbItemToWishlist = async function(tmdbId, mediaType) {
-    const drop = document.getElementById('wish-tmdb-dropdown');
-    const input = document.getElementById('wish-tmdb-input');
-    if (drop) drop.classList.remove('active');
-    if (input) input.value = 'Ajout en cours...';
-
-    try {
-      const detRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${API_KEY}&language=fr-FR&append_to_response=credits`);
-      const itemData = await detRes.json();
-
-      const cardType = mediaType === 'movie' ? 'Film' : 'Série';
-      const title = mediaType === 'movie' ? itemData.title : itemData.name;
-      const year = ((mediaType === 'movie' ? itemData.release_date : itemData.first_air_date) || 'N/A').split('-')[0];
-
-      // Vérifie si déjà dans la liste de souhaits
-      if (myWishlist.some(w => w.tmdbId === itemData.id && w.type === cardType)) {
-        alert(`⚠️ "${title}" (${year}) est déjà dans ta Liste de Souhaits !`);
-        if (input) input.value = '';
-        return;
-      }
-
-      // Vérifie si déjà possédé dans la collection principale
-      if (myMovies.some(m => m.type === cardType && ((m.tmdbId && m.tmdbId === itemData.id) || (normalize(m.title) === normalize(title) && String(m.year) === String(year))))) {
-        if (!confirm(`💡 Tu possèdes déjà "${title}" (${year}) dans ta collection de cartes ! Veux-tu quand même l'ajouter à ta Liste de Souhaits (ex: pour un revisionnage) ?`)) {
-          if (input) input.value = '';
-          return;
-        }
-      }
-
-      let director = "Inconnu";
-      let runtimeMinutes = 0;
-      let totalSeasons = 0;
-      let totalEpisodes = 0;
-
-      if (mediaType === 'movie') {
-        const dirs = (itemData.credits && itemData.credits.crew) ? itemData.credits.crew.filter(c => c.job === 'Director') : [];
-        if (dirs.length > 0) director = dirs.map(d => d.name).join(', ');
-        runtimeMinutes = itemData.runtime || 110;
-      } else {
-        if (itemData.created_by && itemData.created_by.length > 0) {
-          director = itemData.created_by.map(c => c.name).join(', ');
-        } else if (itemData.credits && itemData.credits.crew) {
-          const creators = itemData.credits.crew.filter(x => x.job === 'Original Story' || x.job === 'Series Director' || x.job === 'Director');
-          if (creators.length > 0) director = creators.map(c => c.name).join(', ');
-        }
-        const validSeasons = (itemData.seasons || []).filter(s => s.season_number > 0);
-        totalSeasons = validSeasons.length;
-        totalEpisodes = validSeasons.reduce((acc, s) => acc + (s.episode_count || 0), 0);
-        let epLen = (itemData.episode_run_time && itemData.episode_run_time[0]) || (itemData.last_episode_to_air && itemData.last_episode_to_air.runtime) || 42;
-        runtimeMinutes = totalEpisodes * epLen;
-      }
-
-      const rating = itemData.vote_average || 0;
-      let rarity = "commune";
-      if (rating >= 8.0) rarity = "legendaire";
-      else if (rating >= 7.0) rarity = "epique";
-      else if (rating >= 6.0) rarity = "rare";
-
-      const genresList = (itemData.genres || []).map(g => g.name);
-      const priority = parseInt(document.getElementById('wish-add-priority').value) || 2;
-      const note = document.getElementById('wish-add-note').value.trim();
-
-      const newWish = {
-        tmdbId: itemData.id,
-        mediaType: mediaType,
-        type: cardType,
-        title: title,
-        year: year,
-        director: director,
-        genres: genresList,
-        genreStr: genresList.join(' / ') || 'Non classé',
-        rating: parseFloat(rating.toFixed(1)),
-        rarity: rarity,
-        runtime: runtimeMinutes,
-        totalSeasons: totalSeasons,
-        totalEpisodes: totalEpisodes,
-        poster: itemData.poster_path ? `https://image.tmdb.org/t/p/w500${itemData.poster_path}` : 'https://via.placeholder.com/500x750/0a0a16/ff00ea?text=Affiche+Manquante',
-        synopsis: itemData.overview || "Synopsis non disponible.",
-        priority: priority,
-        note: note,
-        addedAt: Date.now()
-      };
-
-      myWishlist.unshift(newWish);
-      if (input) input.value = '';
-      document.getElementById('wish-add-note').value = '';
-      saveData();
-      populateWishlistGenreFilter();
-      renderWishlistGrid();
-    } catch (e) {
-      alert("Erreur lors de la récupération des détails TMDB.");
-      if (input) input.value = '';
-    }
-  };
-
-  function populateWishlistGenreFilter() {
-    const sel = document.getElementById('wish-filter-genre');
-    if (!sel) return;
-    const currentVal = sel.value || 'ALL';
-    const genreSet = new Set();
-    myWishlist.forEach(w => {
-      if (Array.isArray(w.genres)) w.genres.forEach(g => genreSet.add(g));
-      else if (w.genreStr) w.genreStr.split('/').forEach(g => genreSet.add(g.trim()));
-    });
-    const sortedGenres = Array.from(genreSet).filter(Boolean).sort((a, b) => a.localeCompare(b));
-    sel.innerHTML = `<option value="ALL">Tous les genres (${sortedGenres.length})</option>` +
-      sortedGenres.map(g => `<option value="${g}">${g}</option>`).join('');
-    if (sortedGenres.includes(currentVal)) sel.value = currentVal;
-  }
-
-  window.cycleWishPriority = function(tmdbId, type) {
-    const item = myWishlist.find(w => w.tmdbId === tmdbId && w.type === type);
-    if (!item) return;
-    item.priority = item.priority === 3 ? 1 : (item.priority + 1);
-    saveData();
-    renderWishlistGrid();
-  };
-
-  window.editWishNote = function(tmdbId, type) {
-    const item = myWishlist.find(w => w.tmdbId === tmdbId && w.type === type);
-    if (!item) return;
-    const updated = prompt(`💬 Note / Recommandation pour "${item.title}" :`, item.note || "");
-    if (updated === null) return;
-    item.note = updated.trim();
-    saveData();
-    renderWishlistGrid();
-  };
-
-  window.removeWishItem = function(tmdbId, type) {
-    const idx = myWishlist.findIndex(w => w.tmdbId === tmdbId && w.type === type);
-    if (idx === -1) return;
-    if (confirm(`Retirer "${myWishlist[idx].title}" de ta Liste de Souhaits ?`)) {
-      myWishlist.splice(idx, 1);
-      saveData();
-      populateWishlistGenreFilter();
-      renderWishlistGrid();
-    }
-  };
-
-  window.promoteWishToCollection = function(tmdbId, type) {
-    const idx = myWishlist.findIndex(w => w.tmdbId === tmdbId && w.type === type);
-    if (idx === -1) return;
-    const wish = myWishlist[idx];
-
-    closeWishlistModal();
-    // Bascule sur l'onglet Gestion et pré-verrouille la cible TMDB pour forger la vraie carte !
-    const gestionBtn = document.querySelectorAll('.tab-btn')[1];
-    if (gestionBtn) gestionBtn.click();
-
-    const encodedTitle = encodeURIComponent(wish.title).replace(/'/g, "%27");
-    selectTmdbLiveItem(wish.tmdbId, wish.mediaType || (wish.type === 'Film' ? 'movie' : 'tv'), encodedTitle, wish.year, wish.director || 'Inconnu');
-
-    // Retire automatiquement de la liste de souhaits ou propose de le retirer
-    myWishlist.splice(idx, 1);
-    saveData();
-
-    if (appSettings.dateMode === 'auto') {
-      document.getElementById('main-submit-btn').click();
-    } else {
-      const unlockInput = document.getElementById('m-unlock');
-      if (unlockInput) {
-        unlockInput.focus();
-        unlockInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
-  };
-
-  window.pickRandomWish = function() {
-    const filtered = getFilteredAndSortedWishlist();
-    if (filtered.length === 0) {
-      alert("Ta liste de souhaits (avec ces filtres) est vide ! Ajoute d'abord quelques films ou séries.");
-      return;
-    }
-    const pick = filtered[Math.floor(Math.random() * filtered.length)];
-    const durText = pick.type === 'Film' ? `${pick.runtime || '?'} min` : `${pick.totalSeasons || '?'} saison(s) (${pick.totalEpisodes || '?'} ép.)`;
-    if (confirm(`🎲 LE DESTIN A CHOISI POUR CE SOIR :
-
-🎬 ${pick.title} (${pick.year})
-🎭 ${pick.type} • ${pick.genreStr}
-⭐ Note TMDB : ${pick.rating}/10 • ⏱️ ${durText}
-${pick.note ? '💬 Note : ' + pick.note + '
-' : ''}
-📖 Synopsis : ${pick.synopsis}
-
-Veux-tu le marquer comme "Vu" et forger sa carte maintenant ?`)) {
-      promoteWishToCollection(pick.tmdbId, pick.type);
-    }
-  };
-
-  function getFilteredAndSortedWishlist() {
-    const q = normalize((document.getElementById('wish-filter-query') || {}).value || '');
-    const typeFilter = (document.getElementById('wish-filter-type') || {}).value || 'ALL';
-    const genreFilter = (document.getElementById('wish-filter-genre') || {}).value || 'ALL';
-    const prioFilter = (document.getElementById('wish-filter-prio') || {}).value || 'ALL';
-    const sortMode = (document.getElementById('wish-sort-mode') || {}).value || 'added-desc';
-
-    let list = myWishlist.filter(w => {
-      if (typeFilter !== 'ALL' && w.type !== typeFilter) return false;
-      if (prioFilter !== 'ALL' && String(w.priority) !== String(prioFilter)) return false;
-      if (genreFilter !== 'ALL') {
-        const hasG = (Array.isArray(w.genres) && w.genres.includes(genreFilter)) || (w.genreStr && w.genreStr.includes(genreFilter));
-        if (!hasG) return false;
-      }
-      if (q) {
-        const hay = normalize(`${w.title} ${w.director} ${w.genreStr} ${w.year} ${w.note || ''}`);
-        if (!hay.includes(q)) return false;
-      }
-      return true;
-    });
-
-    const rarityRank = { legendaire: 4, epique: 3, rare: 2, commune: 1 };
-
-    if (sortMode === 'random') {
-      return [...list].sort(() => 0.5 - Math.random());
-    }
-
-    list.sort((a, b) => {
-      switch (sortMode) {
-        case 'added-desc': return (b.addedAt || 0) - (a.addedAt || 0);
-        case 'added-asc': return (a.addedAt || 0) - (b.addedAt || 0);
-        case 'prio-desc': return (b.priority || 0) - (a.priority || 0) || (b.rating || 0) - (a.rating || 0);
-        case 'prio-asc': return (a.priority || 0) - (b.priority || 0) || (b.rating || 0) - (a.rating || 0);
-        case 'rating-desc': return (b.rating || 0) - (a.rating || 0);
-        case 'rating-asc': return (a.rating || 0) - (b.rating || 0);
-        case 'rarity-desc': return (rarityRank[b.rarity] || 0) - (rarityRank[a.rarity] || 0) || (b.rating || 0) - (a.rating || 0);
-        case 'year-desc': return (parseInt(b.year) || 0) - (parseInt(a.year) || 0);
-        case 'year-asc': return (parseInt(a.year) || 9999) - (parseInt(b.year) || 9999);
-        case 'runtime-asc': return (a.runtime || 99999) - (b.runtime || 99999);
-        case 'runtime-desc': return (b.runtime || 0) - (a.runtime || 0);
-        case 'title-asc': return (a.title || '').localeCompare(b.title || '');
-        case 'title-desc': return (b.title || '').localeCompare(a.title || '');
-        case 'director-asc': return (a.director || 'ZZZ').localeCompare(b.director || 'ZZZ');
-        case 'genre-asc': return (a.genreStr || 'ZZZ').localeCompare(b.genreStr || 'ZZZ');
-        default: return 0;
-      }
-    });
-
-    return list;
-  }
-
-  window.renderWishlistGrid = function() {
-    updateWishlistHeaderBadge();
-
-    // Mise à jour des compteurs statistiques en haut de la modale
-    const totalMovies = myWishlist.filter(w => w.type === 'Film').length;
-    const totalSeries = myWishlist.filter(w => w.type === 'Série').length;
-    const totalMins = myWishlist.reduce((acc, w) => acc + (w.runtime || 0), 0);
-
-    const elTotal = document.getElementById('wish-stat-total');
-    const elMovies = document.getElementById('wish-stat-movies');
-    const elSeries = document.getElementById('wish-stat-series');
-    const elRuntime = document.getElementById('wish-stat-runtime');
-    if (elTotal) elTotal.innerText = myWishlist.length;
-    if (elMovies) elMovies.innerText = totalMovies;
-    if (elSeries) elSeries.innerText = totalSeries;
-    if (elRuntime) elRuntime.innerText = `${Math.round(totalMins / 60)} h`;
-
-    const grid = document.getElementById('wishlist-grid-container');
-    if (!grid) return;
-
-    const items = getFilteredAndSortedWishlist();
-
-    if (items.length === 0) {
-      grid.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.5); border: 2px dashed rgba(255,255,255,0.12); border-radius: 20px; margin-top: 10px;">
-          <div style="font-size: 48px; margin-bottom: 10px;">🌟</div>
-          <h3 style="font-family: 'Rajdhani'; font-size: 24px; color: #fff; margin: 0 0 6px 0;">Aucune œuvre dans ta Liste de Souhaits pour le moment</h3>
-          <p style="font-size: 13px; margin: 0;">Utilise la barre de recherche TMDB en haut à gauche pour entreposer tes prochains films, séries et animés à découvrir !</p>
-        </div>`;
-      return;
-    }
-
-    grid.innerHTML = items.map(w => {
-      const prioLabels = { 3: '🔥🔥🔥 Hype Absolue', 2: '🔥🔥 Hype Moyenne', 1: '🔥 Tranquille' };
-      const prioLabel = prioLabels[w.priority] || prioLabels[2];
-      const isSerie = w.type === 'Série';
-      const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`;
-      const durationBadge = isSerie
-        ? `${w.totalSeasons || '?'} S • ${w.totalEpisodes || '?'} ép.`
-        : `${w.runtime ? Math.floor(w.runtime / 60) + 'h' + String(w.runtime % 60).padStart(2, '0') : 'Durée N/A'}`;
-
-      return `
-        <div class="wish-card prio-${w.priority || 2}">
-          <div class="wish-poster-wrap" style="background-image: url('${w.poster}');">
-            <div class="wish-prio-badge prio-badge-${w.priority || 2}" onclick="cycleWishPriority(${w.tmdbId}, '${w.type}')" title="Cliquer pour changer le niveau de priorité">${prioLabel}</div>
-            ${badgeHTML}
-            <div class="wish-poster-overlay">
-              <div style="font-family: 'Rajdhani'; font-size: 19px; font-weight: 700; color: #fff; line-height: 1.15; text-shadow: 0 2px 8px #000;">${w.title}</div>
-              <div class="wish-meta-line" style="margin-top: 4px;">
-                <span style="color: var(--neon-blue); font-weight: bold;">${w.year}</span>
-                <span>•</span>
-                <span style="color: var(--gold); font-weight: bold;">★ ${w.rating}</span>
-                <span>•</span>
-                <span>⏱️ ${durationBadge}</span>
-              </div>
-            </div>
-          </div>
-          <div class="wish-body">
-            <div>
-              <div style="font-size: 11px; color: var(--neon-pink); font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🎬 ${w.director || 'Inconnu'}</div>
-              <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-bottom: 6px;">🏷️ ${w.genreStr}</div>
-              <div style="font-size: 11px; color: rgba(255,255,255,0.78); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.35;">${w.synopsis}</div>
-              <div onclick="editWishNote(${w.tmdbId}, '${w.type}')" style="margin-top: 8px; padding: 5px 8px; border-radius: 6px; background: rgba(255,215,0,0.08); border: 1px dashed rgba(255,215,0,0.4); font-size: 11px; color: var(--gold); cursor: pointer;" title="Cliquer pour modifier la note">
-                💬 ${w.note ? w.note : '<span style="opacity:0.6;">+ Ajouter une note (qui te l'a conseillé, plateforme...)</span>'}
-              </div>
-            </div>
-            <div class="wish-actions">
-              <button class="wish-btn-forge" onclick="promoteWishToCollection(${w.tmdbId}, '${w.type}')" title="Transférer et forger la carte dans ta collection">✔ Vu ! Forger</button>
-              <button class="btn-delete" onclick="removeWishItem(${w.tmdbId}, '${w.type}')" style="padding: 6px 10px;" title="Retirer de la liste">🗑️</button>
-            </div>
-          </div>
-        </div>`;
-    }).join('');
-  };
-
-  document.addEventListener('click', function(e) {
-    const box = document.getElementById('wish-search-container');
-    const drop = document.getElementById('wish-tmdb-dropdown');
-    if (box && drop && !box.contains(e.target)) {
-      drop.classList.remove('active');
-    }
-  });
 </script>
 </body>
 </html>
