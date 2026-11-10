@@ -298,6 +298,102 @@
     .modal-notes { order: 2; width: 100%; min-height: 180px; margin-top: 10px; }
     .modal-synopsis { order: 3; margin-top: 20px; text-align: center; font-size: 14px;}
     .mystery-choices, .chrono-choices { grid-template-columns: 1fr; }
+
+/* =========================================================
+     🎄 SKIN DE NOËL FÉERIQUE (TEMPS RÉEL & GLASSMORPHISM HIVERNAL)
+     ========================================================= */
+  #snow-canvas {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none; z-index: 9998; display: none;
+  }
+  body.skin-noel #snow-canvas { display: block; }
+
+  body.skin-noel {
+    --bg-dark: #040d08;
+    --neon-blue: #ff2a4b;
+    --neon-pink: #00e676;
+    --gold: #ffd700;
+    --glass-bg: rgba(10, 28, 18, 0.72);
+    --glass-border: rgba(255, 215, 0, 0.3);
+  }
+  body.skin-noel .bg-animation {
+    background: radial-gradient(circle at 50% 20%, #163824 0%, #051209 65%, #020804 100%);
+  }
+  body.skin-noel .orb-1 { background: #ff1744; opacity: 0.45; }
+  body.skin-noel .orb-2 { background: #00c853; opacity: 0.4; }
+
+  /* Guirlande lumineuse interactive sous le header */
+  .christmas-garland {
+    display: none; justify-content: center; gap: 28px; padding: 0 0 18px 0;
+    overflow: hidden; width: 100%; pointer-events: none;
+  }
+  body.skin-noel .christmas-garland { display: flex; }
+  .bulb {
+    width: 12px; height: 18px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+    position: relative; animation: bulbGlow 1.6s infinite alternate ease-in-out;
+  }
+  .bulb::before {
+    content: ''; position: absolute; top: -5px; left: 3px; width: 6px; height: 5px;
+    background: #333; border-radius: 2px;
+  }
+  .bulb:nth-child(4n+1) { background: #ff1744; color: #ff1744; animation-delay: 0s; }
+  .bulb:nth-child(4n+2) { background: #ffd700; color: #ffd700; animation-delay: 0.4s; }
+  .bulb:nth-child(4n+3) { background: #00e676; color: #00e676; animation-delay: 0.8s; }
+  .bulb:nth-child(4n+4) { background: #00e5ff; color: #00e5ff; animation-delay: 1.2s; }
+  @keyframes bulbGlow {
+    0% { opacity: 0.45; transform: scale(0.92); box-shadow: 0 0 6px currentColor; }
+    100% { opacity: 1; transform: scale(1.1); box-shadow: 0 0 18px currentColor, 0 0 30px currentColor; }
+  }
+
+  /* Effet Givre & Sucre d'orge sur les panneaux et cartes */
+  body.skin-noel h1 {
+    text-shadow: 0 0 12px #ff1744, 0 0 25px #ffd700, 0 0 40px #00e676;
+  }
+  body.skin-noel .glass-panel {
+    border: 1px solid rgba(255, 215, 0, 0.35);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 2px 12px rgba(255, 255, 255, 0.18);
+  }
+  body.skin-noel .card-face.card-front::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(125deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.22) 50%, rgba(255,215,0,0.12) 55%, rgba(255,255,255,0) 70%);
+    background-size: 200% 200%; animation: frostShimmer 4s infinite linear; pointer-events: none;
+  }
+  @keyframes frostShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  body.skin-noel::-webkit-scrollbar-thumb {
+    background: repeating-linear-gradient(45deg, #ff1744, #ff1744 8px, #ffffff 8px, #ffffff 16px);
+  }
+
+  /* Bannière Event de Noël & Jauge Sucre d'Orge */
+  .xmas-event-banner {
+    background: linear-gradient(135deg, rgba(160, 0, 30, 0.35), rgba(0, 90, 40, 0.45));
+    border: 2px solid var(--gold); position: relative; overflow: hidden; margin-top: 30px;
+  }
+  .candy-progress-bg {
+    width: 100%; height: 18px; background: rgba(0,0,0,0.65); border-radius: 15px;
+    border: 1px solid var(--gold); overflow: hidden; margin: 12px 0; position: relative;
+  }
+  .candy-progress-fill {
+    height: 100%;
+    background: repeating-linear-gradient(45deg, #ff1744, #ff1744 12px, #ffffff 12px, #ffffff 24px, #00c853 24px, #00c853 36px, #ffffff 36px, #ffffff 48px);
+    background-size: 68px 68px; animation: candySlide 1.5s linear infinite;
+    box-shadow: 0 0 15px rgba(255, 23, 68, 0.8); transition: width 0.6s ease;
+  }
+  @keyframes candySlide { 0% { background-position: 0 0; } 100% { background-position: 68px 0; } }
+
+  .xmas-verified-badge {
+    position: absolute; bottom: 8px; right: 8px; background: rgba(0, 120, 50, 0.9);
+    border: 1px solid var(--gold); color: #fff; padding: 3px 8px; border-radius: 12px;
+    font-size: 9px; font-weight: bold; z-index: 12; box-shadow: 0 2px 8px rgba(0,0,0,0.7);
+  }
+  .quiz-timer-bar {
+    width: 100%; height: 6px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; margin-bottom: 18px;
+  }
+  .quiz-timer-fill {
+    height: 100%; background: linear-gradient(90deg, var(--success), var(--gold), var(--danger));
+    transition: width 1s linear;
+  }
+    
   }
 </style>
 </head>
@@ -305,6 +401,8 @@
 
 <div class="bg-animation"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
 
+<canvas id="snow-canvas"></canvas>
+  
 <!-- ÉCRAN DE CONNEXION (VERROUILLAGE) -->
 <div id="login-overlay" class="overlay show">
   <div class="glass-panel login-box">
@@ -334,6 +432,12 @@
       </div>
 
       <h1>Ciné Cards</h1>
+      <div class="christmas-garland">
+        <div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div>
+        <div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div>
+        <div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div>
+        <div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div>
+      </div>
       <nav class="tabs">
         <button class="tab-btn active" onclick="switchTab('vitrine')">Vitrine</button>
         <button class="tab-btn" onclick="switchTab('gestion')">Gestion</button>
@@ -349,6 +453,28 @@
         <div class="glass-panel stat-card"><h3 style="margin:0;">Cartes Débloquées</h3><div class="stat-value" id="stat-total" style="font-size: 48px; margin: 10px 0;">0</div><div class="stat-detail">Œuvres archivées dans ton classeur</div></div>
         <div class="glass-panel stat-card"><h3 style="margin:0; color: var(--gold);">Temps de Visionnage</h3><div class="stat-value" id="stat-runtime" style="font-size: 48px; margin: 10px 0; color: var(--gold); text-shadow: 0 0 10px var(--gold);">0 h</div><div class="stat-detail">Durée totale cumulée (arrondie à l'heure)</div></div>
         <div class="glass-panel stat-card"><h3 style="margin:0; color: var(--neon-pink);">Réal / Créateur Favori</h3><div class="stat-value" id="stat-director" style="font-size: 28px; margin: 10px 0; color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink);">...</div><div class="stat-detail">L'artiste le plus présent dans ta base</div></div>
+      </div>
+      <!-- BANNIÈRE EVENT DE NOËL (QUÊTE 20 FILMS VÉRIFIÉS) -->
+      <div class="glass-panel xmas-event-banner">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+          <div style="text-align: left; flex: 1; min-width: 260px;">
+            <div style="display: inline-block; background: var(--gold); color: #000; font-family: 'Rajdhani'; font-weight: bold; font-size: 11px; padding: 2px 10px; border-radius: 12px; text-transform: uppercase; margin-bottom: 6px;">🎄 Événement Saisonnier Exclusif</div>
+            <h3 style="margin: 0; font-family: 'Rajdhani'; font-size: 28px; color: #fff; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 12px #ff1744;">Défi Féerie d'Hiver : 20 Nouveaux Films de Noël</h3>
+            <p style="margin: 5px 0 0 0; font-size: 13px; color: rgba(255,255,255,0.85);">Forge <strong>20 nouveaux films de Noël</strong> et réussis le <strong>Quiz Anti-Triche (3/3)</strong> sur chacun d'eux pour débloquer le Skin Collector <em>"Noël Féerique"</em> (Neige temps réel 60 FPS, givre & badge Panthéon) !</p>
+          </div>
+          <div style="text-align: center; min-width: 210px;">
+            <div style="font-family: 'Rajdhani'; font-size: 26px; font-weight: bold; color: var(--gold);" id="xmas-quest-counter">0 / 20 Validés</div>
+            <button id="xmas-skin-toggle-btn" class="btn-sync" onclick="toggleChristmasSkin()" style="display: none; border-color: var(--gold); color: var(--gold); margin: 8px 0 0 0; padding: 8px 20px; font-size: 14px;">✨ Équiper le Skin Noël</button>
+            <button class="btn-sync" onclick="openXmasSuggestions()" style="border-color: #fff; color: #fff; margin: 8px 0 0 0; padding: 6px 14px; font-size: 11px;">💡 Idées de films éligibles</button>
+          </div>
+        </div>
+        <div class="candy-progress-bg">
+          <div class="candy-progress-fill" id="xmas-quest-bar" style="width: 0%;"></div>
+        </div>
+        <div style="font-size: 11px; color: rgba(255,255,255,0.7); display: flex; justify-content: space-between; flex-wrap: wrap;">
+          <span>🔒 Règle Anti-Triche : Un film de Noël ajouté doit obligatoirement être validé par un Quiz minuté de 3 questions sur son histoire.</span>
+          <span id="xmas-unlock-status" style="color: var(--gold); font-weight: bold;">🔒 Skin Verrouillé</span>
+        </div>
       </div>
       <div style="display: flex; gap: 30px; margin-top: 30px; flex-wrap: wrap;">
         <div class="glass-panel" style="flex: 1; min-width: 300px; text-align: center;">
@@ -475,7 +601,7 @@
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--danger); text-transform: uppercase; margin: 0;">🛡️ Panneau de Contrôle Admin</h2></div>
     <p style="color: #aaa; font-size: 13px; text-align: center; margin-top: 0;">Gestion des utilisateurs, suppression des faux comptes et réinitialisation des scores d'arcade.</p>
     <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
-      <button class="btn-sync" onclick="loadAdminUsersList()" style="border-color: var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; font-size: 12px; margin-bottom: 0;">🔄 Rafraîchir la liste</button>
+      <button class="btn-sync" onclick="loadAdminUsersList()" style="border-color: var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; font-size: 12px; margin-bottom: 0;">🔄 Rafraîchir la liste</button><button class="btn-sync" onclick="adminForceUnlockXmasSkin()" style="border-color: var(--gold); color: var(--gold); padding: 8px 16px; font-size: 12px; margin-bottom: 0; margin-right: 10px;">🎄 Débloquer/Tester Skin Noël (Admin)</button>
     </div>
     <div id="admin-users-list-container" style="overflow-y: auto; max-height: 50vh; text-align: left; padding: 5px;">
       <!-- Rempli dynamiquement -->
@@ -483,7 +609,22 @@
     <button onclick="closeAdminModal()" class="btn-submit" style="margin-top: 20px;">Fermer le Panel</button>
   </div>
 </div>
-
+  
+<!-- MODALE QUIZ ANTI-TRICHE DE NOËL -->
+<div id="xmas-quiz-overlay" class="overlay" style="z-index: 10005;">
+  <div class="selector-modal" style="max-width: 600px; height: auto; border-color: var(--gold); box-shadow: 0 0 35px rgba(255, 215, 0, 0.35);">
+    <div class="selector-header">
+      <div style="color: var(--gold); font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">🎅 Contrôle Anti-Triche de Noël</div>
+      <h2 id="xmas-quiz-movie-title" style="color: #fff; margin: 5px 0;">As-tu vraiment vu ce film ?</h2>
+      <p id="xmas-quiz-step" style="color: var(--neon-blue); font-size: 12px; margin: 0;">Question 1 / 3 • ⏱️ 15 secondes</p>
+    </div>
+    <div class="quiz-timer-bar"><div id="xmas-quiz-timer-fill" class="quiz-timer-fill" style="width: 100%;"></div></div>
+    <div id="xmas-quiz-question-box" style="font-size: 15px; color: #fff; font-weight: 600; text-align: center; margin-bottom: 20px; line-height: 1.5; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px;"></div>
+    <div id="xmas-quiz-choices" class="mystery-choices" style="grid-template-columns: 1fr;"></div>
+    <button onclick="closeXmasQuiz()" class="btn-delete" style="margin-top: 20px; align-self: center;">Abandonner la vérification</button>
+  </div>
+</div>
+  
 <!-- MODALE JOURNAL DE BORD (CHANGELOG) STRUCTURÉ PAR VERSION -->
 <div id="changelog-overlay" class="overlay">
   <span class="overlay-close" onclick="closeChangelogModal()">×</span>
@@ -491,6 +632,27 @@
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">📢 Journal de Bord - Mises à Jour</h2></div>
     <div style="overflow-y: auto; text-align: left; padding: 10px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85);">
 
+<!-- VERSION 7.9 -->
+      <div style="margin-bottom: 25px; border-left: 3px solid #ff1744; padding-left: 12px;">
+        <h3 style="color: #ff1744; font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">🎄 v7.9 - Event de Noël, Skin Temps Réel & Quiz Anti-Triche</h3>
+        <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Mise à jour Événement Saisonnier Majeur</p>
+        <ul style="margin: 0; padding-left: 18px;">
+          <li><strong>Quête Extrême des 20 Films de Noël</strong> : Nouveau défi saisonnier dans la Vitrine demandant de visionner 20 nouveaux films sur le thème de Noël.</li>
+          <li><strong>Système de Vérification Anti-Triche (Quiz Minuté)</strong> : Pour valider un film de Noël dans la jauge, le joueur doit réussir un sans-faute (3/3) à un quiz chronométré (15s/question) généré dynamiquement sur l'histoire, les personnages et le casting du film !</li>
+          <li><strong>Skin Collector "Noël Féerique" (60 FPS)</strong> : Moteur physique de chute de neige interactif sur Canvas HTML5, guirlande d'ampoules lumineuses, givre holographique sur les cartes et badge 🎅 dans le Panthéon.</li>
+        </ul>
+      </div>
+
+      <!-- VERSION 7.8 -->
+      <div style="margin-bottom: 25px; border-left: 3px solid var(--success); padding-left: 12px;">
+        <h3 style="color: var(--success); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v7.8 - Connexion Intelligente & Récupération de Compte</h3>
+        <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Mise à jour migration GitHub & accès joueurs</p>
+        <ul style="margin: 0; padding-left: 18px;">
+          <li><strong>Connexion Souple (Insensible à la casse)</strong> : Le système retrouve automatiquement le profil correspondant dans le Cloud même sans respecter les majuscules ou accents exacts.</li>
+          <li><strong>Gestion & Récupération des PIN (Panel Admin)</strong> : Consultation et modification du code secret (PIN) d'un ami en un clic depuis le Panel Admin.</li>
+        </ul>
+      </div>
+      
       <!-- VERSION 7.8 -->
       <div style="margin-bottom: 25px; border-left: 3px solid var(--success); padding-left: 12px;">
         <h3 style="color: var(--success); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v7.8 - Connexion Intelligente & Récupération de Compte</h3>
@@ -580,7 +742,7 @@
 <script>
   const API_KEY = 'fb195a905bf531daf7eb642dbf16c455'; 
   const OMDB_KEY = 'bb349eee';
-  const CURRENT_CHANGELOG_VERSION = 'v7.7';
+  const CURRENT_CHANGELOG_VERSION = 'v7.9';
 
   // --- INITIALISATION DE LA BASE DE DONNÉES CLOUD (FIREBASE) ---
   const firebaseConfig = {
@@ -714,7 +876,7 @@
     document.getElementById('admin-dashboard-overlay').classList.remove('show');
   };
 
-  window.loadAdminUsersList = async function() {
+window.loadAdminUsersList = async function() {
     const container = document.getElementById('admin-users-list-container');
     container.innerHTML = `<div style="text-align:center; color:var(--neon-blue); padding:20px;">Chargement des utilisateurs inscrits...</div>`;
     try {
@@ -726,6 +888,116 @@
         container.innerHTML = `<p style="text-align:center; color:#888;">Aucun utilisateur enregistré.</p>`;
         return;
       }
+
+      container.innerHTML = users.map(u => {
+        const isMe = (u.pseudo === "Mr. Bonnet");
+        const safePseudo = (u.pseudo || '').replace(/'/g, "\\'");
+        const safePin = (u.pin || '').replace(/'/g, "\\'");
+        return `
+          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.08); padding:12px 15px; border-radius:10px; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
+            <div>
+              <div style="font-weight:bold; color:#fff; font-size:15px;">${u.pseudo} ${isMe ? '<span style="color:var(--gold); font-size:12px;">(Admin Principal)</span>' : `<span style="color:var(--neon-blue); font-size:11px; margin-left:8px;">🔑 PIN: <code>${u.pin || '???'}</code></span>`}</div>
+              <div style="font-size:12px; color:rgba(255,255,255,0.6); margin-top:3px;">📚 ${u.totalCards || 0} cartes • 📺 ${u.totalHours || 0}h • 🎄 Noël: ${u.xmasVerifiedCount || 0}/20 • 🏆 M:${u.hsMystery || 0} | C:${u.hsChrono || 0} | Cr:${u.hsCritic || 0}</div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <button onclick="resetUserPin('${safePseudo}', '${safePin}')" class="btn-sync" style="border-color:var(--neon-blue); color:var(--neon-blue); padding:5px 10px; font-size:11px; margin-bottom:0;" title="Voir ou modifier le code secret">🔑 PIN</button>
+              <button onclick="resetUserScores('${safePseudo}')" class="btn-sync" style="border-color:var(--gold); color:var(--gold); padding:5px 10px; font-size:11px; margin-bottom:0;" title="Remettre les scores d'arcade à zéro">🔄 Scores</button>
+              ${!isMe ? `<button onclick="deleteUserAccount('${safePseudo}')" class="btn-delete" style="padding:6px 12px;">Supprimer</button>` : `<span style="color:var(--success); font-size:12px; font-weight:bold;">Protégé</span>`}
+            </div>
+          </div>`;
+      }).join('');
+    } catch(e) {
+      container.innerHTML = `<p style="text-align:center; color:var(--danger);">Erreur lors de la récupération de la liste.</p>`;
+    }
+  };
+
+  window.resetUserPin = async function(targetPseudo, currentPin) {
+    const newPin = prompt(`🔑 Code secret actuel de "${targetPseudo}" : ${currentPin}\n\nEntrez le nouveau code secret (3 caractères min.) :`, currentPin);
+    if (!newPin || newPin.trim().length < 3) return;
+    try {
+      await db.collection('users').doc(targetPseudo).set({ pin: newPin.trim() }, { merge: true });
+      alert(`✅ Le code secret de "${targetPseudo}" est désormais : ${newPin.trim()}`);
+      await loadAdminUsersList();
+    } catch(e) {
+      alert(`❌ Erreur : ${e.message}`);
+    }
+  };
+
+  window.attemptAuth = async function(action) {
+      let pseudoInput = document.getElementById('login-pseudo').value.trim();
+      const pin = document.getElementById('login-pin').value.trim();
+      const status = document.getElementById('login-status');
+      
+      if (pseudoInput.length < 3 || pin.length < 3) { status.innerText = "Le pseudo et le mot de passe doivent faire 3 caractères min."; return; }
+      
+      document.getElementById('btn-login').disabled = true;
+      document.getElementById('btn-register').disabled = true;
+      status.innerText = "Connexion au Cloud Firebase en cours...";
+
+      try {
+          let resolvedPseudo = pseudoInput;
+          let docRef = db.collection('users').doc(resolvedPseudo);
+          let docSnap = await docRef.get();
+
+          // Recherche souple insensible à la casse/accents si le nom exact n'est pas trouvé
+          if (!docSnap.exists) {
+              const allUsersSnap = await db.collection('users').get();
+              const targetNorm = normalize(pseudoInput);
+              allUsersSnap.forEach(d => {
+                  const uData = d.data();
+                  const candidateName = uData.pseudo || d.id;
+                  if (normalize(candidateName) === targetNorm) {
+                      resolvedPseudo = d.id;
+                      docSnap = d;
+                  }
+              });
+          }
+          
+          if (action === 'login') {
+              if (docSnap && docSnap.exists) {
+                  const data = docSnap.data();
+                  if(String(data.pin).trim() === pin) {
+                      const saveRef = db.collection('saves').doc(resolvedPseudo);
+                      const saveSnap = await saveRef.get();
+                      if(saveSnap.exists) {
+                          const saveData = saveSnap.data();
+                          if(saveData.moviesStr) myMovies = JSON.parse(saveData.moviesStr);
+                          if(saveData.top3Str) myTop3 = JSON.parse(saveData.top3Str);
+                      }
+                      
+                      appSettings.pseudo = resolvedPseudo; appSettings.pin = pin;
+                      appSettings.highScores = { mystery: data.hsMystery||0, chrono: data.hsChrono||0, critic: data.hsCritic||0 };
+                      if (data.xmasSkinUnlocked) appSettings.xmasSkinUnlocked = true;
+                      if (data.activeSkin) appSettings.activeSkin = data.activeSkin;
+                      if(data.moviesStr) { await syncProfileToCloud(true); } 
+                      finishLogin(`Connecté en tant que ${resolvedPseudo} !`);
+                  } else {
+                      status.innerText = "❌ Mot de passe incorrect pour ce pseudo !";
+                      document.getElementById('btn-login').disabled = false;
+                      document.getElementById('btn-register').disabled = false;
+                  }
+              } else {
+                  status.innerText = "❌ Ce compte n'existe pas. Vérifie l'orthographe !";
+                  document.getElementById('btn-login').disabled = false;
+                  document.getElementById('btn-register').disabled = false;
+              }
+          } else if (action === 'register') {
+              if (docSnap && docSnap.exists) {
+                  status.innerText = `❌ Ce pseudo existe déjà sous "${resolvedPseudo}" ! Clique sur Se connecter.`;
+                  document.getElementById('btn-login').disabled = false;
+                  document.getElementById('btn-register').disabled = false;
+              } else {
+                  appSettings.pseudo = pseudoInput; appSettings.pin = pin;
+                  await syncProfileToCloud(true);
+                  finishLogin("✅ Nouveau compte créé avec succès !");
+              }
+          }
+      } catch(e) {
+          console.error("Erreur Firebase:", e);
+          status.innerText = "Erreur réseau. Joue en local pour le moment.";
+          finishLogin("Mode hors ligne activé.");
+      }
+  };
 
 container.innerHTML = users.map(u => {
         const isMe = (u.pseudo === "Mr. Bonnet");
@@ -780,64 +1052,6 @@ container.innerHTML = users.map(u => {
     }
   };
 
-  window.attemptAuth = async function(action) {
-      const pseudo = document.getElementById('login-pseudo').value.trim();
-      const pin = document.getElementById('login-pin').value.trim();
-      const status = document.getElementById('login-status');
-      
-      if (pseudo.length < 3 || pin.length < 3) { status.innerText = "Le pseudo et le mot de passe doivent faire 3 caractères min."; return; }
-      
-      document.getElementById('btn-login').disabled = true;
-      document.getElementById('btn-register').disabled = true;
-      status.innerText = "Connexion au Cloud Firebase en cours...";
-
-      try {
-          const docRef = db.collection('users').doc(pseudo);
-          const docSnap = await docRef.get();
-          
-          if (action === 'login') {
-              if (docSnap.exists) {
-                  const data = docSnap.data();
-                  if(data.pin === pin) {
-                      const saveRef = db.collection('saves').doc(pseudo);
-                      const saveSnap = await saveRef.get();
-                      if(saveSnap.exists) {
-                          const saveData = saveSnap.data();
-                          if(saveData.moviesStr) myMovies = JSON.parse(saveData.moviesStr);
-                          if(saveData.top3Str) myTop3 = JSON.parse(saveData.top3Str);
-                      }
-                      
-                      appSettings.pseudo = pseudo; appSettings.pin = pin;
-                      appSettings.highScores = { mystery: data.hsMystery||0, chrono: data.hsChrono||0, critic: data.hsCritic||0 };
-                      if(data.moviesStr) { await syncProfileToCloud(true); } 
-                      finishLogin("Connecté ! Chargement de ta collection...");
-                  } else {
-                      status.innerText = "❌ Mot de passe incorrect pour ce pseudo !";
-                      document.getElementById('btn-login').disabled = false;
-                      document.getElementById('btn-register').disabled = false;
-                  }
-              } else {
-                  status.innerText = "❌ Ce compte n'existe pas. Vérifie l'orthographe !";
-                  document.getElementById('btn-login').disabled = false;
-                  document.getElementById('btn-register').disabled = false;
-              }
-          } else if (action === 'register') {
-              if (docSnap.exists) {
-                  status.innerText = "❌ Ce pseudo est déjà pris ! Choisis-en un autre.";
-                  document.getElementById('btn-login').disabled = false;
-                  document.getElementById('btn-register').disabled = false;
-              } else {
-                  appSettings.pseudo = pseudo; appSettings.pin = pin;
-                  await syncProfileToCloud(true);
-                  finishLogin("✅ Nouveau compte créé avec succès !");
-              }
-          }
-      } catch(e) {
-          console.error("Erreur Firebase:", e);
-          status.innerText = "Erreur réseau. Joue en local pour le moment.";
-          finishLogin("Mode hors ligne activé.");
-      }
-  };
 
   function finishLogin(message) {
       document.getElementById('login-status').innerText = message;
@@ -1064,8 +1278,7 @@ container.innerHTML = users.map(u => {
 
         if (bestResult) {
           const mediaType = bestResult.media_type;
-          const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${bestResult.id}?api_key=${API_KEY}&language=fr-FR&append_to_response=credits,external_ids`);
-          const itemData = await detailsRes.json();
+const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${bestResult.id}?api_key=${API_KEY}&language=fr-FR&append_to_response=credits,external_ids,keywords`);          const itemData = await detailsRes.json();
 
           movie.tmdbId = itemData.id;
 
