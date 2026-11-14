@@ -18,18 +18,44 @@
     --success: #00ff73; --danger: #ff003c;
   }
 
+  /* THÈME DE NOËL (SKIN DÉBLOQUÉ) */
+  body.theme-christmas {
+    --bg-dark: #06120c;
+    --neon-blue: #ff2a55;
+    --neon-pink: #00ff88;
+    --glass-bg: rgba(12, 28, 20, 0.72);
+    --glass-border: rgba(255, 215, 0, 0.25);
+  }
+  body.theme-christmas .bg-animation {
+    background: radial-gradient(circle at center, #0d261a 0%, #030a06 100%);
+  }
+  body.theme-christmas .orb-1 { background: #ff1e42; opacity: 0.45; }
+  body.theme-christmas .orb-2 { background: #00e676; opacity: 0.4; }
+  body.theme-christmas h1 {
+    text-shadow: 0 0 12px #ff2a55, 0 0 24px #ffd700;
+  }
+
   body { 
     background-color: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; 
     margin: 0; padding: 0; overflow-x: hidden; min-height: 100vh;
     -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;
+    transition: background-color 0.5s ease;
   }
 
-  /* ARRIÈRE-PLAN ANIMÉ */
-  .bg-animation { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; background: radial-gradient(circle at center, #0a0a16 0%, #000 100%); }
+  /* ARRIÈRE-PLAN ANIMÉ + FLOCONS DE NEIGE */
+  .bg-animation { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; background: radial-gradient(circle at center, #0a0a16 0%, #000 100%); transition: background 0.5s ease; }
   .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; animation: floatBg 10s infinite alternate ease-in-out; }
   .orb-1 { width: 40vw; height: 40vw; background: var(--neon-blue); top: -10%; left: -10%; }
   .orb-2 { width: 50vw; height: 50vw; background: var(--neon-pink); bottom: -20%; right: -10%; animation-duration: 15s; animation-direction: alternate-reverse; }
   @keyframes floatBg { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 50px) scale(1.1); } }
+
+  #snow-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 2; overflow: hidden; display: none; }
+  body.theme-christmas #snow-container { display: block; }
+  .snowflake { position: absolute; top: -10px; color: #fff; user-select: none; animation: fall linear infinite; opacity: 0.8; text-shadow: 0 0 6px #fff; }
+  @keyframes fall {
+    0% { transform: translateY(-10vh) rotate(0deg); }
+    100% { transform: translateY(110vh) rotate(360deg); }
+  }
 
   /* HEADER & TABS */
   header { text-align: center; padding: 30px 0 10px 0; background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%); }
@@ -46,6 +72,11 @@
   .btn-wishlist-top { background: rgba(255, 0, 234, 0.15); border: 1px solid var(--neon-pink); color: var(--neon-pink); box-shadow: 0 0 12px rgba(255, 0, 234, 0.25); }
   .btn-wishlist-top:hover { background: rgba(255, 0, 234, 0.3); box-shadow: 0 0 20px rgba(255, 0, 234, 0.5); transform: translateY(-1px); }
   .wishlist-counter-pill { background: var(--neon-blue); color: #000; font-weight: 800; padding: 1px 7px; border-radius: 10px; font-size: 11px; box-shadow: 0 0 8px var(--neon-blue); }
+
+  /* BOUTONS EN HAUT À DROITE (ÉVÉNEMENT NOËL / SKINS + NOUVEAUTÉS) */
+  .top-right-controls { position: absolute; top: 20px; right: 30px; display: flex; align-items: center; gap: 10px; z-index: 100; flex-wrap: wrap; }
+  .btn-xmas-top { background: linear-gradient(135deg, rgba(255, 30, 66, 0.22), rgba(0, 230, 118, 0.22)); border: 1px solid var(--gold); color: var(--gold); box-shadow: 0 0 14px rgba(255, 215, 0, 0.3); }
+  .btn-xmas-top:hover { background: rgba(255, 215, 0, 0.28); box-shadow: 0 0 22px rgba(255, 215, 0, 0.6); transform: translateY(-1px); }
 
   #app-content { display: none; }
   #app-content.loaded { display: block; }
@@ -288,9 +319,10 @@
     -webkit-text-fill-color: transparent;
     text-shadow: 0 0 25px rgba(0, 243, 255, 0.3);
   }
+  /* BARRE DE FILTRES ÉPURÉE : RECHERCHE + FORMAT + GENRE + HYPE + TRI MINIMAL + RESET + ROULETTE */
   .wishlist-controls-bar {
     display: grid;
-    grid-template-columns: 1.5fr 1fr 0.8fr 0.9fr 0.9fr 1.1fr auto;
+    grid-template-columns: 1.4fr 0.85fr 0.95fr 0.9fr 1.05fr auto auto;
     gap: 10px;
     align-items: center;
     background: rgba(0, 0, 0, 0.45);
@@ -312,7 +344,7 @@
     font-size: 13px;
     box-sizing: border-box;
     outline: none;
-    transition: 0.25s;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
   .wishlist-input:focus, .wishlist-select:focus {
     border-color: var(--neon-pink);
@@ -330,7 +362,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: transform 0.2s, box-shadow 0.2s;
     white-space: nowrap;
     box-shadow: 0 0 15px rgba(255, 0, 234, 0.35);
   }
@@ -353,7 +385,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    transition: 0.3s;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
     position: relative;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
   }
@@ -420,12 +452,13 @@
     font-weight: 700;
     cursor: pointer;
     border: 1px solid;
-    transition: 0.2s;
+    transition: transform 0.12s ease, background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
     margin-top: 6px;
     align-self: flex-start;
     user-select: none;
   }
   .hype-badge-btn:hover { transform: scale(1.06); }
+  .hype-badge-btn:active { transform: scale(0.95); }
   .hype-3 { background: rgba(255, 0, 60, 0.2); border-color: #ff0055; color: #ff5e8e; box-shadow: 0 0 10px rgba(255, 0, 85, 0.3); }
   .hype-2 { background: rgba(255, 215, 0, 0.15); border-color: var(--gold); color: var(--gold); }
   .hype-1 { background: rgba(0, 243, 255, 0.12); border-color: var(--neon-blue); color: var(--neon-blue); }
@@ -473,7 +506,7 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     cursor: pointer;
-    transition: 0.25s;
+    transition: 0.2s;
   }
   .btn-forge-wish:hover {
     background: var(--success);
@@ -493,6 +526,39 @@
   .btn-del-wish:hover {
     background: var(--danger);
     color: #fff;
+  }
+
+  /* MODALE ÉVÉNEMENT DE NOËL & SKINS */
+  .xmas-progress-box {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 215, 0, 0.35);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 18px;
+  }
+  .xmas-movie-chip {
+    display: inline-block;
+    background: rgba(0, 255, 136, 0.12);
+    border: 1px solid rgba(0, 255, 136, 0.4);
+    color: #b8ffda;
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 11px;
+    margin: 3px;
+  }
+  .skin-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 14px 16px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+  }
+  .skin-card.active-skin {
+    border-color: var(--gold);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.25);
   }
 
   /* OVERLAYS CLASSEUR GÉNÉRIQUE & ÉPISODES */
@@ -553,14 +619,14 @@
     .modal-notes { order: 2; width: 100%; min-height: 180px; margin-top: 10px; }
     .modal-synopsis { order: 3; margin-top: 20px; text-align: center; font-size: 14px;}
     .mystery-choices, .chrono-choices { grid-template-columns: 1fr; }
-    .top-left-controls { position: static; justify-content: center; margin-bottom: 10px; }
-    #changelog-btn { position: static !important; margin: 0 auto 15px auto; width: fit-content; }
+    .top-left-controls, .top-right-controls { position: static; justify-content: center; margin-bottom: 10px; }
   }
 </style>
 </head>
 <body>
 
 <div class="bg-animation"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
+<div id="snow-container"></div>
 
 <!-- ÉCRAN DE CONNEXION (VERROUILLAGE) -->
 <div id="login-overlay" class="overlay show">
@@ -590,9 +656,14 @@
         </div>
       </div>
 
-      <!-- BOUTON JOURNAL DE BORD (CHANGELOG) EN HAUT À DROITE -->
-      <div id="changelog-btn" onclick="openChangelogModal()" style="position: absolute; top: 20px; right: 30px; background: rgba(0, 243, 255, 0.15); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px); z-index: 100;">
-        📢 Nouveautés <span id="changelog-badge" style="background: var(--neon-pink); width: 8px; height: 8px; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px var(--neon-pink);"></span>
+      <!-- CONTRÔLES EN HAUT À DROITE : ÉVÉNEMENT NOËL / SKINS + NOUVEAUTÉS -->
+      <div class="top-right-controls">
+        <div id="xmas-event-btn" onclick="openChristmasModal()" class="top-pill-btn btn-xmas-top">
+          🎄 Défi Noël & Skins
+        </div>
+        <div id="changelog-btn" onclick="openChangelogModal()" class="top-pill-btn" style="background: rgba(0, 243, 255, 0.15); border: 1px solid var(--neon-blue); color: var(--neon-blue);">
+          📢 Nouveautés <span id="changelog-badge" style="background: var(--neon-pink); width: 8px; height: 8px; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px var(--neon-pink);"></span>
+        </div>
       </div>
 
       <h1>Ciné Cards</h1>
@@ -721,7 +792,7 @@
     <div class="wishlist-header">
       <div class="wishlist-title-group">
         <h2>🌟 Liste de Souhaits (<span id="wishlist-modal-count">0</span>)</h2>
-        <div style="font-size: 12px; color: rgba(255,255,255,0.65);">Ajoute tes envies en direct via TMDB, gère ton niveau de Hype et forge tes cartes en 1 clic !</div>
+        <div style="font-size: 12px; color: rgba(255,255,255,0.65);">Ajoute tes envies en direct via TMDB, gère ton niveau de Hype en 1 clic instantané et forge tes cartes !</div>
       </div>
       <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
         <div id="wishlist-quick-add-box" style="position: relative; width: 320px; max-width: 75vw;">
@@ -732,41 +803,28 @@
       </div>
     </div>
 
-    <!-- BARRE DE FILTRES & 16 MODES DE TRI CUMULABLES -->
+    <!-- BARRE DE FILTRES & TRI MINIMALISTE (FORMAT + GENRE + HYPE) -->
     <div class="wishlist-controls-bar">
       <input type="text" id="wish-filter-text" class="wishlist-input" placeholder="🔍 Filtrer (titre, réal, note...)" oninput="renderWishlistGrid()">
       <select id="wish-filter-type" class="wishlist-select" onchange="renderWishlistGrid()">
-        <option value="all">🎬 Tous les formats</option>
+        <option value="all">🎬 Format : Tous</option>
         <option value="Film">🎬 Films uniquement</option>
         <option value="Série">📺 Séries / Animés</option>
       </select>
       <select id="wish-filter-genre" class="wishlist-select" onchange="renderWishlistGrid()">
-        <option value="all">🎭 Tous les genres</option>
+        <option value="all">🎭 Genre : Tous</option>
       </select>
       <select id="wish-filter-hype" class="wishlist-select" onchange="renderWishlistGrid()">
-        <option value="all">🔥 Toutes Hypes</option>
+        <option value="all">🔥 Hype : Toutes</option>
         <option value="3">🔥🔥🔥 Absolue</option>
         <option value="2">🔥🔥 Moyenne</option>
         <option value="1">🔥 Tranquille</option>
       </select>
       <select id="wish-sort-mode" class="wishlist-select" style="border-color: var(--neon-pink);" onchange="renderWishlistGrid()">
-        <option value="added-desc">🕒 Ajout : Récents d'abord</option>
-        <option value="added-asc">🕒 Ajout : Anciens d'abord</option>
-        <option value="hype-desc">🔥 Hype : Plus forte d'abord</option>
-        <option value="hype-asc">🔥 Hype : Moins forte d'abord</option>
-        <option value="rating-desc">⭐ Note TMDB : Meilleure</option>
-        <option value="rating-asc">⭐ Note TMDB : Plus basse</option>
-        <option value="rarity-desc">💎 Rareté : Légendaire d'abord</option>
-        <option value="rarity-asc">💎 Rareté : Commune d'abord</option>
-        <option value="duration-asc">⏱️ Durée : Courte d'abord</option>
-        <option value="duration-desc">⏱️ Durée : Longue d'abord</option>
-        <option value="year-desc">📅 Sortie : Plus récente</option>
-        <option value="year-asc">📅 Sortie : Plus ancienne</option>
-        <option value="title-asc">🔤 Titre : A → Z</option>
-        <option value="title-desc">🔤 Titre : Z → A</option>
-        <option value="director-asc">🎬 Réalisateur : A → Z</option>
-        <option value="genre-asc">🎭 Genre : A → Z</option>
-        <option value="random">🎲 Ordre 100% Aléatoire</option>
+        <option value="hype-desc">🔥 Trier : Hype (Forte → Faible)</option>
+        <option value="hype-asc">🔥 Trier : Hype (Faible → Forte)</option>
+        <option value="genre-asc">🎭 Trier : Genre (A → Z)</option>
+        <option value="type-asc">🎬 Trier : Format (Films / Séries)</option>
       </select>
       <button class="btn-sync" onclick="resetWishlistFilters()" style="margin:0; padding: 9px 12px; font-size: 12px; border-radius: 10px;" title="Réinitialiser les filtres">↺ Reset</button>
       <button class="btn-roulette" onclick="spinWishlistRoulette()">🎲 Tirer au sort</button>
@@ -774,6 +832,19 @@
 
     <!-- GRILLE DES SOUHAITS -->
     <div id="wishlist-grid" class="wishlist-grid"></div>
+  </div>
+</div>
+
+<!-- MODALE ÉVÉNEMENT DE NOËL & GESTIONNAIRE DE SKINS -->
+<div id="christmas-overlay" class="overlay">
+  <span class="overlay-close" onclick="closeChristmasModal()">×</span>
+  <div class="selector-modal" style="max-width: 720px; height: auto; max-height: 86vh; border-color: var(--gold);">
+    <div class="selector-header">
+      <h2 style="font-family: 'Rajdhani'; color: var(--gold); text-transform: uppercase; margin: 0;">🎄 Événement Spécial Noël & Menu des Skins</h2>
+    </div>
+    <div id="christmas-modal-body" style="overflow-y: auto; padding: 5px 10px; text-align: left;">
+      <!-- Rempli dynamiquement -->
+    </div>
   </div>
 </div>
 
@@ -815,15 +886,34 @@
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">📢 Journal de Bord - Mises à Jour</h2></div>
     <div style="overflow-y: auto; text-align: left; padding: 10px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85);">
       
-      <!-- VERSION 7.9 -->
+      <!-- VERSION 8.1 -->
+      <div style="margin-bottom: 25px; border-left: 3px solid var(--success); padding-left: 12px;">
+        <h3 style="color: var(--success); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v8.1 - Optimisation Instantanée (0ms) & Tri Minimaliste Wishlist</h3>
+        <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Performance ultra-fluide & ergonomie épurée</p>
+        <ul style="margin: 0; padding-left: 18px;">
+          <li><strong>Changement de Hype 100% Instantané</strong> : Fini la latence ! Cliquer sur le badge de Hype met à jour l'élément directement dans le DOM en moins de 1ms sans recharger toute l'application ni les podiums.</li>
+          <li><strong>Système de Tri Minimaliste</strong> : La barre de tri et filtres de la Liste de Souhaits est désormais centrée uniquement sur l'essentiel : <strong>Hype</strong>, <strong>Genre</strong> et <strong>Format</strong> (Films / Séries).</li>
+        </ul>
+      </div>
+
+      <!-- VERSION 8.0 -->
       <div style="margin-bottom: 25px; border-left: 3px solid var(--neon-pink); padding-left: 12px;">
-        <h3 style="color: var(--neon-pink); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v7.9 - Liste de Souhaits Glassmorphism, Roulette & Transfert 1-Clic</h3>
+        <h3 style="color: var(--neon-pink); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v8.0 - Liste de Souhaits Glassmorphism, Roulette & Transfert 1-Clic</h3>
         <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Nouveau module de gestion des envies</p>
         <ul style="margin: 0; padding-left: 18px;">
           <li><strong>Bouton & Modale Plein Écran "🌟 Liste de Souhaits"</strong> : Accessible en haut à gauche avec compteur dynamique et interface Glassmorphism néon rose/bleu (96vw × 93vh).</li>
           <li><strong>Scan TMDB en Direct, Hype & Notes</strong> : Ajoute n'importe quel film, série ou animé instantanément, change son niveau de Hype (<em>Absolue, Moyenne, Tranquille</em>) en 1 clic et note qui te l'a conseillé.</li>
-          <li><strong>Moteur de Tri & Filtres Avancés</strong> : Filtre cumulable (texte, format, genre dynamique, priorité) et 16 modes de tri (ajout, hype, note TMDB, rareté potentielle, durée, année, alphabétique, réalisateur, genre, aléatoire).</li>
           <li><strong>🎲 Tirer au sort & Transfert 1-Clic ("✔ Vu ! Forger")</strong> : Une roulette sélectionne une œuvre selon tes filtres actifs, et le bouton <em>Forger</em> la retire de la liste et la pré-verrouille dans l'onglet Gestion !</li>
+        </ul>
+      </div>
+
+      <!-- VERSION 7.9 -->
+      <div style="margin-bottom: 25px; border-left: 3px solid var(--gold); padding-left: 12px;">
+        <h3 style="color: var(--gold); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v7.9 - Événement Spécial Noël & Menu des Skins Permanent</h3>
+        <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Défi saisonnier & personnalisation visuelle</p>
+        <ul style="margin: 0; padding-left: 18px;">
+          <li><strong>Défi des 20 Films de Noël</strong> : Détection intelligente et vérification des œuvres de Noël dans ta collection pour débloquer la récompense saisonnière.</li>
+          <li><strong>Thème Noël & Neige Animée</strong> : Débloque le skin festif (palette rouge/vert/or + flocons animés) et bascule à tout moment entre le thème Cyber Néon et le thème Noël via le menu permanent.</li>
         </ul>
       </div>
 
@@ -913,7 +1003,7 @@
 <script>
   const API_KEY = 'fb195a905bf531daf7eb642dbf16c455'; 
   const OMDB_KEY = 'bb349eee';
-  const CURRENT_CHANGELOG_VERSION = 'v7.9';
+  const CURRENT_CHANGELOG_VERSION = 'v8.1';
 
   // --- INITIALISATION DE LA BASE DE DONNÉES CLOUD (FIREBASE) ---
   const firebaseConfig = {
@@ -955,13 +1045,15 @@
   // VARIABLES GLOBALES
   let appSettings = JSON.parse(localStorage.getItem('thomasSettings_v74')) || {
     skipAnimation: false, precisionMode: false, dateMode: 'manual', searchMode: 'multi', universeCounts: {},
-    highScores: { mystery: 0, chrono: 0, critic: 0 }, pseudo: "", pin: ""
+    highScores: { mystery: 0, chrono: 0, critic: 0 }, pseudo: "", pin: "",
+    unlockedSkins: ['default'], activeSkin: 'default'
   };
   let myMovies = [];
   let myTop3 = { Film: [null, null, null], Série: [null, null, null] };
   let myWishlist = [];
   let notesVisible = true; let recentlyAddedKey = null; let currentPodiumSelectionType = null; let currentPodiumSelectionRank = null;
   let saveCloudTimeout = null;
+  let wishlistRenderTimeout = null;
   let rouletteHighlightedId = null;
 
   // --- FONCTIONS UTILITAIRES D'IDENTIFICATION UNIQUE (ANTI-DOUBLONS HOMONYMES) ---
@@ -1017,6 +1109,9 @@
        appSettings.highScores = oldSettings.highScores || appSettings.highScores;
        appSettings.pseudo = oldSettings.pseudo || ""; appSettings.pin = oldSettings.pin || "";
     }
+    if (!Array.isArray(appSettings.unlockedSkins)) appSettings.unlockedSkins = ['default'];
+    if (!appSettings.activeSkin) appSettings.activeSkin = 'default';
+    applyActiveSkin();
 
     if(appSettings.pseudo && appSettings.pin) {
         document.getElementById('login-pseudo').value = appSettings.pseudo;
@@ -1181,6 +1276,8 @@
                           if (saveData.moviesStr) myMovies = JSON.parse(saveData.moviesStr);
                           if (saveData.top3Str) myTop3 = JSON.parse(saveData.top3Str);
                           if (saveData.wishlistStr) myWishlist = JSON.parse(saveData.wishlistStr);
+                          if (Array.isArray(saveData.unlockedSkins)) appSettings.unlockedSkins = saveData.unlockedSkins;
+                          if (saveData.activeSkin) appSettings.activeSkin = saveData.activeSkin;
                       }
                       
                       appSettings.pseudo = resolvedPseudo;
@@ -1247,7 +1344,7 @@
       setTimeout(() => {
           document.getElementById('login-overlay').classList.remove('show');
           document.getElementById('app-content').classList.add('loaded');
-          saveDataLocalOnly(); applySettingsUI(); updateApp();
+          saveDataLocalOnly(); applySettingsUI(); applyActiveSkin(); updateApp();
       }, 1000);
   }
 
@@ -1261,16 +1358,30 @@
       localStorage.setItem('thomasMovieCollection_v74', JSON.stringify(myMovies));
       localStorage.setItem('thomasTop3_v74', JSON.stringify(myTop3));
       localStorage.setItem('thomasWishlist_v74', JSON.stringify(myWishlist));
+      localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
+  }
+
+  function scheduleCloudSync() {
+      if (saveCloudTimeout) clearTimeout(saveCloudTimeout);
+      saveCloudTimeout = setTimeout(() => {
+          syncProfileToCloud(true);
+      }, 1500);
+  }
+
+  // Sauvegarde légère dédiée à la Wishlist : zéro recalcul lourd de la collection principale
+  function saveWishlistFast(reRenderGrid = false) {
+      localStorage.setItem('thomasWishlist_v74', JSON.stringify(myWishlist));
+      updateWishlistCounters();
+      if (reRenderGrid && document.getElementById('wishlist-overlay').classList.contains('show')) {
+          renderWishlistGrid();
+      }
+      scheduleCloudSync();
   }
 
   function saveData() {
       saveDataLocalOnly();
       updateApp();
-      
-      if (saveCloudTimeout) clearTimeout(saveCloudTimeout);
-      saveCloudTimeout = setTimeout(() => {
-          syncProfileToCloud(true);
-      }, 1500);
+      scheduleCloudSync();
   }
 
   async function syncProfileToCloud(includeMovies = false) {
@@ -1305,7 +1416,9 @@
               let payloadSave = {
                 moviesStr: JSON.stringify(myMovies),
                 top3Str: JSON.stringify(myTop3),
-                wishlistStr: JSON.stringify(myWishlist)
+                wishlistStr: JSON.stringify(myWishlist),
+                unlockedSkins: appSettings.unlockedSkins || ['default'],
+                activeSkin: appSettings.activeSkin || 'default'
               };
               await db.collection('saves').doc(appSettings.pseudo).set(payloadSave, { merge: true });
           }
@@ -1427,7 +1540,14 @@
   }
 
   function exportData() {
-    const data = { movies: myMovies, top3: myTop3, wishlist: myWishlist }; const jsonStr = JSON.stringify(data);
+    const data = {
+      movies: myMovies,
+      top3: myTop3,
+      wishlist: myWishlist,
+      unlockedSkins: appSettings.unlockedSkins || ['default'],
+      activeSkin: appSettings.activeSkin || 'default'
+    };
+    const jsonStr = JSON.stringify(data);
     const blob = new Blob([jsonStr], { type: "application/json" }); const url = URL.createObjectURL(blob);
     const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.href = url; downloadAnchorNode.download = "cine_cards_sauvegarde.json";
     document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); document.body.removeChild(downloadAnchorNode); URL.revokeObjectURL(url);
@@ -1442,8 +1562,11 @@
           myMovies = importedData.movies;
           if (importedData.top3) myTop3 = importedData.top3;
           if (Array.isArray(importedData.wishlist)) myWishlist = importedData.wishlist;
+          if (Array.isArray(importedData.unlockedSkins)) appSettings.unlockedSkins = importedData.unlockedSkins;
+          if (importedData.activeSkin) appSettings.activeSkin = importedData.activeSkin;
+          applyActiveSkin();
           saveData();
-          alert("✅ Sauvegarde (collection, top 3 et liste de souhaits) restaurée et synchronisée avec le Cloud !");
+          alert("✅ Sauvegarde (collection, top 3, liste de souhaits et skins) restaurée et synchronisée avec le Cloud !");
         }
       } catch (err) { alert("❌ Erreur de lecture."); }
     };
@@ -1451,9 +1574,178 @@
   }
 
   // =========================================================================
-  // --- SYSTÈME COMPLET : LISTE DE SOUHAITS (WISHLIST) ---
+  // --- ÉVÉNEMENT SPÉCIAL NOËL & GESTIONNAIRE DE SKINS (v7.9) ---
+  // =========================================================================
+  const XMAS_KEYWORDS = [
+    "noel", "christmas", "santa", "pere noel", "grinch", "maman j ai rate l avion", "home alone",
+    "pole express", "polar express", "l etrange noel de monsieur jack", "nightmare before christmas",
+    "elf", "elfe", "love actually", "the holiday", "klaus", "arthur christmas", "mission noel",
+    "hyper noel", "super noel", "santa clause", "gremlins", "die hard", "piege de cristal",
+    "scrooge", "drole de noel", "a christmas carol", "le drole de noel de scrooge",
+    "chroniques de noel", "christmas chronicles", "violente nuit", "violent night",
+    "last christmas", "hollidate", "spirit of christmas", "the knight before christmas",
+    "alvin", "casse noisette", "nutcracker", "miracle sur la 34e rue", "miracle on 34th",
+    "la vie est belle", "its a wonderful life", "le sapin a les boules", "christmas vacation",
+    "la course au jouet", "jingle all the way", "jack frost", "rudolph", "frosty",
+    "noelle", "fred claus", "un conte de noel", "family man", "the family stone",
+    "four christmases", "tout sauf en famille", "deck the halls", "voisin contre voisin",
+    "bad santa", "office christmas party", "joyeux noel", "silent night", "black christmas",
+    "krampus", "fatman", "red one", "spirited", "a boy called christmas", "un garcon nomme noel",
+    "falling for christmas", "noel tombe a pic", "hot frosty", "carry on", "bagages"
+  ];
+
+  function detectChristmasMovies() {
+    return myMovies.filter(m => {
+      if (m.type !== 'Film') return false;
+      const hay = normalize(`${m.title || ''} ${m.universe || ''} ${m.quote || ''}`);
+      return XMAS_KEYWORDS.some(kw => hay.includes(normalize(kw)));
+    });
+  }
+
+  function applyActiveSkin() {
+    const skin = appSettings.activeSkin || 'default';
+    if (skin === 'christmas') {
+      document.body.classList.add('theme-christmas');
+      ensureSnowflakes();
+    } else {
+      document.body.classList.remove('theme-christmas');
+    }
+  }
+
+  function ensureSnowflakes() {
+    const container = document.getElementById('snow-container');
+    if (!container || container.children.length > 0) return;
+    const flakes = ['❄', '❅', '❆', '•'];
+    for (let i = 0; i < 35; i++) {
+      const span = document.createElement('span');
+      span.className = 'snowflake';
+      span.innerText = flakes[i % flakes.length];
+      span.style.left = Math.random() * 100 + 'vw';
+      span.style.fontSize = (10 + Math.random() * 14) + 'px';
+      span.style.animationDuration = (6 + Math.random() * 9) + 's';
+      span.style.animationDelay = (-Math.random() * 10) + 's';
+      container.appendChild(span);
+    }
+  }
+
+  window.openChristmasModal = function() {
+    renderChristmasModal();
+    document.getElementById('christmas-overlay').classList.add('show');
+  };
+
+  window.closeChristmasModal = function() {
+    document.getElementById('christmas-overlay').classList.remove('show');
+  };
+
+  document.getElementById('christmas-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeChristmasModal();
+  });
+
+  window.equipSkin = function(skinId) {
+    if (!appSettings.unlockedSkins.includes(skinId)) return;
+    appSettings.activeSkin = skinId;
+    applyActiveSkin();
+    saveData();
+    renderChristmasModal();
+  };
+
+  window.unlockChristmasReward = function(forceAdmin = false) {
+    const xmasFilms = detectChristmasMovies();
+    if (!forceAdmin && xmasFilms.length < 20) {
+      alert(`🎅 Il te manque encore ${20 - xmasFilms.length} film(s) de Noël visionné(s) dans ta collection pour débloquer ce skin !`);
+      return;
+    }
+    if (!appSettings.unlockedSkins.includes('christmas')) {
+      appSettings.unlockedSkins.push('christmas');
+    }
+    appSettings.activeSkin = 'christmas';
+    applyActiveSkin();
+    saveData();
+    renderChristmasModal();
+    alert("🎄 Félicitations ! Le Skin Exclusif Noël (Ambiance Rouge/Vert/Or + Neige) est débloqué et équipé !");
+  };
+
+  function renderChristmasModal() {
+    const body = document.getElementById('christmas-modal-body');
+    if (!body) return;
+
+    const xmasFilms = detectChristmasMovies();
+    const count = xmasFilms.length;
+    const target = 20;
+    const pct = Math.min(Math.round((count / target) * 100), 100);
+    const hasXmasSkin = (appSettings.unlockedSkins || []).includes('christmas');
+    const isAdmin = appSettings.pseudo === "Mr. Bonnet";
+
+    const chipsHtml = xmasFilms.length > 0
+      ? xmasFilms.map(m => `<span class="xmas-movie-chip">🎬 ${m.title} (${m.year})</span>`).join('')
+      : `<span style="color:#888; font-size:12px;">Aucun film de Noël détecté pour le moment.</span>`;
+
+    body.innerHTML = `
+      <div class="xmas-progress-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <strong style="color:var(--gold); font-family:'Rajdhani'; font-size:19px;">🎁 Défi : 20 Films de Noël Visionnés</strong>
+          <span style="color:var(--success); font-weight:bold; font-size:15px;">${count} / ${target} (${pct}%)</span>
+        </div>
+        <div class="progress-bar-bg" style="height:12px; margin-bottom:12px;">
+          <div class="progress-bar-fill" style="width:${pct}%; background: linear-gradient(90deg, #ff2a55, #ffd700, #00ff88);"></div>
+        </div>
+        <p style="font-size:12px; color:rgba(255,255,255,0.75); margin:0 0 10px 0;">
+          Forges 20 films de Noël dans ta collection pour débloquer définitivement le <strong>Skin Noël</strong> (thème Rouge/Vert/Or + flocons de neige).
+        </p>
+        <div style="max-height:110px; overflow-y:auto; padding:6px; background:rgba(0,0,0,0.35); border-radius:8px; margin-bottom:12px;">
+          ${chipsHtml}
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          ${!hasXmasSkin
+            ? `<button class="btn-submit" style="margin:0; flex:1; background:linear-gradient(90deg, #ff2a55, #00c853);" onclick="unlockChristmasReward(false)">🔍 Vérifier & Débloquer (${count}/${target})</button>`
+            : `<div style="color:var(--success); font-weight:bold; font-size:13px;">✔ Récompense débloquée et ajoutée à ton vestiaire !</div>`
+          }
+          ${isAdmin && !hasXmasSkin
+            ? `<button class="btn-sync" style="margin:0; border-color:var(--danger); color:var(--danger); font-size:12px; padding:10px 14px;" onclick="unlockChristmasReward(true)">🛡️ Bypass Admin</button>`
+            : ''
+          }
+        </div>
+      </div>
+
+      <h3 style="color:var(--neon-blue); font-family:'Rajdhani'; text-transform:uppercase; margin:0 0 10px 0; font-size:20px;">🎨 Menu Permanent des Skins</h3>
+
+      <div class="skin-card ${appSettings.activeSkin === 'default' ? 'active-skin' : ''}">
+        <div>
+          <div style="font-weight:bold; color:#fff; font-size:15px;">🌌 Cyber Néon (Classique)</div>
+          <div style="font-size:12px; color:#888;">Ambiance originale bleu cyan & rose néon.</div>
+        </div>
+        ${appSettings.activeSkin === 'default'
+          ? `<span style="color:var(--gold); font-weight:bold; font-size:12px;">✔ Équipé</span>`
+          : `<button class="btn-sync" style="margin:0; padding:6px 14px; font-size:12px;" onclick="equipSkin('default')">Équiper</button>`
+        }
+      </div>
+
+      <div class="skin-card ${appSettings.activeSkin === 'christmas' ? 'active-skin' : ''}">
+        <div>
+          <div style="font-weight:bold; color:var(--gold); font-size:15px;">🎄 Magie de Noël (Édition Limitée)</div>
+          <div style="font-size:12px; color:#aaa;">Palette Rouge, Vert Sapin & Or + chute de neige animée.</div>
+        </div>
+        ${!hasXmasSkin
+          ? `<span style="color:#888; font-size:12px;">🔒 Verrouillé (${count}/${target})</span>`
+          : (appSettings.activeSkin === 'christmas'
+              ? `<span style="color:var(--gold); font-weight:bold; font-size:12px;">✔ Équipé</span>`
+              : `<button class="btn-sync" style="margin:0; padding:6px 14px; font-size:12px; border-color:var(--gold); color:var(--gold);" onclick="equipSkin('christmas')">Équiper</button>`
+            )
+        }
+      </div>
+    `;
+  }
+
+  // =========================================================================
+  // --- SYSTÈME ULTRA-RÉACTIF & MINIMALISTE : LISTE DE SOUHAITS (v8.1) ---
   // =========================================================================
   let wishlistSearchTimeout = null;
+
+  const HYPE_CONFIG = {
+    3: { label: '🔥🔥🔥 Absolue', cls: 'hype-3' },
+    2: { label: '🔥🔥 Moyenne', cls: 'hype-2' },
+    1: { label: '🔥 Tranquille', cls: 'hype-1' }
+  };
 
   function updateWishlistCounters() {
     const count = Array.isArray(myWishlist) ? myWishlist.length : 0;
@@ -1490,7 +1782,7 @@
       return;
     }
     clearTimeout(wishlistSearchTimeout);
-    wishlistSearchTimeout = setTimeout(() => fetchWishlistTmdbCandidates(q), 300);
+    wishlistSearchTimeout = setTimeout(() => fetchWishlistTmdbCandidates(q), 250);
   };
 
   async function fetchWishlistTmdbCandidates(query) {
@@ -1627,7 +1919,8 @@
       };
 
       myWishlist.unshift(newWish);
-      saveData();
+      populateWishlistGenreFilter();
+      saveWishlistFast(true);
     } catch (e) {
       alert("❌ Impossible d'ajouter cette œuvre depuis TMDB.");
     } finally {
@@ -1635,41 +1928,65 @@
     }
   };
 
-  window.cycleWishHype = function(uid) {
+  // MISE À JOUR DOM EN 0ms SANS RE-RENDER DE TOUTE L'APPLICATION !
+  window.cycleWishHype = function(uid, badgeEl) {
     const item = myWishlist.find(w => w.uid === uid);
     if (!item) return;
-    item.hype = item.hype === 3 ? 2 : (item.hype === 2 ? 1 : 3);
-    saveData();
+
+    // 1. Mise à jour immédiate de la donnée en mémoire
+    const nextHype = item.hype === 3 ? 2 : (item.hype === 2 ? 1 : 3);
+    item.hype = nextHype;
+
+    // 2. Patch chirurgical instantané du badge cliqué (< 0.1ms)
+    const targetBadge = badgeEl || document.getElementById(`hype-badge-${uid}`);
+    if (targetBadge) {
+      const cfg = HYPE_CONFIG[nextHype];
+      targetBadge.className = `hype-badge-btn ${cfg.cls}`;
+      targetBadge.textContent = cfg.label;
+    }
+
+    // 3. Sauvegarde locale immédiate + synchro Firebase différée en arrière-plan
+    localStorage.setItem('thomasWishlist_v74', JSON.stringify(myWishlist));
+    scheduleCloudSync();
+
+    // 4. Si un filtre ou tri actif dépend de la hype, on ré-ordonne doucement après un court délai
+    const hypeF = document.getElementById('wish-filter-hype')?.value || 'all';
+    const sortMode = document.getElementById('wish-sort-mode')?.value || 'hype-desc';
+    if (hypeF !== 'all' || sortMode.startsWith('hype-')) {
+      if (wishlistRenderTimeout) clearTimeout(wishlistRenderTimeout);
+      wishlistRenderTimeout = setTimeout(() => {
+        renderWishlistGrid();
+      }, 320);
+    }
   };
 
   window.updateWishNote = function(uid, val) {
     const item = myWishlist.find(w => w.uid === uid);
     if (!item) return;
     item.note = val;
-    saveDataLocalOnly();
-    if (saveCloudTimeout) clearTimeout(saveCloudTimeout);
-    saveCloudTimeout = setTimeout(() => syncProfileToCloud(true), 1500);
+    localStorage.setItem('thomasWishlist_v74', JSON.stringify(myWishlist));
+    scheduleCloudSync();
   };
 
   window.deleteWishItem = function(uid) {
     myWishlist = myWishlist.filter(w => w.uid !== uid);
     if (rouletteHighlightedId === uid) rouletteHighlightedId = null;
-    saveData();
+    const cardEl = document.getElementById(`wish-card-${uid}`);
+    if (cardEl) cardEl.remove();
+    populateWishlistGenreFilter();
+    saveWishlistFast(myWishlist.length === 0);
   };
 
   window.forgeWishItem = function(uid) {
     const item = myWishlist.find(w => w.uid === uid);
     if (!item) return;
 
-    // Retrait de la liste de souhaits
     myWishlist = myWishlist.filter(w => w.uid !== uid);
-    saveData();
+    saveWishlistFast(false);
 
-    // Fermeture de la modale & bascule vers l'onglet Gestion
     closeWishlistModal();
     switchTab('gestion');
 
-    // Pré-remplissage et verrouillage de la cible exacte dans la Forge
     const titleInput = document.getElementById('m-title');
     const yearInput = document.getElementById('m-year');
     const dirInput = document.getElementById('m-director');
@@ -1709,7 +2026,7 @@
       if (Array.isArray(w.genres)) w.genres.forEach(g => genreSet.add(g));
     });
     const sortedGenres = Array.from(genreSet).sort((a, b) => a.localeCompare(b));
-    select.innerHTML = `<option value="all">🎭 Tous les genres</option>` +
+    select.innerHTML = `<option value="all">🎭 Genre : Tous</option>` +
       sortedGenres.map(g => `<option value="${g}">${g}</option>`).join('');
     if (sortedGenres.includes(currentVal)) select.value = currentVal;
   }
@@ -1719,7 +2036,7 @@
     const typeF = document.getElementById('wish-filter-type')?.value || 'all';
     const genreF = document.getElementById('wish-filter-genre')?.value || 'all';
     const hypeF = document.getElementById('wish-filter-hype')?.value || 'all';
-    const sortMode = document.getElementById('wish-sort-mode')?.value || 'added-desc';
+    const sortMode = document.getElementById('wish-sort-mode')?.value || 'hype-desc';
 
     let list = myWishlist.filter(w => {
       if (typeF !== 'all' && w.type !== typeF) return false;
@@ -1732,26 +2049,20 @@
       return true;
     });
 
-    const rarityRank = { legendaire: 4, epique: 3, rare: 2, commune: 1 };
-
+    // Tri minimaliste : Hype, Genre et Format uniquement
     switch (sortMode) {
-      case 'added-desc': list.sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0)); break;
-      case 'added-asc': list.sort((a, b) => (a.addedAt || 0) - (b.addedAt || 0)); break;
-      case 'hype-desc': list.sort((a, b) => (b.hype || 2) - (a.hype || 2) || (b.addedAt || 0) - (a.addedAt || 0)); break;
-      case 'hype-asc': list.sort((a, b) => (a.hype || 2) - (b.hype || 2) || (b.addedAt || 0) - (a.addedAt || 0)); break;
-      case 'rating-desc': list.sort((a, b) => (b.rating || 0) - (a.rating || 0)); break;
-      case 'rating-asc': list.sort((a, b) => (a.rating || 0) - (b.rating || 0)); break;
-      case 'rarity-desc': list.sort((a, b) => (rarityRank[b.rarity] || 1) - (rarityRank[a.rarity] || 1) || (b.rating || 0) - (a.rating || 0)); break;
-      case 'rarity-asc': list.sort((a, b) => (rarityRank[a.rarity] || 1) - (rarityRank[b.rarity] || 1) || (a.rating || 0) - (b.rating || 0)); break;
-      case 'duration-asc': list.sort((a, b) => (a.durationMinutes || 99999) - (b.durationMinutes || 99999)); break;
-      case 'duration-desc': list.sort((a, b) => (b.durationMinutes || 0) - (a.durationMinutes || 0)); break;
-      case 'year-desc': list.sort((a, b) => (parseInt(b.year) || 0) - (parseInt(a.year) || 0)); break;
-      case 'year-asc': list.sort((a, b) => (parseInt(a.year) || 9999) - (parseInt(b.year) || 9999)); break;
-      case 'title-asc': list.sort((a, b) => (a.title || '').localeCompare(b.title || '')); break;
-      case 'title-desc': list.sort((a, b) => (b.title || '').localeCompare(a.title || '')); break;
-      case 'director-asc': list.sort((a, b) => (a.director || 'ZZZ').localeCompare(b.director || 'ZZZ')); break;
-      case 'genre-asc': list.sort((a, b) => (a.genreStr || 'ZZZ').localeCompare(b.genreStr || 'ZZZ')); break;
-      case 'random': list.sort(() => Math.random() - 0.5); break;
+      case 'hype-desc':
+        list.sort((a, b) => (b.hype || 2) - (a.hype || 2) || (b.addedAt || 0) - (a.addedAt || 0));
+        break;
+      case 'hype-asc':
+        list.sort((a, b) => (a.hype || 2) - (b.hype || 2) || (b.addedAt || 0) - (a.addedAt || 0));
+        break;
+      case 'genre-asc':
+        list.sort((a, b) => (a.genreStr || 'ZZZ').localeCompare(b.genreStr || 'ZZZ') || (b.hype || 2) - (a.hype || 2));
+        break;
+      case 'type-asc':
+        list.sort((a, b) => (a.type || '').localeCompare(b.type || '') || (b.hype || 2) - (a.hype || 2));
+        break;
     }
 
     return list;
@@ -1762,7 +2073,7 @@
     document.getElementById('wish-filter-type').value = 'all';
     document.getElementById('wish-filter-genre').value = 'all';
     document.getElementById('wish-filter-hype').value = 'all';
-    document.getElementById('wish-sort-mode').value = 'added-desc';
+    document.getElementById('wish-sort-mode').value = 'hype-desc';
     rouletteHighlightedId = null;
     renderWishlistGrid();
   };
@@ -1781,7 +2092,7 @@
       if (cardEl) {
         cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-    }, 80);
+    }, 60);
   };
 
   function renderWishlistGrid() {
@@ -1796,11 +2107,6 @@
       return;
     }
 
-    const hypeConfig = {
-      3: { label: '🔥🔥🔥 Absolue', cls: 'hype-3' },
-      2: { label: '🔥🔥 Moyenne', cls: 'hype-2' },
-      1: { label: '🔥 Tranquille', cls: 'hype-1' }
-    };
     const rarityLabel = {
       legendaire: '<span style="color:var(--gold);">💎 Légendaire</span>',
       epique: '<span style="color:var(--neon-pink);">💜 Épique</span>',
@@ -1809,7 +2115,7 @@
     };
 
     grid.innerHTML = list.map(w => {
-      const h = hypeConfig[w.hype || 2] || hypeConfig[2];
+      const h = HYPE_CONFIG[w.hype || 2] || HYPE_CONFIG[2];
       const isWinner = rouletteHighlightedId === w.uid ? 'roulette-winner' : '';
       const typePill = w.type === 'Série'
         ? `<span style="color:var(--neon-pink); font-weight:bold;">📺 Série</span>`
@@ -1818,7 +2124,7 @@
       return `
         <div id="wish-card-${w.uid}" class="wish-card ${isWinner}">
           <div class="wish-card-top">
-            <img src="${w.poster}" class="wish-poster" alt="">
+            <img src="${w.poster}" class="wish-poster" alt="" loading="lazy">
             <div class="wish-info">
               <div>
                 <h4 class="wish-title" title="${(w.title || '').replace(/"/g, '&quot;')}">${w.title}</h4>
@@ -1828,7 +2134,7 @@
                   ⏱️ ${w.durationLabel} • ${rarityLabel[w.rarity] || ''}
                 </div>
               </div>
-              <div class="hype-badge-btn ${h.cls}" onclick="cycleWishHype('${w.uid}')" title="Cliquer pour changer la priorité">
+              <div id="hype-badge-${w.uid}" class="hype-badge-btn ${h.cls}" onclick="cycleWishHype('${w.uid}', this)" title="Cliquer pour changer la priorité">
                 ${h.label}
               </div>
             </div>
