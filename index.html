@@ -40,6 +40,13 @@
   .tab-btn.btn-classement { border-color: var(--gold); color: var(--gold); }
   .tab-btn.btn-classement:hover, .tab-btn.btn-classement.active { background: rgba(255, 215, 0, 0.1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
 
+  /* BARRE D'ACTIONS EN HAUT À GAUCHE */
+  .top-left-controls { position: absolute; top: 20px; left: 30px; display: flex; align-items: center; gap: 10px; z-index: 100; flex-wrap: wrap; }
+  .top-pill-btn { padding: 8px 16px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 7px; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px); }
+  .btn-wishlist-top { background: rgba(255, 0, 234, 0.15); border: 1px solid var(--neon-pink); color: var(--neon-pink); box-shadow: 0 0 12px rgba(255, 0, 234, 0.25); }
+  .btn-wishlist-top:hover { background: rgba(255, 0, 234, 0.3); box-shadow: 0 0 20px rgba(255, 0, 234, 0.5); transform: translateY(-1px); }
+  .wishlist-counter-pill { background: var(--neon-blue); color: #000; font-weight: 800; padding: 1px 7px; border-radius: 10px; font-size: 11px; box-shadow: 0 0 8px var(--neon-blue); }
+
   #app-content { display: none; }
   #app-content.loaded { display: block; }
 
@@ -243,6 +250,251 @@
   .modal-synopsis { flex: 1; color: #fff; text-shadow: none; font-size: 16px; line-height: 1.6; font-weight: 500; max-height: 80vh; overflow-y: auto; text-align: left; }
   .modal-synopsis h3 { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); font-family: 'Rajdhani'; text-transform: uppercase; font-size: 24px; margin-top: 0;}
 
+  /* MODALE PLEIN ÉCRAN : LISTE DE SOUHAITS (GLASSMORPHISM NÉON ROSE/BLEU) */
+  .wishlist-modal {
+    width: 96vw;
+    height: 93vh;
+    background: linear-gradient(135deg, rgba(12, 12, 24, 0.88) 0%, rgba(22, 8, 30, 0.88) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 0, 234, 0.45);
+    box-shadow: 0 0 50px rgba(0, 243, 255, 0.25), inset 0 0 30px rgba(255, 0, 234, 0.15);
+    border-radius: 24px;
+    padding: 24px 30px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  .wishlist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    margin-bottom: 18px;
+  }
+  .wishlist-title-group h2 {
+    margin: 0;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 32px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 25px rgba(0, 243, 255, 0.3);
+  }
+  .wishlist-controls-bar {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 0.8fr 0.9fr 0.9fr 1.1fr auto;
+    gap: 10px;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(0, 243, 255, 0.25);
+    padding: 12px 15px;
+    border-radius: 16px;
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 120;
+  }
+  .wishlist-input, .wishlist-select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(10, 10, 20, 0.85);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    box-sizing: border-box;
+    outline: none;
+    transition: 0.25s;
+  }
+  .wishlist-input:focus, .wishlist-select:focus {
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 12px rgba(255, 0, 234, 0.3);
+  }
+  .btn-roulette {
+    background: linear-gradient(135deg, var(--neon-pink), #8a00ff);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: 0.3s;
+    white-space: nowrap;
+    box-shadow: 0 0 15px rgba(255, 0, 234, 0.35);
+  }
+  .btn-roulette:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 25px rgba(255, 0, 234, 0.7);
+  }
+  .wishlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+    overflow-y: auto;
+    flex-grow: 1;
+    padding: 4px 6px 15px 2px;
+  }
+  .wish-card {
+    background: rgba(18, 18, 34, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: 0.3s;
+    position: relative;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  }
+  .wish-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--neon-blue);
+    box-shadow: 0 10px 28px rgba(0, 243, 255, 0.25);
+  }
+  .wish-card.roulette-winner {
+    border: 2px solid var(--gold) !important;
+    box-shadow: 0 0 35px rgba(255, 215, 0, 0.85) !important;
+    transform: scale(1.03);
+    animation: pulseWinner 1s infinite alternate;
+  }
+  @keyframes pulseWinner {
+    from { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+    to { box-shadow: 0 0 40px rgba(255, 0, 234, 0.9); }
+  }
+  .wish-card-top {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    background: linear-gradient(180deg, rgba(0, 243, 255, 0.06) 0%, transparent 100%);
+  }
+  .wish-poster {
+    width: 78px;
+    height: 116px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+  }
+  .wish-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .wish-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.15;
+    margin: 0 0 4px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .wish-meta {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.4;
+  }
+  .hype-badge-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 9px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid;
+    transition: 0.2s;
+    margin-top: 6px;
+    align-self: flex-start;
+    user-select: none;
+  }
+  .hype-badge-btn:hover { transform: scale(1.06); }
+  .hype-3 { background: rgba(255, 0, 60, 0.2); border-color: #ff0055; color: #ff5e8e; box-shadow: 0 0 10px rgba(255, 0, 85, 0.3); }
+  .hype-2 { background: rgba(255, 215, 0, 0.15); border-color: var(--gold); color: var(--gold); }
+  .hype-1 { background: rgba(0, 243, 255, 0.12); border-color: var(--neon-blue); color: var(--neon-blue); }
+
+  .wish-note-box {
+    padding: 0 12px 10px 12px;
+    flex-grow: 1;
+  }
+  .wish-note-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px dashed rgba(255, 215, 0, 0.35);
+    border-radius: 8px;
+    color: #f3e8b5;
+    font-family: 'Inter', sans-serif;
+    font-size: 11.5px;
+    padding: 7px 9px;
+    box-sizing: border-box;
+    resize: none;
+    height: 46px;
+    outline: none;
+    transition: 0.2s;
+  }
+  .wish-note-input:focus {
+    border-color: var(--gold);
+    background: rgba(255, 215, 0, 0.08);
+  }
+  .wish-actions {
+    display: flex;
+    gap: 8px;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.45);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .btn-forge-wish {
+    flex: 1;
+    background: linear-gradient(90deg, rgba(0, 255, 115, 0.2), rgba(0, 243, 255, 0.2));
+    border: 1px solid var(--success);
+    color: var(--success);
+    padding: 7px 10px;
+    border-radius: 8px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: 0.25s;
+  }
+  .btn-forge-wish:hover {
+    background: var(--success);
+    color: #000;
+    box-shadow: 0 0 15px rgba(0, 255, 115, 0.5);
+  }
+  .btn-del-wish {
+    background: rgba(255, 0, 60, 0.12);
+    border: 1px solid rgba(255, 0, 60, 0.4);
+    color: #ff5c7c;
+    padding: 7px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: 0.2s;
+  }
+  .btn-del-wish:hover {
+    background: var(--danger);
+    color: #fff;
+  }
+
   /* OVERLAYS CLASSEUR GÉNÉRIQUE & ÉPISODES */
   #collection-binder-overlay { background: rgba(0,0,0,0.9); }
   #episode-manager-overlay { background: rgba(0,0,0,0.95); z-index: 10001; }
@@ -292,107 +544,17 @@
   input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 26px; width: 26px; border-radius: 50%; background: var(--gold); cursor: pointer; margin-top: -9px; box-shadow: 0 0 15px var(--gold); }
   input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: rgba(255, 255, 255, 0.2); border-radius: 5px; }
 
+  @media (max-width: 1100px) {
+    .wishlist-controls-bar { grid-template-columns: 1fr 1fr; }
+  }
   @media (max-width: 900px) { 
     .collection-layout { flex-direction: column; } .sidebar { width: 100%; position: static; } 
     .modal-wrapper { flex-direction: column; text-align: center; } .modal-card-container { order: 1; }
     .modal-notes { order: 2; width: 100%; min-height: 180px; margin-top: 10px; }
     .modal-synopsis { order: 3; margin-top: 20px; text-align: center; font-size: 14px;}
     .mystery-choices, .chrono-choices { grid-template-columns: 1fr; }
-  }
-
-  /* =========================================================
-     🎄 SKIN DE NOËL FÉERIQUE (TEMPS RÉEL & GLASSMORPHISM HIVERNAL)
-     ========================================================= */
-  #snow-canvas {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    pointer-events: none; z-index: 9998; display: none;
-  }
-  body.skin-noel #snow-canvas { display: block; }
-
-  body.skin-noel {
-    --bg-dark: #040d08;
-    --neon-blue: #ff2a4b;
-    --neon-pink: #00e676;
-    --gold: #ffd700;
-    --glass-bg: rgba(10, 28, 18, 0.72);
-    --glass-border: rgba(255, 215, 0, 0.3);
-  }
-  body.skin-noel .bg-animation {
-    background: radial-gradient(circle at 50% 20%, #163824 0%, #051209 65%, #020804 100%);
-  }
-  body.skin-noel .orb-1 { background: #ff1744; opacity: 0.45; }
-  body.skin-noel .orb-2 { background: #00c853; opacity: 0.4; }
-
-  /* Guirlande lumineuse interactive sous le header */
-  .christmas-garland {
-    display: none; justify-content: center; gap: 28px; padding: 0 0 18px 0;
-    overflow: hidden; width: 100%; pointer-events: none;
-  }
-  body.skin-noel .christmas-garland { display: flex; }
-  .bulb {
-    width: 12px; height: 18px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
-    position: relative; animation: bulbGlow 1.6s infinite alternate ease-in-out;
-  }
-  .bulb::before {
-    content: ''; position: absolute; top: -5px; left: 3px; width: 6px; height: 5px;
-    background: #333; border-radius: 2px;
-  }
-  .bulb:nth-child(4n+1) { background: #ff1744; color: #ff1744; animation-delay: 0s; }
-  .bulb:nth-child(4n+2) { background: #ffd700; color: #ffd700; animation-delay: 0.4s; }
-  .bulb:nth-child(4n+3) { background: #00e676; color: #00e676; animation-delay: 0.8s; }
-  .bulb:nth-child(4n+4) { background: #00e5ff; color: #00e5ff; animation-delay: 1.2s; }
-  @keyframes bulbGlow {
-    0% { opacity: 0.45; transform: scale(0.92); box-shadow: 0 0 6px currentColor; }
-    100% { opacity: 1; transform: scale(1.1); box-shadow: 0 0 18px currentColor, 0 0 30px currentColor; }
-  }
-
-  /* Effet Givre & Sucre d'orge sur les panneaux et cartes */
-  body.skin-noel h1 {
-    text-shadow: 0 0 12px #ff1744, 0 0 25px #ffd700, 0 0 40px #00e676;
-  }
-  body.skin-noel .glass-panel {
-    border: 1px solid rgba(255, 215, 0, 0.35);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 2px 12px rgba(255, 255, 255, 0.18);
-  }
-  body.skin-noel .card-face.card-front::after {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(125deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.22) 50%, rgba(255,215,0,0.12) 55%, rgba(255,255,255,0) 70%);
-    background-size: 200% 200%; animation: frostShimmer 4s infinite linear; pointer-events: none;
-  }
-  @keyframes frostShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-  body.skin-noel::-webkit-scrollbar-thumb {
-    background: repeating-linear-gradient(45deg, #ff1744, #ff1744 8px, #ffffff 8px, #ffffff 16px);
-  }
-
-  /* Bannière Event de Noël & Jauge Sucre d'Orge */
-  .xmas-event-banner {
-    background: linear-gradient(135deg, rgba(160, 0, 30, 0.35), rgba(0, 90, 40, 0.45));
-    border: 2px solid var(--gold); position: relative; overflow: hidden; margin-top: 30px;
-  }
-  .candy-progress-bg {
-    width: 100%; height: 18px; background: rgba(0,0,0,0.65); border-radius: 15px;
-    border: 1px solid var(--gold); overflow: hidden; margin: 12px 0; position: relative;
-  }
-  .candy-progress-fill {
-    height: 100%;
-    background: repeating-linear-gradient(45deg, #ff1744, #ff1744 12px, #ffffff 12px, #ffffff 24px, #00c853 24px, #00c853 36px, #ffffff 36px, #ffffff 48px);
-    background-size: 68px 68px; animation: candySlide 1.5s linear infinite;
-    box-shadow: 0 0 15px rgba(255, 23, 68, 0.8); transition: width 0.6s ease;
-  }
-  @keyframes candySlide { 0% { background-position: 0 0; } 100% { background-position: 68px 0; } }
-
-  .xmas-verified-badge {
-    position: absolute; bottom: 8px; right: 8px; background: rgba(0, 120, 50, 0.9);
-    border: 1px solid var(--gold); color: #fff; padding: 3px 8px; border-radius: 12px;
-    font-size: 9px; font-weight: bold; z-index: 12; box-shadow: 0 2px 8px rgba(0,0,0,0.7);
-  }
-  .quiz-timer-bar {
-    width: 100%; height: 6px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; margin-bottom: 18px;
-  }
-  .quiz-timer-fill {
-    height: 100%; background: linear-gradient(90deg, var(--success), var(--gold), var(--danger));
-    transition: width 1s linear;
+    .top-left-controls { position: static; justify-content: center; margin-bottom: 10px; }
+    #changelog-btn { position: static !important; margin: 0 auto 15px auto; width: fit-content; }
   }
 </style>
 </head>
@@ -400,8 +562,6 @@
 
 <div class="bg-animation"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
 
-<canvas id="snow-canvas"></canvas>
-  
 <!-- ÉCRAN DE CONNEXION (VERROUILLAGE) -->
 <div id="login-overlay" class="overlay show">
   <div class="glass-panel login-box">
@@ -413,35 +573,29 @@
       <button class="btn-submit" onclick="attemptAuth('login')" id="btn-login" style="margin-top: 0;">Se connecter</button>
       <button class="btn-sync" onclick="attemptAuth('register')" id="btn-register" style="margin-top: 0; margin-bottom: 0; width: 100%; border-color: var(--neon-pink); color: var(--neon-pink);">Créer un compte</button>
     </div>
-    <div id="login-status" style="margin-top: 15px; font-size: 14px; font-weight: bold; color: var(--neon-blue); height: 20px;"></div>
+    <div id="login-status" style="margin-top: 15px; font-size: 14px; font-weight: bold; color: var(--neon-blue); min-height: 20px;"></div>
   </div>
 </div>
 
 <!-- LE RESTE DE L'APPLICATION -->
 <div id="app-content">
     <header style="position: relative;">
-      <!-- BOUTON DASHBOARD ADMIN (EN HAUT À GAUCHE, VISIBLE UNIQUEMENT POUR MR. BONNET) -->
-      <div id="admin-dash-btn" onclick="openAdminModal()" style="display: none; position: absolute; top: 20px; left: 30px; background: rgba(255, 0, 60, 0.15); border: 1px solid var(--danger); color: var(--danger); padding: 8px 16px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px); z-index: 100;">
-        🛡️ Panel Admin
+      <!-- CONTRÔLES EN HAUT À GAUCHE : LISTE DE SOUHAITS + PANEL ADMIN -->
+      <div class="top-left-controls">
+        <div id="wishlist-open-btn" onclick="openWishlistModal()" class="top-pill-btn btn-wishlist-top">
+          🌟 Liste de Souhaits <span id="wishlist-top-counter" class="wishlist-counter-pill">0</span>
+        </div>
+        <div id="admin-dash-btn" onclick="openAdminModal()" class="top-pill-btn" style="display: none; background: rgba(255, 0, 60, 0.15); border: 1px solid var(--danger); color: var(--danger);">
+          🛡️ Panel Admin
+        </div>
       </div>
 
-      <!-- BOUTONS EN HAUT À DROITE : SKINS & NOUVEAUTÉS -->
-      <div style="position: absolute; top: 20px; right: 30px; display: flex; gap: 10px; z-index: 100; flex-wrap: wrap; justify-content: flex-end;">
-        <div id="skins-vault-btn" onclick="openSkinsModal()" style="background: rgba(255, 215, 0, 0.15); border: 1px solid var(--gold); color: var(--gold); padding: 8px 16px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px);">
-          🎨 Skins
-        </div>
-        <div id="changelog-btn" onclick="openChangelogModal()" style="background: rgba(0, 243, 255, 0.15); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px);">
-          📢 Nouveautés <span id="changelog-badge" style="background: var(--neon-pink); width: 8px; height: 8px; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px var(--neon-pink);"></span>
-        </div>
+      <!-- BOUTON JOURNAL DE BORD (CHANGELOG) EN HAUT À DROITE -->
+      <div id="changelog-btn" onclick="openChangelogModal()" style="position: absolute; top: 20px; right: 30px; background: rgba(0, 243, 255, 0.15); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px); z-index: 100;">
+        📢 Nouveautés <span id="changelog-badge" style="background: var(--neon-pink); width: 8px; height: 8px; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px var(--neon-pink);"></span>
       </div>
 
       <h1>Ciné Cards</h1>
-      <div class="christmas-garland">
-        <div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div>
-        <div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div>
-        <div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div>
-        <div class="bulb"></div><div class="bulb"></div><div class="bulb"></div><div class="bulb"></div>
-      </div>
       <nav class="tabs">
         <button class="tab-btn active" onclick="switchTab('vitrine')">Vitrine</button>
         <button class="tab-btn" onclick="switchTab('gestion')">Gestion</button>
@@ -457,28 +611,6 @@
         <div class="glass-panel stat-card"><h3 style="margin:0;">Cartes Débloquées</h3><div class="stat-value" id="stat-total" style="font-size: 48px; margin: 10px 0;">0</div><div class="stat-detail">Œuvres archivées dans ton classeur</div></div>
         <div class="glass-panel stat-card"><h3 style="margin:0; color: var(--gold);">Temps de Visionnage</h3><div class="stat-value" id="stat-runtime" style="font-size: 48px; margin: 10px 0; color: var(--gold); text-shadow: 0 0 10px var(--gold);">0 h</div><div class="stat-detail">Durée totale cumulée (arrondie à l'heure)</div></div>
         <div class="glass-panel stat-card"><h3 style="margin:0; color: var(--neon-pink);">Réal / Créateur Favori</h3><div class="stat-value" id="stat-director" style="font-size: 28px; margin: 10px 0; color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink);">...</div><div class="stat-detail">L'artiste le plus présent dans ta base</div></div>
-      </div>
-      <!-- BANNIÈRE EVENT DE NOËL (QUÊTE 20 FILMS VÉRIFIÉS) -->
-      <div class="glass-panel xmas-event-banner">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-          <div style="text-align: left; flex: 1; min-width: 260px;">
-            <div style="display: inline-block; background: var(--gold); color: #000; font-family: 'Rajdhani'; font-weight: bold; font-size: 11px; padding: 2px 10px; border-radius: 12px; text-transform: uppercase; margin-bottom: 6px;">🎄 Événement Saisonnier Exclusif</div>
-            <h3 style="margin: 0; font-family: 'Rajdhani'; font-size: 28px; color: #fff; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 12px #ff1744;">Défi Féerie d'Hiver : 20 Nouveaux Films de Noël</h3>
-            <p style="margin: 5px 0 0 0; font-size: 13px; color: rgba(255,255,255,0.85);">Forge <strong>20 nouveaux films de Noël</strong> et réussis le <strong>Quiz Anti-Triche (3/3)</strong> sur chacun d'eux pour débloquer le Skin Collector <em>"Noël Féerique"</em> (Neige temps réel 60 FPS, givre & badge Panthéon) !</p>
-          </div>
-          <div style="text-align: center; min-width: 210px;">
-            <div style="font-family: 'Rajdhani'; font-size: 26px; font-weight: bold; color: var(--gold);" id="xmas-quest-counter">0 / 20 Validés</div>
-            <button id="xmas-skin-toggle-btn" class="btn-sync" onclick="toggleChristmasSkin()" style="display: none; border-color: var(--gold); color: var(--gold); margin: 8px 0 0 0; padding: 8px 20px; font-size: 14px;">✨ Équiper le Skin Noël</button>
-            <button class="btn-sync" onclick="openXmasSuggestions()" style="border-color: #fff; color: #fff; margin: 8px 0 0 0; padding: 6px 14px; font-size: 11px;">💡 Idées de films éligibles</button>
-          </div>
-        </div>
-        <div class="candy-progress-bg">
-          <div class="candy-progress-fill" id="xmas-quest-bar" style="width: 0%;"></div>
-        </div>
-        <div style="font-size: 11px; color: rgba(255,255,255,0.7); display: flex; justify-content: space-between; flex-wrap: wrap;">
-          <span>🔒 Règle Anti-Triche : Un film de Noël ajouté doit obligatoirement être validé par un Quiz minuté de 3 questions sur son histoire.</span>
-          <span id="xmas-unlock-status" style="color: var(--gold); font-weight: bold;">🔒 Skin Verrouillé</span>
-        </div>
       </div>
       <div style="display: flex; gap: 30px; margin-top: 30px; flex-wrap: wrap;">
         <div class="glass-panel" style="flex: 1; min-width: 300px; text-align: center;">
@@ -583,6 +715,68 @@
     </div>
 </div>
 
+<!-- MODALE PLEIN ÉCRAN : LISTE DE SOUHAITS -->
+<div id="wishlist-overlay" class="overlay">
+  <div class="wishlist-modal">
+    <div class="wishlist-header">
+      <div class="wishlist-title-group">
+        <h2>🌟 Liste de Souhaits (<span id="wishlist-modal-count">0</span>)</h2>
+        <div style="font-size: 12px; color: rgba(255,255,255,0.65);">Ajoute tes envies en direct via TMDB, gère ton niveau de Hype et forge tes cartes en 1 clic !</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+        <div id="wishlist-quick-add-box" style="position: relative; width: 320px; max-width: 75vw;">
+          <input type="text" id="wishlist-tmdb-input" class="wishlist-input" style="border-color: var(--neon-blue); padding-left: 14px;" placeholder="➕ Ajouter un film, série ou animé..." autocomplete="off" oninput="onWishlistTmdbSearch(this.value)">
+          <div id="wishlist-tmdb-dropdown" class="tmdb-live-dropdown"></div>
+        </div>
+        <button onclick="closeWishlistModal()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 38px; height: 38px; border-radius: 50%; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.borderColor='var(--neon-pink)'; this.style.color='var(--neon-pink)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.2)'; this.style.color='#fff'">×</button>
+      </div>
+    </div>
+
+    <!-- BARRE DE FILTRES & 16 MODES DE TRI CUMULABLES -->
+    <div class="wishlist-controls-bar">
+      <input type="text" id="wish-filter-text" class="wishlist-input" placeholder="🔍 Filtrer (titre, réal, note...)" oninput="renderWishlistGrid()">
+      <select id="wish-filter-type" class="wishlist-select" onchange="renderWishlistGrid()">
+        <option value="all">🎬 Tous les formats</option>
+        <option value="Film">🎬 Films uniquement</option>
+        <option value="Série">📺 Séries / Animés</option>
+      </select>
+      <select id="wish-filter-genre" class="wishlist-select" onchange="renderWishlistGrid()">
+        <option value="all">🎭 Tous les genres</option>
+      </select>
+      <select id="wish-filter-hype" class="wishlist-select" onchange="renderWishlistGrid()">
+        <option value="all">🔥 Toutes Hypes</option>
+        <option value="3">🔥🔥🔥 Absolue</option>
+        <option value="2">🔥🔥 Moyenne</option>
+        <option value="1">🔥 Tranquille</option>
+      </select>
+      <select id="wish-sort-mode" class="wishlist-select" style="border-color: var(--neon-pink);" onchange="renderWishlistGrid()">
+        <option value="added-desc">🕒 Ajout : Récents d'abord</option>
+        <option value="added-asc">🕒 Ajout : Anciens d'abord</option>
+        <option value="hype-desc">🔥 Hype : Plus forte d'abord</option>
+        <option value="hype-asc">🔥 Hype : Moins forte d'abord</option>
+        <option value="rating-desc">⭐ Note TMDB : Meilleure</option>
+        <option value="rating-asc">⭐ Note TMDB : Plus basse</option>
+        <option value="rarity-desc">💎 Rareté : Légendaire d'abord</option>
+        <option value="rarity-asc">💎 Rareté : Commune d'abord</option>
+        <option value="duration-asc">⏱️ Durée : Courte d'abord</option>
+        <option value="duration-desc">⏱️ Durée : Longue d'abord</option>
+        <option value="year-desc">📅 Sortie : Plus récente</option>
+        <option value="year-asc">📅 Sortie : Plus ancienne</option>
+        <option value="title-asc">🔤 Titre : A → Z</option>
+        <option value="title-desc">🔤 Titre : Z → A</option>
+        <option value="director-asc">🎬 Réalisateur : A → Z</option>
+        <option value="genre-asc">🎭 Genre : A → Z</option>
+        <option value="random">🎲 Ordre 100% Aléatoire</option>
+      </select>
+      <button class="btn-sync" onclick="resetWishlistFilters()" style="margin:0; padding: 9px 12px; font-size: 12px; border-radius: 10px;" title="Réinitialiser les filtres">↺ Reset</button>
+      <button class="btn-roulette" onclick="spinWishlistRoulette()">🎲 Tirer au sort</button>
+    </div>
+
+    <!-- GRILLE DES SOUHAITS -->
+    <div id="wishlist-grid" class="wishlist-grid"></div>
+  </div>
+</div>
+
 <!-- OVERLAYS SYSTÈME -->
 <div id="card-modal-overlay" class="overlay"><span class="overlay-close" onclick="closeModal()">×</span><div id="modal-content-area"></div></div>
 <div id="podium-selection-overlay" class="overlay">
@@ -601,46 +795,16 @@
 <!-- MODALE DASHBOARD ADMIN (EXCLUSIF MR. BONNET) -->
 <div id="admin-dashboard-overlay" class="overlay">
   <span class="overlay-close" onclick="closeAdminModal()">×</span>
-  <div class="selector-modal" style="max-width: 750px; height: auto; max-height: 85vh;">
+  <div class="selector-modal" style="max-width: 800px; height: auto; max-height: 85vh;">
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--danger); text-transform: uppercase; margin: 0;">🛡️ Panneau de Contrôle Admin</h2></div>
-    <p style="color: #aaa; font-size: 13px; text-align: center; margin-top: 0;">Gestion des utilisateurs, suppression des faux comptes et réinitialisation des scores d'arcade.</p>
+    <p style="color: #aaa; font-size: 13px; text-align: center; margin-top: 0;">Gestion des comptes, récupération/changement des codes PIN, reset des scores et suppression des faux profils.</p>
     <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
-      <button class="btn-sync" onclick="loadAdminUsersList()" style="border-color: var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; font-size: 12px; margin-bottom: 0;">🔄 Rafraîchir la liste</button><button class="btn-sync" id="admin-preview-xmas-btn" onclick="adminForceUnlockXmasSkin()" style="border-color: var(--gold); color: var(--gold); padding: 8px 16px; font-size: 12px; margin-bottom: 0; margin-right: 10px;">👁️ Tester Aperçu Skin Noël (Sans débloquer la quête)</button>
+      <button class="btn-sync" onclick="loadAdminUsersList()" style="border-color: var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; font-size: 12px; margin-bottom: 0;">🔄 Rafraîchir la liste</button>
     </div>
     <div id="admin-users-list-container" style="overflow-y: auto; max-height: 50vh; text-align: left; padding: 5px;">
       <!-- Rempli dynamiquement -->
     </div>
     <button onclick="closeAdminModal()" class="btn-submit" style="margin-top: 20px;">Fermer le Panel</button>
-  </div>
-</div>
-  
-<!-- MODALE QUIZ ANTI-TRICHE DE NOËL -->
-<div id="xmas-quiz-overlay" class="overlay" style="z-index: 10005;">
-  <div class="selector-modal" style="max-width: 600px; height: auto; border-color: var(--gold); box-shadow: 0 0 35px rgba(255, 215, 0, 0.35);">
-    <div class="selector-header">
-      <div style="color: var(--gold); font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">🎅 Contrôle Anti-Triche de Noël</div>
-      <h2 id="xmas-quiz-movie-title" style="color: #fff; margin: 5px 0;">As-tu vraiment vu ce film ?</h2>
-      <p id="xmas-quiz-step" style="color: var(--neon-blue); font-size: 12px; margin: 0;">Question 1 / 3 • ⏱️ 15 secondes</p>
-    </div>
-    <div class="quiz-timer-bar"><div id="xmas-quiz-timer-fill" class="quiz-timer-fill" style="width: 100%;"></div></div>
-    <div id="xmas-quiz-question-box" style="font-size: 15px; color: #fff; font-weight: 600; text-align: center; margin-bottom: 20px; line-height: 1.5; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px;"></div>
-    <div id="xmas-quiz-choices" class="mystery-choices" style="grid-template-columns: 1fr;"></div>
-    <button onclick="closeXmasQuiz()" class="btn-delete" style="margin-top: 20px; align-self: center;">Abandonner la vérification</button>
-  </div>
-</div>
-  
-<!-- MODALE VESTIAIRE DES SKINS (PERMANENT) -->
-<div id="skins-vault-overlay" class="overlay">
-  <span class="overlay-close" onclick="closeSkinsModal()">×</span>
-  <div class="selector-modal" style="max-width: 720px; height: auto; max-height: 85vh; border-color: var(--gold); box-shadow: 0 0 35px rgba(255, 215, 0, 0.25);">
-    <div class="selector-header">
-      <h2 style="font-family: 'Rajdhani'; color: var(--gold); text-transform: uppercase; margin: 0; font-size: 30px;">🎨 Vestiaire des Skins & Thèmes</h2>
-      <p style="color: rgba(255,255,255,0.65); font-size: 13px; margin: 5px 0 0 0;">Tous tes skins d'événements débloqués restent accessibles ici à vie, même une fois les événements terminés !</p>
-    </div>
-    <div id="skins-vault-list" style="overflow-y: auto; max-height: 55vh; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; padding: 10px 5px; text-align: left;">
-      <!-- Généré dynamiquement -->
-    </div>
-    <button onclick="closeSkinsModal()" class="btn-submit" style="margin-top: 20px;">Fermer le Vestiaire</button>
   </div>
 </div>
 
@@ -650,47 +814,36 @@
   <div class="selector-modal" style="max-width: 650px; height: auto; max-height: 80vh;">
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">📢 Journal de Bord - Mises à Jour</h2></div>
     <div style="overflow-y: auto; text-align: left; padding: 10px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85);">
-
-      <!-- VERSION 8.0 -->
-      <div style="margin-bottom: 25px; border-left: 3px solid var(--gold); padding-left: 12px;">
-        <h3 style="color: var(--gold); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">🎨 v8.0 - Vestiaire Permanent des Skins & Mode Aperçu Admin</h3>
-        <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Mise à jour Cosmétiques & Quête Admin</p>
+      
+      <!-- VERSION 7.9 -->
+      <div style="margin-bottom: 25px; border-left: 3px solid var(--neon-pink); padding-left: 12px;">
+        <h3 style="color: var(--neon-pink); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v7.9 - Liste de Souhaits Glassmorphism, Roulette & Transfert 1-Clic</h3>
+        <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Nouveau module de gestion des envies</p>
         <ul style="margin: 0; padding-left: 18px;">
-          <li><strong>Nouveau Bouton "🎨 Skins" (Vestiaire Permanent)</strong> : Un menu dédié en haut à droite permet d'équiper ou de déséquiper à tout moment tes skins débloqués (Cyberpunk, Noël Féerique, et les futurs skins d'événements) même après la fin d'un event !</li>
-          <li><strong>Séparation du Mode Test Admin & Quête</strong> : Le bouton de test dans le Panel Admin active désormais un simple <em>Aperçu temporaire</em> sans déverrouiller le skin. L'Admin garde ainsi sa quête des 20 films verrouillée pour pouvoir la compléter légitimement !</li>
-        </ul>
-      </div>
-
-<!-- VERSION 7.9 -->
-      <div style="margin-bottom: 25px; border-left: 3px solid #ff1744; padding-left: 12px;">
-        <h3 style="color: #ff1744; font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">🎄 v7.9 - Event de Noël, Skin Temps Réel & Quiz Anti-Triche</h3>
-        <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Mise à jour Événement Saisonnier Majeur</p>
-        <ul style="margin: 0; padding-left: 18px;">
-          <li><strong>Quête Extrême des 20 Films de Noël</strong> : Nouveau défi saisonnier dans la Vitrine demandant de visionner 20 nouveaux films sur le thème de Noël.</li>
-          <li><strong>Système de Vérification Anti-Triche (Quiz Minuté)</strong> : Pour valider un film de Noël dans la jauge, le joueur doit réussir un sans-faute (3/3) à un quiz chronométré (15s/question) généré dynamiquement sur l'histoire, les personnages et le casting du film !</li>
-          <li><strong>Skin Collector "Noël Féerique" (60 FPS)</strong> : Moteur physique de chute de neige interactif sur Canvas HTML5, guirlande d'ampoules lumineuses, givre holographique sur les cartes et badge 🎅 dans le Panthéon.</li>
+          <li><strong>Bouton & Modale Plein Écran "🌟 Liste de Souhaits"</strong> : Accessible en haut à gauche avec compteur dynamique et interface Glassmorphism néon rose/bleu (96vw × 93vh).</li>
+          <li><strong>Scan TMDB en Direct, Hype & Notes</strong> : Ajoute n'importe quel film, série ou animé instantanément, change son niveau de Hype (<em>Absolue, Moyenne, Tranquille</em>) en 1 clic et note qui te l'a conseillé.</li>
+          <li><strong>Moteur de Tri & Filtres Avancés</strong> : Filtre cumulable (texte, format, genre dynamique, priorité) et 16 modes de tri (ajout, hype, note TMDB, rareté potentielle, durée, année, alphabétique, réalisateur, genre, aléatoire).</li>
+          <li><strong>🎲 Tirer au sort & Transfert 1-Clic ("✔ Vu ! Forger")</strong> : Une roulette sélectionne une œuvre selon tes filtres actifs, et le bouton <em>Forger</em> la retire de la liste et la pré-verrouille dans l'onglet Gestion !</li>
         </ul>
       </div>
 
       <!-- VERSION 7.8 -->
       <div style="margin-bottom: 25px; border-left: 3px solid var(--success); padding-left: 12px;">
         <h3 style="color: var(--success); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v7.8 - Connexion Intelligente & Récupération de Compte</h3>
-        <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Mise à jour migration GitHub & accès joueurs</p>
+        <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Mise à jour authentification & migration GitHub</p>
         <ul style="margin: 0; padding-left: 18px;">
-          <li><strong>Connexion Souple (Insensible à la casse)</strong> : Plus besoin de respecter les majuscules, minuscules, accents ou espaces exacts de son pseudo pour se connecter. Le système retrouve automatiquement le profil correspondant dans le Cloud !</li>
-          <li><strong>Gestion & Récupération des PIN (Panel Admin)</strong> : L'administrateur peut désormais consulter et réinitialiser le code secret (PIN) d'un ami en un clic depuis le Panel Admin en cas d'oubli lors du passage sur GitHub Pages.</li>
+          <li><strong>Connexion Insensible à la Casse</strong> : Plus besoin de respecter les majuscules, minuscules ou accents exacts de son pseudo pour se connecter. Le système retrouve automatiquement le bon profil dans le Cloud.</li>
+          <li><strong>Gestion des Codes PIN (Panel Admin)</strong> : L'administrateur peut désormais consulter et réinitialiser le code secret d'un ami en cas d'oubli après le passage sur GitHub Pages.</li>
         </ul>
       </div>
 
-      
       <!-- VERSION 7.7 -->
       <div style="margin-bottom: 25px; border-left: 3px solid var(--gold); padding-left: 12px;">
         <h3 style="color: var(--gold); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v7.7 - Support des Homonymes, Remakes & Live-Actions</h3>
         <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Mise à jour système anti-doublons</p>
         <ul style="margin: 0; padding-left: 18px;">
-          <li><strong>Détection Intelligente des Doublons</strong> : Le système ne bloque plus une œuvre simplement parce qu'elle porte le même nom qu'une autre. Il vérifie désormais l'identifiant TMDB unique, le type (Film/Série) ET l'année de sortie.</li>
-          <li><strong>Compatibilité Remakes & Adaptations</strong> : Tu peux désormais collectionner un animé original et son adaptation Live-Action (ex: <em>One Piece 1999</em> et <em>One Piece 2023</em>) ou deux films homonymes de dates différentes sans conflit !</li>
-          <li><strong>Podiums Multi-Versions</strong> : Le Top 3 distingue désormais les œuvres homonymes grâce à leur année de sortie.</li>
+          <li><strong>Détection Intelligente des Doublons</strong> : Le système vérifie l'identifiant TMDB unique, le type (Film/Série) ET l'année de sortie.</li>
+          <li><strong>Compatibilité Remakes & Adaptations</strong> : Tu peux désormais collectionner un animé original et son adaptation Live-Action sans conflit.</li>
         </ul>
       </div>
 
@@ -711,7 +864,6 @@
         <ul style="margin: 0; padding-left: 18px;">
           <li>Suppression des latences sur le cochage des épisodes et l'écriture des notes.</li>
           <li>Correction de l'isolation des scores d'arcade par compte utilisateur.</li>
-          <li>Optimisation TMDB pour les séries longues comme <em>One Piece</em>.</li>
         </ul>
       </div>
 
@@ -761,7 +913,7 @@
 <script>
   const API_KEY = 'fb195a905bf531daf7eb642dbf16c455'; 
   const OMDB_KEY = 'bb349eee';
-  const CURRENT_CHANGELOG_VERSION = 'v8.0';
+  const CURRENT_CHANGELOG_VERSION = 'v7.9';
 
   // --- INITIALISATION DE LA BASE DE DONNÉES CLOUD (FIREBASE) ---
   const firebaseConfig = {
@@ -805,9 +957,12 @@
     skipAnimation: false, precisionMode: false, dateMode: 'manual', searchMode: 'multi', universeCounts: {},
     highScores: { mystery: 0, chrono: 0, critic: 0 }, pseudo: "", pin: ""
   };
-  let myMovies = []; let myTop3 = { Film: [null, null, null], Série: [null, null, null] };
+  let myMovies = [];
+  let myTop3 = { Film: [null, null, null], Série: [null, null, null] };
+  let myWishlist = [];
   let notesVisible = true; let recentlyAddedKey = null; let currentPodiumSelectionType = null; let currentPodiumSelectionRank = null;
   let saveCloudTimeout = null;
+  let rouletteHighlightedId = null;
 
   // --- FONCTIONS UTILITAIRES D'IDENTIFICATION UNIQUE (ANTI-DOUBLONS HOMONYMES) ---
   const normalize = str => {
@@ -852,6 +1007,8 @@
         break;
       }
     }
+    const savedWish = JSON.parse(localStorage.getItem('thomasWishlist_v74'));
+    if (Array.isArray(savedWish)) myWishlist = savedWish;
     
     let oldSettings = JSON.parse(localStorage.getItem('thomasSettings_v73')) || JSON.parse(localStorage.getItem('thomasSettings_v72'));
     if (oldSettings && !localStorage.getItem('thomasSettings_v74')) {
@@ -895,7 +1052,7 @@
     document.getElementById('admin-dashboard-overlay').classList.remove('show');
   };
 
-window.loadAdminUsersList = async function() {
+  window.loadAdminUsersList = async function() {
     const container = document.getElementById('admin-users-list-container');
     container.innerHTML = `<div style="text-align:center; color:var(--neon-blue); padding:20px;">Chargement des utilisateurs inscrits...</div>`;
     try {
@@ -915,12 +1072,15 @@ window.loadAdminUsersList = async function() {
         return `
           <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.08); padding:12px 15px; border-radius:10px; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
             <div>
-              <div style="font-weight:bold; color:#fff; font-size:15px;">${u.pseudo} ${isMe ? '<span style="color:var(--gold); font-size:12px;">(Admin Principal)</span>' : `<span style="color:var(--neon-blue); font-size:11px; margin-left:8px;">🔑 PIN: <code>${u.pin || '???'}</code></span>`}</div>
-              <div style="font-size:12px; color:rgba(255,255,255,0.6); margin-top:3px;">📚 ${u.totalCards || 0} cartes • 📺 ${u.totalHours || 0}h • 🎄 Noël: ${u.xmasVerifiedCount || 0}/20 • 🏆 M:${u.hsMystery || 0} | C:${u.hsChrono || 0} | Cr:${u.hsCritic || 0}</div>
+              <div style="font-weight:bold; color:#fff; font-size:15px;">
+                ${u.pseudo}
+                ${isMe ? '<span style="color:var(--gold); font-size:12px;">(Admin Principal)</span>' : `<span style="color:var(--neon-blue); font-size:11px; margin-left:8px; background:rgba(0,243,255,0.1); padding:2px 8px; border-radius:6px; border:1px solid rgba(0,243,255,0.3);">🔑 PIN: <code>${u.pin || '???'}</code></span>`}
+              </div>
+              <div style="font-size:12px; color:rgba(255,255,255,0.6); margin-top:4px;">📚 ${u.totalCards || 0} cartes • 📺 ${u.totalHours || 0}h • 🏆 Mystère: ${u.hsMystery || 0} | Chrono: ${u.hsChrono || 0} | Critique: ${u.hsCritic || 0}</div>
             </div>
             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-              <button onclick="resetUserPin('${safePseudo}', '${safePin}')" class="btn-sync" style="border-color:var(--neon-blue); color:var(--neon-blue); padding:5px 10px; font-size:11px; margin-bottom:0;" title="Voir ou modifier le code secret">🔑 PIN</button>
-              <button onclick="resetUserScores('${safePseudo}')" class="btn-sync" style="border-color:var(--gold); color:var(--gold); padding:5px 10px; font-size:11px; margin-bottom:0;" title="Remettre les scores d'arcade à zéro">🔄 Scores</button>
+              <button onclick="resetUserPin('${safePseudo}', '${safePin}')" class="btn-sync" style="border-color:var(--neon-blue); color:var(--neon-blue); padding:5px 10px; font-size:11px; margin-bottom:0;" title="Modifier le code secret de ce joueur">🔑 Changer PIN</button>
+              <button onclick="resetUserScores('${safePseudo}')" class="btn-sync" style="border-color:var(--gold); color:var(--gold); padding:5px 10px; font-size:11px; margin-bottom:0;" title="Remettre les scores d'arcade à zéro">🔄 Reset Scores</button>
               ${!isMe ? `<button onclick="deleteUserAccount('${safePseudo}')" class="btn-delete" style="padding:6px 12px;">Supprimer</button>` : `<span style="color:var(--success); font-size:12px; font-weight:bold;">Protégé</span>`}
             </div>
           </div>`;
@@ -931,94 +1091,27 @@ window.loadAdminUsersList = async function() {
   };
 
   window.resetUserPin = async function(targetPseudo, currentPin) {
-    const newPin = prompt(`🔑 Code secret actuel de "${targetPseudo}" : ${currentPin}\n\nEntrez le nouveau code secret (3 caractères min.) :`, currentPin);
-    if (!newPin || newPin.trim().length < 3) return;
+    const newPin = prompt(`🔑 Nouveau code secret (PIN) pour "${targetPseudo}" (3 caractères min.) :`, currentPin);
+    if (newPin === null) return;
+    const cleanPin = newPin.trim();
+    if (cleanPin.length < 3) {
+      alert("⚠️ Le code secret doit contenir au moins 3 caractères.");
+      return;
+    }
     try {
-      await db.collection('users').doc(targetPseudo).set({ pin: newPin.trim() }, { merge: true });
-      alert(`✅ Le code secret de "${targetPseudo}" est désormais : ${newPin.trim()}`);
+      await db.collection('users').doc(targetPseudo).set({ pin: cleanPin }, { merge: true });
+      alert(`✅ Le code secret de "${targetPseudo}" est désormais : ${cleanPin}`);
+      if (targetPseudo === appSettings.pseudo) {
+        appSettings.pin = cleanPin;
+        localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
+      }
       await loadAdminUsersList();
-    } catch(e) {
-      alert(`❌ Erreur : ${e.message}`);
+    } catch (e) {
+      alert(`❌ Erreur lors de la modification du PIN : ${e.message}`);
     }
   };
 
-  window.attemptAuth = async function(action) {
-      let pseudoInput = document.getElementById('login-pseudo').value.trim();
-      const pin = document.getElementById('login-pin').value.trim();
-      const status = document.getElementById('login-status');
-      
-      if (pseudoInput.length < 3 || pin.length < 3) { status.innerText = "Le pseudo et le mot de passe doivent faire 3 caractères min."; return; }
-      
-      document.getElementById('btn-login').disabled = true;
-      document.getElementById('btn-register').disabled = true;
-      status.innerText = "Connexion au Cloud Firebase en cours...";
-
-      try {
-          let resolvedPseudo = pseudoInput;
-          let docRef = db.collection('users').doc(resolvedPseudo);
-          let docSnap = await docRef.get();
-
-          // Recherche souple insensible à la casse/accents si le nom exact n'est pas trouvé
-          if (!docSnap.exists) {
-              const allUsersSnap = await db.collection('users').get();
-              const targetNorm = normalize(pseudoInput);
-              allUsersSnap.forEach(d => {
-                  const uData = d.data();
-                  const candidateName = uData.pseudo || d.id;
-                  if (normalize(candidateName) === targetNorm) {
-                      resolvedPseudo = d.id;
-                      docSnap = d;
-                  }
-              });
-          }
-          
-          if (action === 'login') {
-              if (docSnap && docSnap.exists) {
-                  const data = docSnap.data();
-                  if(String(data.pin).trim() === pin) {
-                      const saveRef = db.collection('saves').doc(resolvedPseudo);
-                      const saveSnap = await saveRef.get();
-                      if(saveSnap.exists) {
-                          const saveData = saveSnap.data();
-                          if(saveData.moviesStr) myMovies = JSON.parse(saveData.moviesStr);
-                          if(saveData.top3Str) myTop3 = JSON.parse(saveData.top3Str);
-                      }
-                      
-                      appSettings.pseudo = resolvedPseudo; appSettings.pin = pin;
-                      appSettings.highScores = { mystery: data.hsMystery||0, chrono: data.hsChrono||0, critic: data.hsCritic||0 };
-                      if (data.xmasSkinUnlocked) appSettings.xmasSkinUnlocked = true;
-                      if (data.activeSkin) appSettings.activeSkin = data.activeSkin;
-                      if(data.moviesStr) { await syncProfileToCloud(true); } 
-                      finishLogin(`Connecté en tant que ${resolvedPseudo} !`);
-                  } else {
-                      status.innerText = "❌ Mot de passe incorrect pour ce pseudo !";
-                      document.getElementById('btn-login').disabled = false;
-                      document.getElementById('btn-register').disabled = false;
-                  }
-              } else {
-                  status.innerText = "❌ Ce compte n'existe pas. Vérifie l'orthographe !";
-                  document.getElementById('btn-login').disabled = false;
-                  document.getElementById('btn-register').disabled = false;
-              }
-          } else if (action === 'register') {
-              if (docSnap && docSnap.exists) {
-                  status.innerText = `❌ Ce pseudo existe déjà sous "${resolvedPseudo}" ! Clique sur Se connecter.`;
-                  document.getElementById('btn-login').disabled = false;
-                  document.getElementById('btn-register').disabled = false;
-              } else {
-                  appSettings.pseudo = pseudoInput; appSettings.pin = pin;
-                  await syncProfileToCloud(true);
-                  finishLogin("✅ Nouveau compte créé avec succès !");
-              }
-          }
-      } catch(e) {
-          console.error("Erreur Firebase:", e);
-          status.innerText = "Erreur réseau. Joue en local pour le moment.";
-          finishLogin("Mode hors ligne activé.");
-      }
-  };
-
-window.resetUserScores = async function(targetPseudo) {
+  window.resetUserScores = async function(targetPseudo) {
     if (!confirm(`Voulez-vous réinitialiser tous les scores d'arcade (Mystère, Chrono, Critique) de "${targetPseudo}" ?`)) return;
     try {
       await db.collection('users').doc(targetPseudo).set({
@@ -1050,12 +1143,84 @@ window.resetUserScores = async function(targetPseudo) {
     }
   };
 
+  window.attemptAuth = async function(action) {
+      let pseudoInput = document.getElementById('login-pseudo').value.trim();
+      const pin = document.getElementById('login-pin').value.trim();
+      const status = document.getElementById('login-status');
+      
+      if (pseudoInput.length < 3 || pin.length < 3) { status.innerText = "Le pseudo et le mot de passe doivent faire 3 caractères min."; return; }
+      
+      document.getElementById('btn-login').disabled = true;
+      document.getElementById('btn-register').disabled = true;
+      status.innerText = "Connexion au Cloud Firebase en cours...";
+
+      try {
+          let resolvedPseudo = pseudoInput;
+          let docRef = db.collection('users').doc(resolvedPseudo);
+          let docSnap = await docRef.get();
+
+          if (!docSnap.exists) {
+              const allUsersSnap = await db.collection('users').get();
+              const inputNorm = normalize(pseudoInput);
+              allUsersSnap.forEach(d => {
+                  if (!docSnap.exists && normalize(d.id) === inputNorm) {
+                      docSnap = d;
+                      resolvedPseudo = d.id;
+                  }
+              });
+          }
+          
+          if (action === 'login') {
+              if (docSnap.exists) {
+                  const data = docSnap.data();
+                  if (String(data.pin || '').trim() === pin) {
+                      const saveRef = db.collection('saves').doc(resolvedPseudo);
+                      const saveSnap = await saveRef.get();
+                      if (saveSnap.exists) {
+                          const saveData = saveSnap.data();
+                          if (saveData.moviesStr) myMovies = JSON.parse(saveData.moviesStr);
+                          if (saveData.top3Str) myTop3 = JSON.parse(saveData.top3Str);
+                          if (saveData.wishlistStr) myWishlist = JSON.parse(saveData.wishlistStr);
+                      }
+                      
+                      appSettings.pseudo = resolvedPseudo;
+                      appSettings.pin = data.pin;
+                      document.getElementById('login-pseudo').value = resolvedPseudo;
+                      appSettings.highScores = { mystery: data.hsMystery||0, chrono: data.hsChrono||0, critic: data.hsCritic||0 };
+                      if (data.moviesStr) { await syncProfileToCloud(true); } 
+                      finishLogin(`Connecté en tant que ${resolvedPseudo} ! Chargement...`);
+                  } else {
+                      status.innerText = `❌ Mot de passe incorrect pour "${resolvedPseudo}" !`;
+                      document.getElementById('btn-login').disabled = false;
+                      document.getElementById('btn-register').disabled = false;
+                  }
+              } else {
+                  status.innerText = "❌ Ce compte n'existe pas. Vérifie l'orthographe !";
+                  document.getElementById('btn-login').disabled = false;
+                  document.getElementById('btn-register').disabled = false;
+              }
+          } else if (action === 'register') {
+              if (docSnap.exists) {
+                  status.innerText = `❌ Le pseudo "${resolvedPseudo}" est déjà pris ! Clique sur "Se connecter".`;
+                  document.getElementById('btn-login').disabled = false;
+                  document.getElementById('btn-register').disabled = false;
+              } else {
+                  appSettings.pseudo = pseudoInput; appSettings.pin = pin;
+                  await syncProfileToCloud(true);
+                  finishLogin("✅ Nouveau compte créé avec succès !");
+              }
+          }
+      } catch(e) {
+          console.error("Erreur Firebase:", e);
+          status.innerText = "Erreur réseau. Joue en local pour le moment.";
+          finishLogin("Mode hors ligne activé.");
+      }
+  };
 
   function finishLogin(message) {
       document.getElementById('login-status').innerText = message;
       localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
       
-      // Dédoublonnage intelligent prenant en compte l'ID TMDB ou (Titre + Type + Année)
       const uniqueMovies = []; const seenKeys = new Set();
       myMovies.forEach(movie => {
         const key = getMovieUniqueKey(movie);
@@ -1068,6 +1233,7 @@ window.resetUserScores = async function(targetPseudo) {
         }
       });
       myMovies = uniqueMovies;
+      if (!Array.isArray(myWishlist)) myWishlist = [];
 
       const adminBtn = document.getElementById('admin-dash-btn');
       if (adminBtn) {
@@ -1094,6 +1260,7 @@ window.resetUserScores = async function(targetPseudo) {
   function saveDataLocalOnly() {
       localStorage.setItem('thomasMovieCollection_v74', JSON.stringify(myMovies));
       localStorage.setItem('thomasTop3_v74', JSON.stringify(myTop3));
+      localStorage.setItem('thomasWishlist_v74', JSON.stringify(myWishlist));
   }
 
   function saveData() {
@@ -1127,9 +1294,6 @@ window.resetUserScores = async function(targetPseudo) {
           hsMystery: appSettings.highScores.mystery || 0,
           hsChrono: appSettings.highScores.chrono || 0,
           hsCritic: appSettings.highScores.critic || 0,
-          xmasVerifiedCount: typeof getVerifiedXmasMoviesCount === 'function' ? getVerifiedXmasMoviesCount() : 0,
-          xmasSkinUnlocked: !!appSettings.xmasSkinUnlocked,
-          activeSkin: appSettings.activeSkin || 'default',
           lastUpdate: firebase.firestore.FieldValue.serverTimestamp(),
           moviesStr: firebase.firestore.FieldValue.delete(), 
           top3Str: firebase.firestore.FieldValue.delete()
@@ -1138,7 +1302,11 @@ window.resetUserScores = async function(targetPseudo) {
       try {
           await db.collection('users').doc(appSettings.pseudo).set(payloadStats, { merge: true });
           if(includeMovies) {
-              let payloadSave = { moviesStr: JSON.stringify(myMovies), top3Str: JSON.stringify(myTop3) };
+              let payloadSave = {
+                moviesStr: JSON.stringify(myMovies),
+                top3Str: JSON.stringify(myTop3),
+                wishlistStr: JSON.stringify(myWishlist)
+              };
               await db.collection('saves').doc(appSettings.pseudo).set(payloadSave, { merge: true });
           }
       } catch(e) {}
@@ -1167,13 +1335,26 @@ window.resetUserScores = async function(targetPseudo) {
 
       let listHtml = sorted.map((u, i) => {
           let badgeClass = i === 0 ? 'border-left: 4px solid var(--gold); background: rgba(255, 215, 0, 0.1); color: var(--gold); font-weight:bold;' : i === 1 ? 'border-left: 4px solid var(--silver); background: rgba(192, 192, 192, 0.1); color: var(--silver);' : i === 2 ? 'border-left: 4px solid var(--bronze); background: rgba(205, 127, 50, 0.1); color: var(--bronze);' : 'border-left: 4px solid rgba(255,255,255,0.2); color: #fff;';
-          return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 15px; border-radius:8px; margin-bottom:8px; font-family:'Inter'; font-size:14px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.05); ${badgeClass}"><span><strong>${i+1}.</strong>&nbsp;${u.xmasSkinUnlocked ? '<span title="Maître de Noël (Défi 20 films réussi !)">🎅</span> ' : ''}${u.pseudo}&nbsp;${u.pseudo === appSettings.pseudo ? '<i>(Toi)</i>' : ''}</span><strong>${u[sortKey]} ${unit}</strong></div>`;
+          return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 15px; border-radius:8px; margin-bottom:8px; font-family:'Inter'; font-size:14px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.05); ${badgeClass}"><span><strong>${i+1}.</strong>&nbsp;${u.pseudo}&nbsp;${u.pseudo === appSettings.pseudo ? '<i>(Toi)</i>' : ''}</span><strong>${u[sortKey]} ${unit}</strong></div>`;
       }).join('');
       if(sorted.length === 0) listHtml = `<div style="text-align:center; color:#888; font-size:12px; margin-top:20px;">Aucun record défini.</div>`;
       return `<div class="glass-panel" style="padding: 25px;"><h3 style="color:${color}; font-family:'Rajdhani'; text-transform:uppercase; margin-top:0; border-bottom:1px dashed rgba(255,255,255,0.2); padding-bottom:10px; font-size:22px; text-shadow: 0 0 10px ${color};">${title}</h3><div style="margin-top:15px;">${listHtml}</div></div>`;
   }
 
-  function updateApp() { renderAdminList(); renderAll(); renderPodiums(); updateCollectionsTab(); updateStats(); checkArcadeAvailability(); updateHighScoresDisplay(); if (typeof updateXmasEventUI === 'function') updateXmasEventUI(); }
+  function updateApp() {
+    renderAdminList();
+    renderAll();
+    renderPodiums();
+    updateCollectionsTab();
+    updateStats();
+    checkArcadeAvailability();
+    updateHighScoresDisplay();
+    updateWishlistCounters();
+    if (document.getElementById('wishlist-overlay').classList.contains('show')) {
+      populateWishlistGenreFilter();
+      renderWishlistGrid();
+    }
+  }
 
   function applySettingsUI() {
     const dateInput = document.getElementById('m-unlock'); const dateLabel = document.getElementById('date-label');
@@ -1189,7 +1370,9 @@ window.resetUserScores = async function(targetPseudo) {
       } else {
         precContainer.classList.remove('active');
         precBadge.style.display = 'none';
-        clearSelectedTmdbTarget();
+        if (!selectedTmdbTarget || !selectedTmdbTarget.fromWishlist) {
+          clearSelectedTmdbTarget();
+        }
         const drop = document.getElementById('tmdb-live-results');
         if (drop) drop.classList.remove('active');
       }
@@ -1226,8 +1409,12 @@ window.resetUserScores = async function(targetPseudo) {
   function switchTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById('tab-' + tabName).classList.add('active');
-    event.currentTarget.classList.add('active');
+    const targetTab = document.getElementById('tab-' + tabName);
+    if (targetTab) targetTab.classList.add('active');
+    const tabOrder = ['vitrine', 'gestion', 'films', 'series', 'collections', 'classement'];
+    const idx = tabOrder.indexOf(tabName);
+    const allBtns = document.querySelectorAll('.tab-btn');
+    if (idx !== -1 && allBtns[idx]) allBtns[idx].classList.add('active');
     if(tabName === 'vitrine') { renderPodiums(); checkArcadeAvailability(); updateHighScoresDisplay(); }
     if(tabName === 'classement') { loadGlobalLeaderboard(); }
   }
@@ -1240,7 +1427,7 @@ window.resetUserScores = async function(targetPseudo) {
   }
 
   function exportData() {
-    const data = { movies: myMovies, top3: myTop3 }; const jsonStr = JSON.stringify(data);
+    const data = { movies: myMovies, top3: myTop3, wishlist: myWishlist }; const jsonStr = JSON.stringify(data);
     const blob = new Blob([jsonStr], { type: "application/json" }); const url = URL.createObjectURL(blob);
     const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.href = url; downloadAnchorNode.download = "cine_cards_sauvegarde.json";
     document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); document.body.removeChild(downloadAnchorNode); URL.revokeObjectURL(url);
@@ -1248,8 +1435,416 @@ window.resetUserScores = async function(targetPseudo) {
 
   function importData(event) {
     const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
-    reader.onload = function(e) { try { const importedData = JSON.parse(e.target.result); if (importedData.movies) { myMovies = importedData.movies; if (importedData.top3) myTop3 = importedData.top3; saveData(); alert("✅ Sauvegarde restaurée et synchronisée avec le Cloud !"); } } catch (err) { alert("❌ Erreur de lecture."); } };
+    reader.onload = function(e) {
+      try {
+        const importedData = JSON.parse(e.target.result);
+        if (importedData.movies) {
+          myMovies = importedData.movies;
+          if (importedData.top3) myTop3 = importedData.top3;
+          if (Array.isArray(importedData.wishlist)) myWishlist = importedData.wishlist;
+          saveData();
+          alert("✅ Sauvegarde (collection, top 3 et liste de souhaits) restaurée et synchronisée avec le Cloud !");
+        }
+      } catch (err) { alert("❌ Erreur de lecture."); }
+    };
     reader.readAsText(file); event.target.value = '';
+  }
+
+  // =========================================================================
+  // --- SYSTÈME COMPLET : LISTE DE SOUHAITS (WISHLIST) ---
+  // =========================================================================
+  let wishlistSearchTimeout = null;
+
+  function updateWishlistCounters() {
+    const count = Array.isArray(myWishlist) ? myWishlist.length : 0;
+    const topEl = document.getElementById('wishlist-top-counter');
+    const modalEl = document.getElementById('wishlist-modal-count');
+    if (topEl) topEl.innerText = count;
+    if (modalEl) modalEl.innerText = count;
+  }
+
+  window.openWishlistModal = function() {
+    rouletteHighlightedId = null;
+    populateWishlistGenreFilter();
+    renderWishlistGrid();
+    document.getElementById('wishlist-overlay').classList.add('show');
+  };
+
+  window.closeWishlistModal = function() {
+    document.getElementById('wishlist-overlay').classList.remove('show');
+    const drop = document.getElementById('wishlist-tmdb-dropdown');
+    if (drop) drop.classList.remove('active');
+  };
+
+  document.getElementById('wishlist-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeWishlistModal();
+  });
+
+  window.onWishlistTmdbSearch = function(query) {
+    const drop = document.getElementById('wishlist-tmdb-dropdown');
+    if (!drop) return;
+    const q = query.trim();
+    if (q.length < 2) {
+      drop.classList.remove('active');
+      drop.innerHTML = '';
+      return;
+    }
+    clearTimeout(wishlistSearchTimeout);
+    wishlistSearchTimeout = setTimeout(() => fetchWishlistTmdbCandidates(q), 300);
+  };
+
+  async function fetchWishlistTmdbCandidates(query) {
+    const drop = document.getElementById('wishlist-tmdb-dropdown');
+    if (!drop) return;
+    drop.innerHTML = `<div style="padding:12px; text-align:center; color:var(--neon-blue); font-family:'Rajdhani'; font-size:14px;">🔎 Scan TMDB en direct...</div>`;
+    drop.classList.add('active');
+
+    try {
+      const [resTv, resMovie] = await Promise.all([
+        fetch(`https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=fr-FR`).then(r => r.json()),
+        fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=fr-FR`).then(r => r.json())
+      ]);
+      const tvList = (resTv.results || []).map(r => ({ ...r, media_type: 'tv' }));
+      const movieList = (resMovie.results || []).map(r => ({ ...r, media_type: 'movie' }));
+      const combined = [...tvList, ...movieList]
+        .sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0))
+        .slice(0, 8);
+
+      if (combined.length === 0) {
+        drop.innerHTML = `<div style="padding:12px; text-align:center; color:#888; font-size:12px;">Aucun résultat sur TMDB.</div>`;
+        return;
+      }
+
+      drop.innerHTML = combined.map(item => {
+        const title = item.title || item.name || 'Sans titre';
+        const year = (item.release_date || item.first_air_date || 'N/A').split('-')[0];
+        const poster = item.poster_path ? `https://image.tmdb.org/t/p/w92${item.poster_path}` : 'https://via.placeholder.com/92x138/0a0a16/00f3ff?text=?';
+        const isMovie = item.media_type === 'movie';
+        const badgeStyle = isMovie ? 'background:rgba(0,243,255,0.15); color:var(--neon-blue); border:1px solid var(--neon-blue);' : 'background:rgba(255,0,234,0.15); color:var(--neon-pink); border:1px solid var(--neon-pink);';
+        const badgeLabel = isMovie ? '🎬 Film' : '📺 Série';
+        const rating = (item.vote_average || 0).toFixed(1);
+
+        return `
+          <div class="tmdb-live-item" onclick="addWishItemFromTmdb(${item.id}, '${item.media_type}')">
+            <img src="${poster}" alt="">
+            <div class="tmdb-live-info">
+              <div class="tmdb-live-title">${title}</div>
+              <div class="tmdb-live-meta">
+                <span class="tmdb-live-badge" style="${badgeStyle}">${badgeLabel}</span>
+                <span>📅 ${year}</span>
+                <span style="color:var(--gold);">★ ${rating}</span>
+              </div>
+            </div>
+            <span style="color:var(--success); font-family:'Rajdhani'; font-weight:bold; font-size:12px;">+ AJOUTER</span>
+          </div>`;
+      }).join('');
+    } catch (e) {
+      drop.innerHTML = `<div style="padding:12px; text-align:center; color:var(--danger); font-size:12px;">Erreur réseau TMDB.</div>`;
+    }
+  }
+
+  document.addEventListener('click', function(e) {
+    const box = document.getElementById('wishlist-quick-add-box');
+    const drop = document.getElementById('wishlist-tmdb-dropdown');
+    if (box && drop && !box.contains(e.target)) {
+      drop.classList.remove('active');
+    }
+  });
+
+  window.addWishItemFromTmdb = async function(tmdbId, mediaType) {
+    const drop = document.getElementById('wishlist-tmdb-dropdown');
+    const input = document.getElementById('wishlist-tmdb-input');
+    if (drop) drop.classList.remove('active');
+
+    const cardType = mediaType === 'movie' ? 'Film' : 'Série';
+    const existsInWish = myWishlist.some(w => w.tmdbId === tmdbId && w.type === cardType);
+    if (existsInWish) {
+      alert("⚠️ Cette œuvre est déjà dans ta Liste de Souhaits !");
+      return;
+    }
+
+    if (input) {
+      input.value = "";
+      input.placeholder = "⏳ Récupération des détails TMDB...";
+    }
+
+    try {
+      const res = await fetch(`https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${API_KEY}&language=fr-FR&append_to_response=credits`);
+      const data = await res.json();
+
+      const title = mediaType === 'movie' ? data.title : data.name;
+      const year = ((mediaType === 'movie' ? data.release_date : data.first_air_date) || 'N/A').split('-')[0];
+      const rating = parseFloat((data.vote_average || 0).toFixed(1));
+      let rarity = "commune";
+      if (rating >= 8.0) rarity = "legendaire";
+      else if (rating >= 7.0) rarity = "epique";
+      else if (rating >= 6.0) rarity = "rare";
+
+      let director = "Inconnu";
+      let durationMinutes = 0;
+      let durationLabel = "Durée inconnue";
+
+      if (mediaType === 'movie') {
+        const dirs = (data.credits && data.credits.crew) ? data.credits.crew.filter(c => c.job === 'Director') : [];
+        if (dirs.length > 0) director = dirs.map(d => d.name).join(', ');
+        durationMinutes = data.runtime || 0;
+        durationLabel = durationMinutes > 0 ? `${Math.floor(durationMinutes / 60)}h${String(durationMinutes % 60).padStart(2, '0')}` : "Film";
+      } else {
+        if (data.created_by && data.created_by.length > 0) {
+          director = data.created_by.map(c => c.name).join(', ');
+        } else if (data.credits && data.credits.crew) {
+          const animeCreators = data.credits.crew.filter(x => x.job === 'Original Story' || x.job === 'Comic Book' || x.job === 'Series Director' || x.job === 'Director');
+          if (animeCreators.length > 0) director = animeCreators.map(c => c.name).join(', ');
+        }
+        const validSeasons = (data.seasons || []).filter(s => s.season_number > 0);
+        const totalEps = validSeasons.reduce((acc, s) => acc + (s.episode_count || 0), 0);
+        let epLen = 45;
+        if (data.episode_run_time && data.episode_run_time.length > 0) epLen = data.episode_run_time[0];
+        else if (data.last_episode_to_air && data.last_episode_to_air.runtime) epLen = data.last_episode_to_air.runtime;
+        durationMinutes = totalEps > 0 ? totalEps * epLen : epLen;
+        durationLabel = validSeasons.length > 0 ? `${validSeasons.length} S • ${totalEps} ép.` : "Série";
+      }
+
+      const genres = (data.genres || []).map(g => g.name);
+      const newWish = {
+        uid: `${mediaType}_${tmdbId}_${Date.now()}`,
+        tmdbId: tmdbId,
+        mediaType: mediaType,
+        type: cardType,
+        title: title,
+        year: year,
+        director: director,
+        genres: genres,
+        genreStr: genres.join(' / ') || 'Non classé',
+        rating: rating,
+        rarity: rarity,
+        durationMinutes: durationMinutes,
+        durationLabel: durationLabel,
+        poster: data.poster_path ? `https://image.tmdb.org/t/p/w500${data.poster_path}` : 'https://via.placeholder.com/500x750/0a0a16/00f3ff?text=Image+Manquante',
+        hype: 2, // 3 = Absolue, 2 = Moyenne, 1 = Tranquille
+        note: "",
+        addedAt: Date.now()
+      };
+
+      myWishlist.unshift(newWish);
+      saveData();
+    } catch (e) {
+      alert("❌ Impossible d'ajouter cette œuvre depuis TMDB.");
+    } finally {
+      if (input) input.placeholder = "➕ Ajouter un film, série ou animé...";
+    }
+  };
+
+  window.cycleWishHype = function(uid) {
+    const item = myWishlist.find(w => w.uid === uid);
+    if (!item) return;
+    item.hype = item.hype === 3 ? 2 : (item.hype === 2 ? 1 : 3);
+    saveData();
+  };
+
+  window.updateWishNote = function(uid, val) {
+    const item = myWishlist.find(w => w.uid === uid);
+    if (!item) return;
+    item.note = val;
+    saveDataLocalOnly();
+    if (saveCloudTimeout) clearTimeout(saveCloudTimeout);
+    saveCloudTimeout = setTimeout(() => syncProfileToCloud(true), 1500);
+  };
+
+  window.deleteWishItem = function(uid) {
+    myWishlist = myWishlist.filter(w => w.uid !== uid);
+    if (rouletteHighlightedId === uid) rouletteHighlightedId = null;
+    saveData();
+  };
+
+  window.forgeWishItem = function(uid) {
+    const item = myWishlist.find(w => w.uid === uid);
+    if (!item) return;
+
+    // Retrait de la liste de souhaits
+    myWishlist = myWishlist.filter(w => w.uid !== uid);
+    saveData();
+
+    // Fermeture de la modale & bascule vers l'onglet Gestion
+    closeWishlistModal();
+    switchTab('gestion');
+
+    // Pré-remplissage et verrouillage de la cible exacte dans la Forge
+    const titleInput = document.getElementById('m-title');
+    const yearInput = document.getElementById('m-year');
+    const dirInput = document.getElementById('m-director');
+    const banner = document.getElementById('selected-tmdb-banner');
+    const bannerText = document.getElementById('selected-tmdb-text');
+
+    if (titleInput) titleInput.value = item.title;
+    if (yearInput && item.year !== 'N/A') yearInput.value = item.year;
+    if (dirInput && item.director !== 'Inconnu') dirInput.value = item.director;
+
+    selectedTmdbTarget = {
+      id: item.tmdbId,
+      media_type: item.mediaType || (item.type === 'Film' ? 'movie' : 'tv'),
+      fromWishlist: true
+    };
+
+    if (banner && bannerText) {
+      bannerText.innerText = `🌟 Prêt à forger depuis la Wishlist : ${item.title} (${item.year}) - ${item.director}`;
+      banner.classList.add('active');
+    }
+
+    const dateInput = document.getElementById('m-unlock');
+    if (dateInput && appSettings.dateMode !== 'auto') {
+      dateInput.focus();
+    } else {
+      const submitBtn = document.getElementById('main-submit-btn');
+      if (submitBtn) submitBtn.focus();
+    }
+  };
+
+  function populateWishlistGenreFilter() {
+    const select = document.getElementById('wish-filter-genre');
+    if (!select) return;
+    const currentVal = select.value;
+    const genreSet = new Set();
+    myWishlist.forEach(w => {
+      if (Array.isArray(w.genres)) w.genres.forEach(g => genreSet.add(g));
+    });
+    const sortedGenres = Array.from(genreSet).sort((a, b) => a.localeCompare(b));
+    select.innerHTML = `<option value="all">🎭 Tous les genres</option>` +
+      sortedGenres.map(g => `<option value="${g}">${g}</option>`).join('');
+    if (sortedGenres.includes(currentVal)) select.value = currentVal;
+  }
+
+  function getFilteredAndSortedWishlist() {
+    const textQ = normalize(document.getElementById('wish-filter-text')?.value || '');
+    const typeF = document.getElementById('wish-filter-type')?.value || 'all';
+    const genreF = document.getElementById('wish-filter-genre')?.value || 'all';
+    const hypeF = document.getElementById('wish-filter-hype')?.value || 'all';
+    const sortMode = document.getElementById('wish-sort-mode')?.value || 'added-desc';
+
+    let list = myWishlist.filter(w => {
+      if (typeF !== 'all' && w.type !== typeF) return false;
+      if (genreF !== 'all' && (!Array.isArray(w.genres) || !w.genres.includes(genreF))) return false;
+      if (hypeF !== 'all' && String(w.hype || 2) !== hypeF) return false;
+      if (textQ) {
+        const hay = normalize(`${w.title} ${w.director} ${w.note || ''} ${w.genreStr || ''}`);
+        if (!hay.includes(textQ)) return false;
+      }
+      return true;
+    });
+
+    const rarityRank = { legendaire: 4, epique: 3, rare: 2, commune: 1 };
+
+    switch (sortMode) {
+      case 'added-desc': list.sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0)); break;
+      case 'added-asc': list.sort((a, b) => (a.addedAt || 0) - (b.addedAt || 0)); break;
+      case 'hype-desc': list.sort((a, b) => (b.hype || 2) - (a.hype || 2) || (b.addedAt || 0) - (a.addedAt || 0)); break;
+      case 'hype-asc': list.sort((a, b) => (a.hype || 2) - (b.hype || 2) || (b.addedAt || 0) - (a.addedAt || 0)); break;
+      case 'rating-desc': list.sort((a, b) => (b.rating || 0) - (a.rating || 0)); break;
+      case 'rating-asc': list.sort((a, b) => (a.rating || 0) - (b.rating || 0)); break;
+      case 'rarity-desc': list.sort((a, b) => (rarityRank[b.rarity] || 1) - (rarityRank[a.rarity] || 1) || (b.rating || 0) - (a.rating || 0)); break;
+      case 'rarity-asc': list.sort((a, b) => (rarityRank[a.rarity] || 1) - (rarityRank[b.rarity] || 1) || (a.rating || 0) - (b.rating || 0)); break;
+      case 'duration-asc': list.sort((a, b) => (a.durationMinutes || 99999) - (b.durationMinutes || 99999)); break;
+      case 'duration-desc': list.sort((a, b) => (b.durationMinutes || 0) - (a.durationMinutes || 0)); break;
+      case 'year-desc': list.sort((a, b) => (parseInt(b.year) || 0) - (parseInt(a.year) || 0)); break;
+      case 'year-asc': list.sort((a, b) => (parseInt(a.year) || 9999) - (parseInt(b.year) || 9999)); break;
+      case 'title-asc': list.sort((a, b) => (a.title || '').localeCompare(b.title || '')); break;
+      case 'title-desc': list.sort((a, b) => (b.title || '').localeCompare(a.title || '')); break;
+      case 'director-asc': list.sort((a, b) => (a.director || 'ZZZ').localeCompare(b.director || 'ZZZ')); break;
+      case 'genre-asc': list.sort((a, b) => (a.genreStr || 'ZZZ').localeCompare(b.genreStr || 'ZZZ')); break;
+      case 'random': list.sort(() => Math.random() - 0.5); break;
+    }
+
+    return list;
+  }
+
+  window.resetWishlistFilters = function() {
+    document.getElementById('wish-filter-text').value = '';
+    document.getElementById('wish-filter-type').value = 'all';
+    document.getElementById('wish-filter-genre').value = 'all';
+    document.getElementById('wish-filter-hype').value = 'all';
+    document.getElementById('wish-sort-mode').value = 'added-desc';
+    rouletteHighlightedId = null;
+    renderWishlistGrid();
+  };
+
+  window.spinWishlistRoulette = function() {
+    const filtered = getFilteredAndSortedWishlist();
+    if (filtered.length === 0) {
+      alert("⚠️ Aucune œuvre ne correspond aux filtres actifs pour le tirage au sort !");
+      return;
+    }
+    const chosen = filtered[Math.floor(Math.random() * filtered.length)];
+    rouletteHighlightedId = chosen.uid;
+    renderWishlistGrid();
+    setTimeout(() => {
+      const cardEl = document.getElementById(`wish-card-${chosen.uid}`);
+      if (cardEl) {
+        cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 80);
+  };
+
+  function renderWishlistGrid() {
+    const grid = document.getElementById('wishlist-grid');
+    if (!grid) return;
+
+    const list = getFilteredAndSortedWishlist();
+    if (list.length === 0) {
+      grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.5); font-family: 'Rajdhani'; font-size: 20px;">
+        ${myWishlist.length === 0 ? "Ta Liste de Souhaits est vide ! Utilise la barre de recherche TMDB en haut à droite pour ajouter ta première envie." : "Aucune œuvre ne correspond à tes filtres actuels."}
+      </div>`;
+      return;
+    }
+
+    const hypeConfig = {
+      3: { label: '🔥🔥🔥 Absolue', cls: 'hype-3' },
+      2: { label: '🔥🔥 Moyenne', cls: 'hype-2' },
+      1: { label: '🔥 Tranquille', cls: 'hype-1' }
+    };
+    const rarityLabel = {
+      legendaire: '<span style="color:var(--gold);">💎 Légendaire</span>',
+      epique: '<span style="color:var(--neon-pink);">💜 Épique</span>',
+      rare: '<span style="color:var(--neon-blue);">💠 Rare</span>',
+      commune: '<span style="color:#aaa;">⚪ Commune</span>'
+    };
+
+    grid.innerHTML = list.map(w => {
+      const h = hypeConfig[w.hype || 2] || hypeConfig[2];
+      const isWinner = rouletteHighlightedId === w.uid ? 'roulette-winner' : '';
+      const typePill = w.type === 'Série'
+        ? `<span style="color:var(--neon-pink); font-weight:bold;">📺 Série</span>`
+        : `<span style="color:var(--neon-blue); font-weight:bold;">🎬 Film</span>`;
+
+      return `
+        <div id="wish-card-${w.uid}" class="wish-card ${isWinner}">
+          <div class="wish-card-top">
+            <img src="${w.poster}" class="wish-poster" alt="">
+            <div class="wish-info">
+              <div>
+                <h4 class="wish-title" title="${(w.title || '').replace(/"/g, '&quot;')}">${w.title}</h4>
+                <div class="wish-meta">
+                  ${typePill} • ${w.year} • <span style="color:var(--gold); font-weight:bold;">★ ${w.rating}</span><br>
+                  🎬 ${w.director}<br>
+                  ⏱️ ${w.durationLabel} • ${rarityLabel[w.rarity] || ''}
+                </div>
+              </div>
+              <div class="hype-badge-btn ${h.cls}" onclick="cycleWishHype('${w.uid}')" title="Cliquer pour changer la priorité">
+                ${h.label}
+              </div>
+            </div>
+          </div>
+          <div style="padding: 0 12px 6px 12px; font-size: 10px; color: rgba(255,255,255,0.5); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            🎭 ${w.genreStr}
+          </div>
+          <div class="wish-note-box">
+            <textarea class="wish-note-input" placeholder="📝 Note perso (conseillé par, plateforme...)" oninput="updateWishNote('${w.uid}', this.value)">${w.note || ''}</textarea>
+          </div>
+          <div class="wish-actions">
+            <button class="btn-forge-wish" onclick="forgeWishItem('${w.uid}')">✔ Vu ! Forger</button>
+            <button class="btn-del-wish" onclick="deleteWishItem('${w.uid}')" title="Retirer de la liste">🗑️</button>
+          </div>
+        </div>`;
+    }).join('');
   }
 
   async function syncCollection() {
@@ -1279,7 +1874,8 @@ window.resetUserScores = async function(targetPseudo) {
 
         if (bestResult) {
           const mediaType = bestResult.media_type;
-const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${bestResult.id}?api_key=${API_KEY}&language=fr-FR&append_to_response=credits,external_ids,keywords`);          const itemData = await detailsRes.json();
+          const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${bestResult.id}?api_key=${API_KEY}&language=fr-FR&append_to_response=credits,external_ids`);
+          const itemData = await detailsRes.json();
 
           movie.tmdbId = itemData.id;
 
@@ -1577,7 +2173,6 @@ const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${best
           if (yearFiltered.length > 0) validResults = yearFiltered;
         }
 
-        // Fonction locale pour vérifier si un candidat de recherche est DÉJÀ dans notre collection
         const isCandidateAlreadyOwned = (cand) => {
           const candType = cand.media_type === 'movie' ? 'Film' : 'Série';
           const candYear = (cand.release_date || cand.first_air_date || 'N/A').split('-')[0];
@@ -1619,7 +2214,6 @@ const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${best
         if (!bestResult) {
           const exactMatches = validResults.filter(r => normalize(r.title || r.name || '') === cleanInputNorm);
           if (exactMatches.length > 0) {
-            // Si une version exacte existe déjà dans la collection, on privilégie l'homonyme / remake non possédé !
             bestResult = exactMatches.find(r => !isCandidateAlreadyOwned(r)) || exactMatches[0];
           } else {
             bestResult = validResults.find(r => !isCandidateAlreadyOwned(r)) || validResults[0];
@@ -1630,7 +2224,7 @@ const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${best
       if (!bestResult) { alert("Œuvre introuvable sur TMDB avec ces filtres précis."); throw new Error("Non trouvé"); }
 
       const mediaType = bestResult.media_type;
-      const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${bestResult.id}?api_key=${API_KEY}&language=fr-FR&append_to_response=credits,external_ids,keywords`);
+      const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${bestResult.id}?api_key=${API_KEY}&language=fr-FR&append_to_response=credits,external_ids`);
       const itemData = await detailsRes.json();
 
       let title = mediaType === 'movie' ? itemData.title : itemData.name;
@@ -1641,7 +2235,6 @@ const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${best
 
       const newPosterHash = itemData.poster_path ? itemData.poster_path.split('/').pop() : null;
 
-      // VÉRIFICATION ANTI-DOUBLONS STRICTE (Basée sur ID TMDB, Affiche ou Titre + Type + Année)
       const isDuplicate = myMovies.some(m => {
         if (m.type !== cardType) return false;
         if (m.tmdbId && itemData.id) return m.tmdbId === itemData.id;
@@ -1690,25 +2283,8 @@ const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${best
       if (wikidataId) { try { const sparqlQuery = `SELECT DISTINCT ?awardLabel (YEAR(?date) as ?year) WHERE { wd:${wikidataId} p:P166 ?statement . ?statement ps:P166 ?award . OPTIONAL { ?statement pq:P585 ?date . } SERVICE wikibase:label { bd:serviceParam wikibase:language "en,fr". } } LIMIT 3`; const wikiRes = await fetch(`https://query.wikidata.org/sparql?query=${encodeURIComponent(sparqlQuery)}&format=json`, { headers: { 'Accept': 'application/sparql-results+json' } }); const wikiData = await wikiRes.json(); if (wikiData.results && wikiData.results.bindings.length > 0) { const validAwards = wikiData.results.bindings.filter(b => b.awardLabel && !/^Q\d+$/.test(b.awardLabel.value)).map(b => { let name = b.awardLabel.value.charAt(0).toUpperCase() + b.awardLabel.value.slice(1); return `${name} (${b.year ? b.year.value : year})`; }); if (validAwards.length > 0) awards = validAwards; } } catch(e) {} }
       if (awards.length === 0 && imdbId) { try { const omdbRes = await fetch(`https://www.omdbapi.com/?i=${imdbId}&apikey=${OMDB_KEY}`); const omdbData = await omdbRes.json(); if (omdbData.Awards && omdbData.Awards !== "N/A" && omdbData.Awards.includes("Won")) { let wonText = omdbData.Awards.split('.')[0]; if (wonText.includes("Won")) awards = [`${wonText} (${year})`]; } } catch(e) {} }
 
-      const isXmasEligible = (mediaType === 'movie') && detectChristmasMovie(itemData);
-      const newMovie = {
-        tmdbId: itemData.id, title: title, type: cardType, director: director, directorTotal: directorTotal,
-        universe: universe, universeTotal: universeTotal, genre: itemData.genres.map(g => g.name).join(' / '),
-        rarity: rarity, rating: rating.toFixed(1),
-        poster: itemData.poster_path ? `https://image.tmdb.org/t/p/w500${itemData.poster_path}` : 'https://via.placeholder.com/500x750/0a0a16/00f3ff?text=Image+Manquante',
-        year: year, unlockDate: unlockDate, quote: itemData.tagline || "Une œuvre mémorable.", awards: awards,
-        runtime: runtimeMinutes, synopsis: itemData.overview || "Synopsis non disponible.", userNote: "",
-        seasonsData: seasonsData, watchedEpisodes: watchedEpisodes, episodeRuntime: episodeRuntime,
-        addedDuringXmasEvent: true, isChristmasCandidate: isXmasEligible, xmasQuizVerified: false
-      };
+      const newMovie = { tmdbId: itemData.id, title: title, type: cardType, director: director, directorTotal: directorTotal, universe: universe, universeTotal: universeTotal, genre: itemData.genres.map(g => g.name).join(' / '), rarity: rarity, rating: rating.toFixed(1), poster: itemData.poster_path ? `https://image.tmdb.org/t/p/w500${itemData.poster_path}` : 'https://via.placeholder.com/500x750/0a0a16/00f3ff?text=Image+Manquante', year: year, unlockDate: unlockDate, quote: itemData.tagline || "Une œuvre mémorable.", awards: awards, runtime: runtimeMinutes, synopsis: itemData.overview || "Synopsis non disponible.", userNote: "", seasonsData: seasonsData, watchedEpisodes: watchedEpisodes, episodeRuntime: episodeRuntime };
       myMovies.unshift(newMovie); recentlyAddedKey = getMovieUniqueKey(newMovie); this.reset(); clearSelectedTmdbTarget(); saveData();
-      if (isXmasEligible) {
-        setTimeout(() => {
-          if (confirm(`🎄 "${title}" est un Nouveau Film de Noël éligible à l'Event Hivernal !\n\nVeux-tu passer le Quiz Anti-Triche (3 questions minutées) maintenant pour le comptabiliser dans tes 20 films ?`)) {
-            startXmasVerificationQuiz(0);
-          }
-        }, 400);
-      }
       if (!appSettings.skipAnimation) { if (mediaType === 'movie') document.querySelectorAll('.tab-btn')[2].click(); else document.querySelectorAll('.tab-btn')[3].click(); } 
       else { const originalText = submitBtn.innerText; submitBtn.innerText = `✅ Ajouté : ${title} (${year})`; submitBtn.style.background = "#28a745"; setTimeout(() => { submitBtn.innerText = originalText; submitBtn.style.background = ""; }, 2000); }
     } catch (error) {} finally { loadingUI.style.display = 'none'; submitBtn.style.display = 'block'; }
@@ -1719,7 +2295,7 @@ const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${best
   function renderAll() { renderGallery('Film', 'gallery-films', 'sort-select-films', 'search-filter-films'); renderGallery('Série', 'gallery-series', 'sort-select-series', 'search-filter-series'); }
   function renderGallery(type, containerId, sortId, searchId) { const gallery = document.getElementById(containerId); gallery.innerHTML = ''; let sortedMovies = myMovies.map((movie, originalIndex) => ({ movie, originalIndex })).filter(item => item.movie.type === type); const searchVal = document.getElementById(searchId).value.toLowerCase(); if (searchVal) { sortedMovies = sortedMovies.filter(item => item.movie.title.toLowerCase().includes(searchVal)); } const sortValue = document.getElementById(sortId).value; if (sortValue === 'title-asc') sortedMovies.sort((a, b) => a.movie.title.localeCompare(b.movie.title)); else if (sortValue === 'rarity-desc') { const scores = { legendaire: 4, epique: 3, rare: 2, commune: 1 }; sortedMovies.sort((a, b) => scores[b.movie.rarity] - scores[a.movie.rarity]); } else if (sortValue === 'year-asc') { sortedMovies.sort((a, b) => parseInt(a.movie.year || 9999) - parseInt(b.movie.year || 9999)); } sortedMovies.forEach(item => { const movie = item.movie; const index = item.originalIndex; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const animClass = (getMovieUniqueKey(movie) === recentlyAddedKey && !appSettings.skipAnimation) ? 'new-card-anim' : ''; let epBadge = ''; let percentage = 100; if (isSerie) { if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } const cardHTML = `<div class="card-container ${animClass}" onclick="openModal(${index})"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel}:</span> ${movie.director}</p><p><span>Année:</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre:</span> ${movie.genre}</p></div><div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div></div></div></div>`; gallery.innerHTML += cardHTML; }); if(type === 'Série' || type === 'Film') { setTimeout(() => { recentlyAddedKey = null; }, 100); } }
 
-  function openModal(index) { const movie = myMovies[index]; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const awardsHTML = getAwardsHTML(movie.awards); const synopsisText = movie.synopsis || "Clique sur 'Synchroniser les données'."; const userNoteText = movie.userNote || ""; const notesHiddenClass = notesVisible ? '' : 'hidden'; const toggleButtonText = notesVisible ? '📝 Masquer les notes' : '📝 Afficher les notes'; let epBadge = ''; let percentage = 100; let btnManager = ''; if (isSerie) { btnManager = `<button class="btn-sync" style="border-color: var(--neon-pink); color: var(--neon-pink); font-size: 12px; padding: 6px 12px; margin-top: 10px;" onclick="openEpisodeManager(${index})">📺 Gérer les épisodes</button>`; if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } else if (movie.addedDuringXmasEvent && (movie.isChristmasCandidate || isTitleOrSynopsisChristmas(movie)) && !movie.xmasQuizVerified) { btnManager = `<button class="btn-sync" style="border-color: var(--gold); color: var(--gold); font-size: 11px; padding: 6px 12px; margin-top: 8px;" onclick="closeModal(); startXmasVerificationQuiz(${index})">🎄 Passer le Quiz Anti-Triche (Event Noël)</button>`; } else if (movie.xmasQuizVerified) { btnManager = `<div style="color: var(--success); font-size: 11px; font-weight: bold; margin-top: 6px;">🎄 Film de Noël Validé (Quiz 3/3 ✔)</div>`; } const fullModalHTML = `<div class="modal-container-box"><button class="btn-toggle-notes" onclick="toggleNotes(${index})">${toggleButtonText}</button><div class="modal-wrapper"><div class="modal-notes ${notesHiddenClass}" id="modal-notes-panel"><h3>📝 Mes Notes</h3><textarea class="post-it" placeholder="Écris tes critiques..." oninput="saveNote(${index}, this.value)">${userNoteText}</textarea><span style="font-size: 10px; color: #888; margin-top: 5px; text-align:right;">* Sauvegarde en temps réel</span></div><div class="modal-card-container"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel} :</span> ${movie.director}</p><p><span>Année :</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre :</span> ${movie.genre}</p>${btnManager}</div>${awardsHTML}<div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div><p class="quote">"${movie.quote}"</p></div></div></div><div class="modal-synopsis"><h3>Synopsis</h3><p>${synopsisText}</p></div></div></div>`; document.getElementById('modal-content-area').innerHTML = fullModalHTML; document.getElementById('card-modal-overlay').classList.add('show'); }
+  function openModal(index) { const movie = myMovies[index]; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const awardsHTML = getAwardsHTML(movie.awards); const synopsisText = movie.synopsis || "Clique sur 'Synchroniser les données'."; const userNoteText = movie.userNote || ""; const notesHiddenClass = notesVisible ? '' : 'hidden'; const toggleButtonText = notesVisible ? '📝 Masquer les notes' : '📝 Afficher les notes'; let epBadge = ''; let percentage = 100; let btnManager = ''; if (isSerie) { btnManager = `<button class="btn-sync" style="border-color: var(--neon-pink); color: var(--neon-pink); font-size: 12px; padding: 6px 12px; margin-top: 10px;" onclick="openEpisodeManager(${index})">📺 Gérer les épisodes</button>`; if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } const fullModalHTML = `<div class="modal-container-box"><button class="btn-toggle-notes" onclick="toggleNotes(${index})">${toggleButtonText}</button><div class="modal-wrapper"><div class="modal-notes ${notesHiddenClass}" id="modal-notes-panel"><h3>📝 Mes Notes</h3><textarea class="post-it" placeholder="Écris tes critiques..." oninput="saveNote(${index}, this.value)">${userNoteText}</textarea><span style="font-size: 10px; color: #888; margin-top: 5px; text-align:right;">* Sauvegarde en temps réel</span></div><div class="modal-card-container"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel} :</span> ${movie.director}</p><p><span>Année :</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre :</span> ${movie.genre}</p>${btnManager}</div>${awardsHTML}<div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div><p class="quote">"${movie.quote}"</p></div></div></div><div class="modal-synopsis"><h3>Synopsis</h3><p>${synopsisText}</p></div></div></div>`; document.getElementById('modal-content-area').innerHTML = fullModalHTML; document.getElementById('card-modal-overlay').classList.add('show'); }
   
   window.saveNote = function(index, text) { 
       if (myMovies[index]) { 
@@ -2171,396 +2747,6 @@ const detailsRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${best
   window.validateCriticGuess = function() { const slider = document.getElementById('critic-slider'); const guessed = parseFloat(slider.value); const realRating = parseFloat(currentCriticMovie.rating); slider.disabled = true; const diff = Math.abs(guessed - realRating); const resDiv = document.getElementById('critic-result'); if (diff <= 0.5) { resDiv.innerHTML = `<span style="color: var(--success); font-weight: bold; font-size: 20px;">Exact ! La note est de ${realRating}</span>`; criticScore++; document.getElementById('critic-score').innerText = criticScore; const btn = document.getElementById('critic-validate-btn'); btn.innerText = "Suivant ➔"; btn.onclick = nextCriticRound; } else { resDiv.innerHTML = `<span style="color: var(--danger); font-weight: bold; font-size: 20px;">Raté ! La vraie note est de ${realRating}</span>`; setTimeout(() => { if (criticScore > (appSettings.highScores.critic || 0)) { appSettings.highScores.critic = criticScore; saveData(); } alert(`Game Over ! Score final : ${criticScore}`); closeGame('critic'); }, 1800); } }
 
   window.closeGame = function(gameId) { document.getElementById(`game-${gameId}-overlay`).classList.remove('show'); };
-
-  // ============================================================================
-  // 🎄 MOTEUR DE L'EVENT DE NOËL (20 FILMS + QUIZ ANTI-TRICHE + NEIGE 60 FPS)
-  // ============================================================================
-  const XMAS_KEYWORDS = [
-    "christmas", "noel", "noël", "santa", "pere noel", "père noël", "grinch", "holiday",
-    "reveillon", "réveillon", "sapin", "lutin", "elf", "xmas", "maman j'ai rate l'avion",
-    "home alone", "klaus", "pole express", "pôle express", "scrooge", "casse-noisette",
-    "nutcracker", "krampus", "jack frost", "etrange noel", "étrange noël", "die hard",
-    "piège de cristal", "piege de cristal", "love actually", "miracle sur la 34", "gremlins"
-  ];
-
-  function isTitleOrSynopsisChristmas(m) {
-    const hay = ((m.title || '') + ' ' + (m.synopsis || '') + ' ' + (m.quote || '')).toLowerCase();
-    return XMAS_KEYWORDS.some(k => hay.includes(k));
-  }
-
-  function detectChristmasMovie(itemData) {
-    const text = ((itemData.title || '') + ' ' + (itemData.original_title || '') + ' ' + (itemData.overview || '') + ' ' + (itemData.tagline || '')).toLowerCase();
-    if (XMAS_KEYWORDS.some(k => text.includes(k))) return true;
-    const kwList = (itemData.keywords && (itemData.keywords.keywords || itemData.keywords.results)) || [];
-    return kwList.some(k => XMAS_KEYWORDS.some(xk => (k.name || '').toLowerCase().includes(xk)));
-  }
-
-  function getVerifiedXmasMoviesCount() {
-    return myMovies.filter(m => m.type === 'Film' && m.addedDuringXmasEvent && m.xmasQuizVerified).length;
-  }
-
-  // Variable de session uniquement (non sauvegardée comme déblocage) pour que l'Admin teste le rendu sans déverrouiller la quête
-  let adminPreviewSkin = null;
-
-  function isXmasLegitimatelyUnlocked() {
-    const count = getVerifiedXmasMoviesCount();
-    return count >= 20;
-  }
-
-  function updateXmasEventUI() {
-    const count = getVerifiedXmasMoviesCount();
-    const target = 20;
-    const pct = Math.min(Math.round((count / target) * 100), 100);
-
-    // Le déblocage permanent dépend STRICTEMENT de la quête des 20 films (même pour l'Admin !)
-    if (count >= target) {
-      appSettings.xmasSkinUnlocked = true;
-    } else {
-      appSettings.xmasSkinUnlocked = false;
-      if (appSettings.activeSkin === 'noel') appSettings.activeSkin = 'default';
-    }
-    localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
-
-    const counterEl = document.getElementById('xmas-quest-counter');
-    const barEl = document.getElementById('xmas-quest-bar');
-    const statusEl = document.getElementById('xmas-unlock-status');
-    const toggleBtn = document.getElementById('xmas-skin-toggle-btn');
-    const adminPreviewBtn = document.getElementById('admin-preview-xmas-btn');
-
-    if (counterEl) counterEl.innerText = `${count} / ${target} Validés`;
-    if (barEl) barEl.style.width = `${pct}%`;
-
-    if (adminPreviewBtn) {
-      adminPreviewBtn.innerText = (adminPreviewSkin === 'noel')
-        ? '🛑 Quitter Aperçu Skin Noël (Admin)'
-        : '👁️ Tester Aperçu Skin Noël (Sans débloquer la quête)';
-    }
-
-    if (appSettings.xmasSkinUnlocked) {
-      if (statusEl) statusEl.innerHTML = `🔓 Skin Collector Débloqué ! (Disponible à vie dans 🎨 Skins)`;
-      if (toggleBtn) {
-        toggleBtn.style.display = 'inline-block';
-        toggleBtn.innerText = (appSettings.activeSkin === 'noel') ? '❄️ Désactiver le Skin Noël' : '🎄 Équiper le Skin Noël';
-      }
-    } else {
-      const previewNote = (adminPreviewSkin === 'noel') ? ' <span style="color:#00e676;">(👁️ Aperçu Admin Actif)</span>' : '';
-      if (statusEl) statusEl.innerHTML = `🔒 Verrouillé • Encore ${Math.max(0, target - count)} film(s) de Noël à vérifier par Quiz${previewNote}`;
-      if (toggleBtn) toggleBtn.style.display = 'none';
-    }
-
-    applyActiveSkin();
-    renderSkinsVault();
-  }
-
-  window.toggleChristmasSkin = function() {
-    if (!appSettings.xmasSkinUnlocked) {
-      alert("🔒 Tu dois d'abord valider les 20 films de Noël via le Quiz Anti-Triche pour pouvoir équiper ce skin !");
-      return;
-    }
-    adminPreviewSkin = null;
-    appSettings.activeSkin = (appSettings.activeSkin === 'noel') ? 'default' : 'noel';
-    localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
-    updateXmasEventUI();
-    syncProfileToCloud(false);
-  };
-
-  window.adminForceUnlockXmasSkin = function() {
-    if (appSettings.pseudo !== "Mr. Bonnet") return;
-    // Active ou désactive uniquement l'aperçu visuel temporaire : la quête reste 100% verrouillée !
-    adminPreviewSkin = (adminPreviewSkin === 'noel') ? null : 'noel';
-    updateXmasEventUI();
-    alert(adminPreviewSkin === 'noel'
-      ? `👁️ Aperçu Admin ACTIVÉ : Tu peux admirer le thème de Noël, mais ta quête (${getVerifiedXmasMoviesCount()}/20) et le skin dans ton vestiaire restent VERROUILLÉS tant que tu n'as pas validé tes 20 films !`
-      : `👁️ Aperçu Admin DÉSACTIVÉ : Retour à ton thème normal.`);
-  };
-
-  function applyActiveSkin() {
-    const effectiveSkin = adminPreviewSkin || (appSettings.xmasSkinUnlocked ? appSettings.activeSkin : 'default');
-    if (effectiveSkin === 'noel') {
-      document.body.classList.add('skin-noel');
-      startSnowEngine();
-    } else {
-      document.body.classList.remove('skin-noel');
-      stopSnowEngine();
-    }
-  }
-
-  // --- GESTION DU VESTIAIRE PERMANENT DES SKINS (BOUTON 🎨 SKINS) ---
-  window.openSkinsModal = function() {
-    renderSkinsVault();
-    document.getElementById('skins-vault-overlay').classList.add('show');
-  };
-
-  window.closeSkinsModal = function() {
-    document.getElementById('skins-vault-overlay').classList.remove('show');
-  };
-
-  window.selectSkinFromVault = function(skinId) {
-    if (skinId === 'noel' && !appSettings.xmasSkinUnlocked) {
-      alert("🔒 Ce skin est verrouillé ! Termine la quête des 20 nouveaux films de Noël (avec Quiz Anti-Triche) pour le débloquer à vie.");
-      return;
-    }
-    adminPreviewSkin = null;
-    appSettings.activeSkin = skinId;
-    localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
-    updateXmasEventUI();
-    syncProfileToCloud(false);
-  };
-
-  function renderSkinsVault() {
-    const container = document.getElementById('skins-vault-list');
-    if (!container) return;
-
-    const count = getVerifiedXmasMoviesCount();
-    const xmasUnlocked = !!appSettings.xmasSkinUnlocked;
-    const currentSkin = appSettings.activeSkin || 'default';
-
-    const skinsCatalog = [
-      {
-        id: 'default',
-        name: '🌌 Cyberpunk Néon',
-        badge: 'Thème Original',
-        badgeColor: 'var(--neon-blue)',
-        desc: 'L\'ambiance originelle de Ciné Cards : orbes bleu cyan et rose magenta sur fond abyssal.',
-        unlocked: true,
-        progressText: 'Débloqué de base'
-      },
-      {
-        id: 'noel',
-        name: '🎄 Noël Féerique (60 FPS)',
-        badge: 'Event Hiver 2026',
-        badgeColor: '#ff1744',
-        desc: 'Chute de neige physique interactive, guirlande d\'ampoules lumineuses, givre cristallin et badge 🎅 au Panthéon.',
-        unlocked: xmasUnlocked,
-        progressText: xmasUnlocked ? 'Débloqué à vie ✔' : `Quête en cours : ${count} / 20 films vérifiés`
-      },
-      {
-        id: 'coming_soon',
-        name: '🎃 Prochain Event Saisonnier',
-        badge: 'Bientôt',
-        badgeColor: '#888',
-        desc: 'De nouveaux skins exclusifs seront ajoutés lors des prochains événements spéciaux sur Ciné Cards.',
-        unlocked: false,
-        isPlaceholder: true,
-        progressText: 'À venir prochainement...'
-      }
-    ];
-
-    container.innerHTML = skinsCatalog.map(s => {
-      const isEquipped = !s.isPlaceholder && s.unlocked && ((s.id === 'default' && currentSkin !== 'noel') || (s.id === currentSkin));
-      const borderStyle = isEquipped ? 'border: 2px solid var(--success); box-shadow: 0 0 20px rgba(0,255,115,0.25);' : (s.unlocked ? 'border: 1px solid rgba(255,215,0,0.4);' : 'border: 1px dashed rgba(255,255,255,0.15); opacity: 0.75;');
-
-      let actionBtn = '';
-      if (s.isPlaceholder) {
-        actionBtn = `<button class="btn-sync" disabled style="width:100%; border-color:#555; color:#666; cursor:not-allowed; margin:12px 0 0 0; padding:8px; font-size:13px;">⏳ Indisponible</button>`;
-      } else if (!s.unlocked) {
-        actionBtn = `<button class="btn-sync" onclick="selectSkinFromVault('${s.id}')" style="width:100%; border-color:var(--danger); color:var(--danger); margin:12px 0 0 0; padding:8px; font-size:13px;">🔒 Verrouillé (${count}/20)</button>`;
-      } else if (isEquipped) {
-        actionBtn = `<button class="btn-sync" disabled style="width:100%; border-color:var(--success); color:var(--success); background:rgba(0,255,115,0.1); margin:12px 0 0 0; padding:8px; font-size:13px;">✔ Équipé actuellement</button>`;
-      } else {
-        actionBtn = `<button class="btn-submit" onclick="selectSkinFromVault('${s.id}')" style="width:100%; margin:12px 0 0 0; padding:8px; font-size:14px;">✨ Équiper ce Skin</button>`;
-      }
-
-      return `
-        <div style="background: rgba(0,0,0,0.55); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; ${borderStyle}">
-          <div>
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px;">
-              <span style="font-family:'Rajdhani'; font-size:20px; font-weight:bold; color:#fff;">${s.name}</span>
-              <span style="font-size:10px; font-weight:bold; text-transform:uppercase; padding:2px 8px; border-radius:10px; border:1px solid ${s.badgeColor}; color:${s.badgeColor};">${s.badge}</span>
-            </div>
-            <p style="font-size:12px; color:rgba(255,255,255,0.7); line-height:1.4; margin:0 0 10px 0;">${s.desc}</p>
-          </div>
-          <div>
-            <div style="font-size:11px; color:var(--gold); font-weight:bold;">${s.progressText}</div>
-            ${actionBtn}
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  // --- MOTEUR DE PARTICULES DE NEIGE TEMPS RÉEL (60 FPS CANVAS) ---
-  let snowAnimId = null;
-  let snowflakes = [];
-  let mouseWindX = 0;
-
-  window.addEventListener('mousemove', (e) => {
-    mouseWindX = ((e.clientX / window.innerWidth) - 0.5) * 1.8;
-  });
-
-  function startSnowEngine() {
-    const canvas = document.getElementById('snow-canvas');
-    if (!canvas || snowAnimId) return;
-    const ctx = canvas.getContext('2d');
-    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-    resize();
-    window.addEventListener('resize', resize);
-
-    snowflakes = Array.from({ length: 110 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 3.2 + 1,
-      speedY: Math.random() * 1.4 + 0.5,
-      drift: Math.random() * 0.8 - 0.4,
-      opacity: Math.random() * 0.65 + 0.25
-    }));
-
-    function renderSnow() {
-      if (!document.body.classList.contains('skin-noel')) { snowAnimId = null; return; }
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let f of snowflakes) {
-        ctx.beginPath();
-        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${f.opacity})`;
-        ctx.fill();
-
-        f.y += f.speedY;
-        f.x += f.drift + mouseWindX;
-
-        if (f.y > canvas.height + 5) { f.y = -5; f.x = Math.random() * canvas.width; }
-        if (f.x > canvas.width + 5) f.x = -5;
-        if (f.x < -5) f.x = canvas.width + 5;
-      }
-      snowAnimId = requestAnimationFrame(renderSnow);
-    }
-    snowAnimId = requestAnimationFrame(renderSnow);
-  }
-
-  function stopSnowEngine() {
-    if (snowAnimId) { cancelAnimationFrame(snowAnimId); snowAnimId = null; }
-  }
-
-  // --- QUIZ DE VÉRIFICATION ANTI-TRICHE (3 QUESTIONS TMDB MINUTÉES) ---
-  let activeQuizMovieIndex = null;
-  let activeQuizQuestions = [];
-  let activeQuizStep = 0;
-  let activeQuizTimer = null;
-  let activeQuizTimeLeft = 15;
-
-  window.startXmasVerificationQuiz = async function(movieIndex) {
-    const movie = myMovies[movieIndex];
-    if (!movie) return;
-    activeQuizMovieIndex = movieIndex;
-
-    const overlay = document.getElementById('xmas-quiz-overlay');
-    const qBox = document.getElementById('xmas-quiz-question-box');
-    const choicesBox = document.getElementById('xmas-quiz-choices');
-    document.getElementById('xmas-quiz-movie-title').innerText = `Vérification : ${movie.title}`;
-    qBox.innerText = "Génération des questions anti-triche depuis les archives TMDB...";
-    choicesBox.innerHTML = "";
-    overlay.classList.add('show');
-
-    try {
-      let tmdbId = movie.tmdbId;
-      if (!tmdbId) {
-        const sRes = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(movie.title)}&language=fr-FR`);
-        const sData = await sRes.json();
-        if (sData.results && sData.results[0]) tmdbId = sData.results[0].id;
-      }
-      const detRes = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${API_KEY}&language=fr-FR&append_to_response=credits`);
-      const detData = await detRes.json();
-
-      const cast = (detData.credits && detData.credits.cast) || [];
-      const leadActor = cast[0] ? cast[0].name : "Bruce Willis";
-      const leadChar = (cast[0] && cast[0].character) ? cast[0].character : (cast[1] && cast[1].character ? cast[1].character : "Le héros principal");
-      const realOverview = detData.overview || movie.synopsis || "Un événement inattendu bouleverse le réveillon de Noël.";
-
-      const fakeActors = ["Tim Allen", "Macaulay Culkin", "Jim Carrey", "Kurt Russell", "Will Ferrell", "Hugh Grant", "Jude Law", "Johnny Depp"].filter(a => a !== leadActor).sort(() => 0.5 - Math.random()).slice(0, 3);
-      const fakeChars = ["Kevin McCallister", "Scott Calvin", "Billy Mack", "Clark Griswold", "Buddy le Lutin", "Ebenezer Scrooge", "Jack Skellington"].filter(c => c !== leadChar).sort(() => 0.5 - Math.random()).slice(0, 3);
-      const otherOverviews = myMovies.filter((m, idx) => idx !== movieIndex && m.synopsis && m.synopsis.length > 35).map(m => m.synopsis).sort(() => 0.5 - Math.random()).slice(0, 3);
-      while (otherOverviews.length < 3) {
-        otherOverviews.push("Un Père Noël amnésique doit retrouver ses rennes égarés dans les rues de Chicago avant minuit.");
-      }
-
-      activeQuizQuestions = [
-        {
-          q: `Quel est le véritable synopsis de "${movie.title}" ?`,
-          correct: realOverview.length > 160 ? realOverview.substring(0, 157) + '...' : realOverview,
-          options: [
-            realOverview.length > 160 ? realOverview.substring(0, 157) + '...' : realOverview,
-            ...otherOverviews.map(o => o.length > 160 ? o.substring(0, 157) + '...' : o)
-          ].sort(() => 0.5 - Math.random())
-        },
-        {
-          q: `Quel personnage apparaît véritablement dans "${movie.title}" ?`,
-          correct: leadChar,
-          options: [leadChar, ...fakeChars].sort(() => 0.5 - Math.random())
-        },
-        {
-          q: `Quel acteur ou actrice tient le rôle principal dans "${movie.title}" ?`,
-          correct: leadActor,
-          options: [leadActor, ...fakeActors].sort(() => 0.5 - Math.random())
-        }
-      ];
-
-      activeQuizStep = 0;
-      renderXmasQuizStep();
-    } catch (e) {
-      alert("Erreur réseau lors de la création du quiz. Réessaie dans un instant.");
-      closeXmasQuiz();
-    }
-  };
-
-  function renderXmasQuizStep() {
-    clearInterval(activeQuizTimer);
-    activeQuizTimeLeft = 15;
-    const currentQ = activeQuizQuestions[activeQuizStep];
-    document.getElementById('xmas-quiz-step').innerText = `Question ${activeQuizStep + 1} / 3 • ⏱️ ${activeQuizTimeLeft}s`;
-    document.getElementById('xmas-quiz-timer-fill').style.width = '100%';
-    document.getElementById('xmas-quiz-question-box').innerText = currentQ.q;
-
-    const choicesBox = document.getElementById('xmas-quiz-choices');
-    choicesBox.innerHTML = '';
-    currentQ.options.forEach(opt => {
-      const btn = document.createElement('button');
-      btn.className = 'mystery-btn';
-      btn.style.textAlign = 'left';
-      btn.innerText = opt;
-      btn.onclick = () => submitXmasQuizAnswer(opt === currentQ.correct);
-      choicesBox.appendChild(btn);
-    });
-
-    activeQuizTimer = setInterval(() => {
-      activeQuizTimeLeft--;
-      document.getElementById('xmas-quiz-step').innerText = `Question ${activeQuizStep + 1} / 3 • ⏱️ ${activeQuizTimeLeft}s`;
-      document.getElementById('xmas-quiz-timer-fill').style.width = `${(activeQuizTimeLeft / 15) * 100}%`;
-      if (activeQuizTimeLeft <= 0) {
-        clearInterval(activeQuizTimer);
-        alert("⏱️ Temps écoulé ! Le contrôle anti-triche a échoué. Regarde bien le film avant de retenter !");
-        closeXmasQuiz();
-      }
-    }, 1000);
-  }
-
-  function submitXmasQuizAnswer(isCorrect) {
-    clearInterval(activeQuizTimer);
-    if (!isCorrect) {
-      alert("❌ Mauvaise réponse ! Tu dois réussir un sans-faute (3/3) pour prouver que tu as bien vu ce film.");
-      closeXmasQuiz();
-      return;
-    }
-    activeQuizStep++;
-    if (activeQuizStep >= activeQuizQuestions.length) {
-      const movie = myMovies[activeQuizMovieIndex];
-      movie.xmasQuizVerified = true;
-      movie.isChristmasCandidate = true;
-      saveData();
-      updateXmasEventUI();
-      closeXmasQuiz();
-      alert(`🎄 Félicitations ! "${movie.title}" est officiellement validé (${getVerifiedXmasMoviesCount()}/20) pour l'Event de Noël !`);
-    } else {
-      renderXmasQuizStep();
-    }
-  }
-
-  window.closeXmasQuiz = function() {
-    clearInterval(activeQuizTimer);
-    document.getElementById('xmas-quiz-overlay').classList.remove('show');
-  };
-
-  window.openXmasSuggestions = function() {
-    alert("🎅 Idées de films de Noël reconnus automatiquement par l'Event :\n\n• Klaus (2019)\n• Maman, j'ai raté l'avion ! (1990)\n• Le Grinch (2000 ou 2018)\n• Le Pôle Express (2004)\n• L'Étrange Noël de monsieur Jack (1993)\n• Piège de cristal - Die Hard (1988)\n• Love Actually (2003)\n• Elfe (2003)\n• Gremlins (1984)\n• Les Cinq Légendes (2012)\n• Les Chroniques de Noël (2018)\n• Violent Night (2022)\n• Red One (2024)\n• Winter Break / The Holdovers (2023)\n\nForge n'importe quel film contenant l'esprit ou le mot-clé de Noël et réussis son Quiz Anti-Triche !");
-  };
 </script>
 </body>
 </html>
