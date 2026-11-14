@@ -96,7 +96,7 @@
   .form-group input[type="text"]:focus, .form-group input[type="password"]:focus { outline: none; border-color: var(--neon-pink); box-shadow: 0 0 10px rgba(255, 0, 234, 0.2); }
 
   .btn-submit { background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink)); color: #fff; border: none; padding: 15px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-family: 'Rajdhani', sans-serif; font-size: 18px; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
-  .btn-submit:hover { opacity: 0.8; box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
+  .btn-submit:hover { opacity: 0.85; box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
 
   /* MODE RECHERCHE ULTRA-PRÉCISE & LIVE PREVIEW TMDB */
   .precision-fields { display: none; gap: 15px; margin-bottom: 20px; animation: fadeIn 0.3s ease-out; }
@@ -105,7 +105,7 @@
   .title-search-wrapper { position: relative; z-index: 100; }
   .tmdb-live-dropdown { display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: rgba(10, 10, 22, 0.98); backdrop-filter: blur(16px); border: 1px solid var(--neon-blue); border-radius: 12px; max-height: 290px; overflow-y: auto; z-index: 9999; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.98); }
   .tmdb-live-dropdown.active { display: block; }
-  .tmdb-live-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); cursor: pointer; transition: 0.2s; }
+  .tmdb-live-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); cursor: pointer; transition: 0.15s; }
   .tmdb-live-item:hover { background: rgba(0, 243, 255, 0.12); }
   .tmdb-live-item img { width: 38px; height: 56px; object-fit: cover; border-radius: 5px; border: 1px solid rgba(255, 255, 255, 0.2); flex-shrink: 0; }
   .tmdb-live-info { flex: 1; overflow: hidden; text-align: left; }
@@ -242,19 +242,117 @@
   }
   .new-card-anim { animation: projectorReveal 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
 
-  /* OVERLAYS & MODALES */
-  .overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); backdrop-filter: blur(20px); z-index: 9999; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
+  /* OVERLAYS & MODALES (ESPACE DE SÉCURITÉ ANTI-COLLAGE AUX BORDS) */
+  .overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.95);
+    backdrop-filter: blur(20px);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
   .overlay.show { display: flex; opacity: 1; }
-  .overlay-close { position: absolute; top: 30px; right: 40px; color: rgba(255,255,255,0.5); font-size: 40px; cursor: pointer; transition: 0.3s; font-family: sans-serif; z-index: 10000;}
-  .overlay-close:hover { color: var(--neon-pink); transform: scale(1.2); }
+  .overlay-close {
+    position: fixed;
+    top: 18px;
+    right: 26px;
+    color: rgba(255,255,255,0.7);
+    font-size: 38px;
+    line-height: 1;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: sans-serif;
+    z-index: 10005;
+    background: rgba(10, 10, 22, 0.75);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .overlay-close:hover { color: var(--neon-pink); border-color: var(--neon-pink); transform: scale(1.12); }
   
   /* OVERLAY DE CONNEXION */
   #login-overlay { background: var(--bg-dark); z-index: 99999; }
   .login-box { width: 100%; max-width: 400px; text-align: center; }
 
-  .game-modal { width: 90%; max-width: 900px; text-align: center; }
-  .game-header { font-family: 'Rajdhani'; color: var(--neon-blue); font-size: 36px; text-transform: uppercase; letter-spacing: 3px; text-shadow: 0 0 15px var(--neon-blue); margin-bottom: 20px;}
-  .game-score { font-size: 20px; color: var(--gold); font-weight: bold; margin-bottom: 30px; }
+  /* MODALES DE JEU ARCADE (MARGES SÉCURISÉES & DÉFILEMENT PROPRE) */
+  .game-modal {
+    width: 100%;
+    max-width: 860px;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    text-align: center;
+    padding: 28px 24px 36px 24px;
+    margin: auto;
+    box-sizing: border-box;
+    background: rgba(12, 12, 24, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 24px;
+    box-shadow: 0 12px 45px rgba(0, 0, 0, 0.85);
+  }
+  .game-header { font-family: 'Rajdhani'; color: var(--neon-blue); font-size: 34px; text-transform: uppercase; letter-spacing: 3px; text-shadow: 0 0 15px var(--neon-blue); margin-bottom: 10px; }
+  .game-score { font-size: 19px; color: var(--gold); font-weight: bold; margin-bottom: 20px; }
+
+  .arcade-postgame-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+    padding-bottom: 6px;
+  }
+  .btn-replay-arcade {
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
+    color: #fff;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 30px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 18px rgba(0, 243, 255, 0.35);
+  }
+  .btn-replay-arcade:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 26px rgba(255, 0, 234, 0.65);
+  }
+  .btn-quit-arcade {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #ddd;
+    padding: 11px 22px;
+    border-radius: 30px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .btn-quit-arcade:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+    background: rgba(255, 0, 60, 0.12);
+  }
 
   .modal-container-box { display: flex; flex-direction: column; align-items: center; max-width: 1200px; width: 100%; padding: 20px; box-sizing: border-box; margin: auto; }
   .btn-toggle-notes { background: rgba(255, 215, 0, 0.1); border: 1px solid var(--gold); color: var(--gold); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-family: 'Rajdhani'; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-bottom: 20px; }
@@ -263,7 +361,7 @@
   .modal-wrapper { display: flex; gap: 40px; align-items: stretch; justify-content: center; width: 100%; transition: 0.3s; }
   .modal-notes { flex: 1; display: flex; flex-direction: column; text-align: left; transition: 0.3s; }
   .modal-notes.hidden { display: none !important; }
-  .modal-notes h3 { color: var(--gold); text-shadow: 0 0 10px var(--gold); font-family: 'Rajdhani'; text-transform: uppercase; font-size: 24px; margin-top: 0;}
+  .modal-notes h3 { color: var(--gold); text-shadow: 0 0 10px var(--gold); font-family: 'Rajdhani'; text-transform: uppercase; font-size: 24px; margin-top: 0; display: flex; justify-content: space-between; align-items: center; }
   .post-it { width: 100%; flex-grow: 1; min-height: 200px; background: rgba(255, 215, 0, 0.05); border: 1px dashed var(--gold); border-radius: 10px; color: #fff; padding: 15px; font-family: 'Inter', sans-serif; font-size: 14px; resize: none; outline: none; box-sizing: border-box; transition: 0.3s; line-height: 1.5; }
   .post-it:focus { background: rgba(255, 215, 0, 0.15); box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
 
@@ -283,8 +381,8 @@
 
   /* MODALE PLEIN ÉCRAN : LISTE DE SOUHAITS (GLASSMORPHISM NÉON ROSE/BLEU) */
   .wishlist-modal {
-    width: 96vw;
-    height: 93vh;
+    width: 95vw;
+    height: 92vh;
     background: linear-gradient(135deg, rgba(12, 12, 24, 0.88) 0%, rgba(22, 8, 30, 0.88) 100%);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
@@ -319,7 +417,6 @@
     -webkit-text-fill-color: transparent;
     text-shadow: 0 0 25px rgba(0, 243, 255, 0.3);
   }
-  /* BARRE DE FILTRES ÉPURÉE : RECHERCHE + FORMAT + GENRE + HYPE + TRI MINIMAL + RESET + ROULETTE */
   .wishlist-controls-bar {
     display: grid;
     grid-template-columns: 1.4fr 0.85fr 0.95fr 0.9fr 1.05fr auto auto;
@@ -452,7 +549,7 @@
     font-weight: 700;
     cursor: pointer;
     border: 1px solid;
-    transition: transform 0.12s ease, background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+    transition: transform 0.1s ease, background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease;
     margin-top: 6px;
     align-self: flex-start;
     user-select: none;
@@ -564,11 +661,11 @@
   /* OVERLAYS CLASSEUR GÉNÉRIQUE & ÉPISODES */
   #collection-binder-overlay { background: rgba(0,0,0,0.9); }
   #episode-manager-overlay { background: rgba(0,0,0,0.95); z-index: 10001; }
-  .episodes-modal { background: var(--bg-dark); border: 1px solid var(--neon-pink); border-radius: 20px; width: 90%; max-width: 1000px; height: 80vh; display: flex; flex-direction: column; padding: 20px; box-shadow: 0 0 30px rgba(255, 0, 234, 0.2); }
+  .episodes-modal { background: var(--bg-dark); border: 1px solid var(--neon-pink); border-radius: 20px; width: 90%; max-width: 1000px; height: 80vh; display: flex; flex-direction: column; padding: 20px; box-shadow: 0 0 30px rgba(255, 0, 234, 0.2); box-sizing: border-box; }
   .seasons-container { display: flex; gap: 20px; overflow-x: auto; flex-grow: 1; padding: 10px; min-height: 0; }
   .season-col { flex: 0 0 160px; background: rgba(15, 15, 25, 0.8); border: 1px solid var(--glass-border); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; max-height: 100%; box-sizing: border-box; }
   .episodes-list { overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; padding-right: 5px; }
-  .ep-btn { width: 100%; padding: 8px; margin-bottom: 8px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-family: 'Inter'; font-size: 12px; cursor: pointer; border-radius: 5px; transition: 0.2s; text-align: left; flex-shrink: 0;}
+  .ep-btn { width: 100%; padding: 8px; margin-bottom: 8px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-family: 'Inter'; font-size: 12px; cursor: pointer; border-radius: 5px; transition: background-color 0.1s, border-color 0.1s, color 0.1s; text-align: left; flex-shrink: 0;}
   .ep-btn.watched { background: rgba(0, 243, 255, 0.2); border-color: var(--neon-blue); color: var(--neon-blue); font-weight: bold; }
   .ep-btn:hover { border-color: var(--neon-pink); }
 
@@ -584,28 +681,28 @@
   .arcade-desc { font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.4; }
   .arcade-hs { position: absolute; top: 10px; right: 10px; border: 1px solid; font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 12px; font-family: 'Inter', sans-serif; z-index: 10; }
 
-  /* JEUX STYLES */
-  .mystery-poster-container { width: 250px; height: 375px; margin: 0 auto 30px auto; border-radius: 15px; border: 3px solid #333; overflow: hidden; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); transition: 0.5s;}
-  .mystery-poster { width: 100%; height: 100%; background-size: cover; background-position: center; transition: 1s ease-out; }
+  /* JEUX STYLES (PROPORTIONS ADAPTÉES POUR NE JAMAIS TOUCHER LE BAS DE L'ÉCRAN) */
+  .mystery-poster-container { width: 220px; height: 330px; margin: 0 auto 22px auto; border-radius: 15px; border: 3px solid #333; overflow: hidden; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); transition: 0.5s;}
+  .mystery-poster { width: 100%; height: 100%; background-size: cover; background-position: center; transition: 0.8s ease-out; }
   .mystery-poster.blurred { filter: blur(25px) contrast(1.5) grayscale(50%); transform: scale(1.1); }
   .mystery-poster.revealed { filter: none; transform: scale(1); }
-  .mystery-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 600px; margin: auto; }
-  .mystery-btn { background: var(--glass-bg); border: 1px solid var(--neon-blue); color: #fff; padding: 15px; font-family: 'Inter'; font-weight: bold; border-radius: 10px; cursor: pointer; transition: 0.2s; font-size: 14px;}
-  .mystery-btn:hover { background: rgba(0, 243, 255, 0.2); box-shadow: 0 0 15px rgba(0, 243, 255, 0.4); transform: scale(1.05);}
+  .mystery-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 600px; margin: 0 auto; }
+  .mystery-btn { background: var(--glass-bg); border: 1px solid var(--neon-blue); color: #fff; padding: 14px; font-family: 'Inter'; font-weight: bold; border-radius: 10px; cursor: pointer; transition: 0.2s; font-size: 14px;}
+  .mystery-btn:hover:not(:disabled) { background: rgba(0, 243, 255, 0.2); box-shadow: 0 0 15px rgba(0, 243, 255, 0.4); transform: scale(1.03);}
   .mystery-btn.correct { background: var(--success); border-color: #fff; box-shadow: 0 0 20px var(--success); color: #000; }
   .mystery-btn.wrong { background: var(--danger); border-color: #fff; box-shadow: 0 0 20px var(--danger); color: #fff; }
   @keyframes shake { 0%, 100% {transform: translateX(0);} 20% {transform: translateX(-10px);} 40% {transform: translateX(10px);} 60% {transform: translateX(-10px);} 80% {transform: translateX(10px);} }
   .shake-effect { animation: shake 0.5s ease-in-out; }
   
-  .chrono-poster-container { width: 220px; height: 330px; margin: 0 auto 15px auto; border-radius: 12px; border: 2px solid var(--neon-pink); overflow: hidden; box-shadow: 0 0 25px rgba(255,0,234,0.3); }
+  .chrono-poster-container { width: 200px; height: 300px; margin: 0 auto 14px auto; border-radius: 12px; border: 2px solid var(--neon-pink); overflow: hidden; box-shadow: 0 0 25px rgba(255,0,234,0.3); }
   .chrono-poster { width: 100%; height: 100%; background-size: cover; background-position: center; }
-  .chrono-title { font-family: 'Rajdhani'; font-size: 26px; font-weight: bold; color: #fff; margin-bottom: 25px; }
+  .chrono-title { font-family: 'Rajdhani'; font-size: 24px; font-weight: bold; color: #fff; margin-bottom: 18px; }
   
-  .critic-arena { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-  .critic-poster { width: 200px; height: 300px; border-radius: 10px; background-size: cover; background-position: center; border: 2px solid var(--gold); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2); }
-  .critic-title { font-family: 'Rajdhani'; font-size: 28px; font-weight: bold; color: #fff; margin-top: 10px;}
-  .critic-slider-container { width: 100%; max-width: 400px; margin: 20px 0; }
-  .critic-value-display { font-family: 'Rajdhani'; font-size: 56px; color: var(--gold); text-shadow: 0 0 20px var(--gold); font-weight: bold; margin-bottom: 10px; }
+  .critic-arena { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-bottom: 10px; }
+  .critic-poster { width: 175px; height: 262px; border-radius: 10px; background-size: cover; background-position: center; border: 2px solid var(--gold); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2); }
+  .critic-title { font-family: 'Rajdhani'; font-size: 25px; font-weight: bold; color: #fff; margin-top: 4px;}
+  .critic-slider-container { width: 100%; max-width: 400px; margin: 6px 0; }
+  .critic-value-display { font-family: 'Rajdhani'; font-size: 46px; color: var(--gold); text-shadow: 0 0 20px var(--gold); font-weight: bold; margin-bottom: 6px; line-height: 1; }
   input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
   input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 26px; width: 26px; border-radius: 50%; background: var(--gold); cursor: pointer; margin-top: -9px; box-shadow: 0 0 15px var(--gold); }
   input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: rgba(255, 255, 255, 0.2); border-radius: 5px; }
@@ -620,6 +717,8 @@
     .modal-synopsis { order: 3; margin-top: 20px; text-align: center; font-size: 14px;}
     .mystery-choices, .chrono-choices { grid-template-columns: 1fr; }
     .top-left-controls, .top-right-controls { position: static; justify-content: center; margin-bottom: 10px; }
+    .overlay { padding: 14px; }
+    .game-modal { padding: 20px 16px 28px 16px; }
   }
 </style>
 </head>
@@ -763,7 +862,7 @@
         </div>
         <div class="glass-panel list-section">
           <h2 style="margin-top:0; color:var(--neon-pink); font-family: 'Rajdhani'; text-transform: uppercase;">Base de Données</h2>
-          <input type="text" id="admin-search-input" placeholder="🔍 Rechercher un titre à supprimer..." onkeyup="renderAdminList()" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--neon-pink); background: rgba(0,0,0,0.5); color: #fff; margin-bottom: 15px; box-sizing: border-box; font-family: inherit;">
+          <input type="text" id="admin-search-input" placeholder="🔍 Rechercher un titre à supprimer..." oninput="debouncedAdminSearch()" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--neon-pink); background: rgba(0,0,0,0.5); color: #fff; margin-bottom: 15px; box-sizing: border-box; font-family: inherit;">
           <div id="admin-movie-list" style="max-height: 250px; overflow-y: auto; padding-right: 10px;"></div>
         </div>
       </div>
@@ -777,11 +876,11 @@
     </div>
 
     <!-- ONGLETS FILMS / SÉRIES / COLLECTIONS -->
-    <div id="tab-films" class="tab-content"><div class="collection-layout"><aside class="glass-panel sidebar"><div class="filter-box"><h3>Rechercher</h3><input type="text" id="search-filter-films" placeholder="Nom du film..." onkeyup="renderAll()"><h3 style="margin-top: 20px;">Trier</h3><select id="sort-select-films" onchange="renderAll()"><option value="default">Derniers ajouts</option><option value="title-asc">Ordre alphabétique (A-Z)</option><option value="rarity-desc">Rareté TMDB (Légendaire d'abord)</option><option value="year-asc">Ordre chronologique (Marathon)</option></select></div></aside><main class="gallery-main"><div class="gallery" id="gallery-films"></div></main></div></div>
-    <div id="tab-series" class="tab-content"><div class="collection-layout"><aside class="glass-panel sidebar"><div class="filter-box"><h3>Rechercher</h3><input type="text" id="search-filter-series" placeholder="Nom de la série..." onkeyup="renderAll()"><h3 style="margin-top: 20px;">Trier</h3><select id="sort-select-series" onchange="renderAll()"><option value="default">Derniers ajouts</option><option value="title-asc">Ordre alphabétique (A-Z)</option><option value="rarity-desc">Rareté TMDB (Légendaire d'abord)</option><option value="year-asc">Ordre chronologique (Marathon)</option></select></div></aside><main class="gallery-main"><div class="gallery" id="gallery-series"></div></main></div></div>
+    <div id="tab-films" class="tab-content"><div class="collection-layout"><aside class="glass-panel sidebar"><div class="filter-box"><h3>Rechercher</h3><input type="text" id="search-filter-films" placeholder="Nom du film..." oninput="debouncedGallerySearch('Film')"><h3 style="margin-top: 20px;">Trier</h3><select id="sort-select-films" onchange="renderGallery('Film', 'gallery-films', 'sort-select-films', 'search-filter-films')"><option value="default">Derniers ajouts</option><option value="title-asc">Ordre alphabétique (A-Z)</option><option value="rarity-desc">Rareté TMDB (Légendaire d'abord)</option><option value="year-asc">Ordre chronologique (Marathon)</option></select></div></aside><main class="gallery-main"><div class="gallery" id="gallery-films"></div></main></div></div>
+    <div id="tab-series" class="tab-content"><div class="collection-layout"><aside class="glass-panel sidebar"><div class="filter-box"><h3>Rechercher</h3><input type="text" id="search-filter-series" placeholder="Nom de la série..." oninput="debouncedGallerySearch('Série')"><h3 style="margin-top: 20px;">Trier</h3><select id="sort-select-series" onchange="renderGallery('Série', 'gallery-series', 'sort-select-series', 'search-filter-series')"><option value="default">Derniers ajouts</option><option value="title-asc">Ordre alphabétique (A-Z)</option><option value="rarity-desc">Rareté TMDB (Légendaire d'abord)</option><option value="year-asc">Ordre chronologique (Marathon)</option></select></div></aside><main class="gallery-main"><div class="gallery" id="gallery-series"></div></main></div></div>
     <div id="tab-collections" class="tab-content">
       <div style="text-align: center; margin-bottom: 30px;"><button class="btn-sync" onclick="syncCollection()" id="sync-btn">🔄 Synchroniser les données</button><div id="sync-status" style="display: none; color: var(--neon-blue); font-family: 'Rajdhani'; font-weight: bold; font-size: 18px;">Synchronisation en cours... 0%</div></div>
-      <div class="glass-panel" style="margin-bottom: 30px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap;"><div style="flex: 2; min-width: 250px;"><label style="font-size: 12px; color: var(--neon-blue); text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">🔍 Rechercher</label><input type="text" id="search-filter-collections" placeholder="Nom de saga ou de réalisateur..." onkeyup="updateCollectionsTab()" style="width: 100%; padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--neon-blue); margin-top: 5px; box-sizing: border-box; font-family: inherit; transition: 0.3s;"></div><div style="flex: 1; min-width: 200px;"><label style="font-size: 12px; color: var(--neon-pink); text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">↕️ Trier par</label><select id="sort-select-collections" onchange="updateCollectionsTab()" style="width: 100%; padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--neon-pink); margin-top: 5px; box-sizing: border-box; font-family: inherit; cursor: pointer; transition: 0.3s;"><option value="count-desc">Progression (Le plus vu d'abord)</option><option value="percent-desc">Complétion (% le plus élevé)</option><option value="name-asc">Ordre alphabétique (A-Z)</option></select></div></div>
+      <div class="glass-panel" style="margin-bottom: 30px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap;"><div style="flex: 2; min-width: 250px;"><label style="font-size: 12px; color: var(--neon-blue); text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">🔍 Rechercher</label><input type="text" id="search-filter-collections" placeholder="Nom de saga ou de réalisateur..." oninput="debouncedCollectionsSearch()" style="width: 100%; padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--neon-blue); margin-top: 5px; box-sizing: border-box; font-family: inherit; transition: 0.3s;"></div><div style="flex: 1; min-width: 200px;"><label style="font-size: 12px; color: var(--neon-pink); text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">↕️ Trier par</label><select id="sort-select-collections" onchange="updateCollectionsTab()" style="width: 100%; padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--neon-pink); margin-top: 5px; box-sizing: border-box; font-family: inherit; cursor: pointer; transition: 0.3s;"><option value="count-desc">Progression (Le plus vu d'abord)</option><option value="percent-desc">Complétion (% le plus élevé)</option><option value="name-asc">Ordre alphabétique (A-Z)</option></select></div></div>
       <div style="display: flex; gap: 30px; flex-wrap: wrap;"><div class="glass-panel" style="flex: 1; min-width: 300px;"><h2 style="color: var(--neon-blue); font-family: 'Rajdhani'; text-transform: uppercase; margin-top:0;">Sagas & Univers</h2><p style="font-size:12px; color:rgba(255,255,255,0.5); margin-top:-15px;">Clique sur une jauge pour explorer la saga !</p><div id="collections-universes"></div></div><div class="glass-panel" style="flex: 1; min-width: 300px;"><h2 style="color: var(--neon-pink); font-family: 'Rajdhani'; text-transform: uppercase; margin-top:0;">Réalisateurs & Créateurs</h2><p style="font-size:12px; color:rgba(255,255,255,0.5); margin-top:-15px;">Clique sur une jauge pour ouvrir la filmographie !</p><div id="collections-directors"></div></div></div>
     </div>
 </div>
@@ -805,7 +904,7 @@
 
     <!-- BARRE DE FILTRES & TRI MINIMALISTE (FORMAT + GENRE + HYPE) -->
     <div class="wishlist-controls-bar">
-      <input type="text" id="wish-filter-text" class="wishlist-input" placeholder="🔍 Filtrer (titre, réal, note...)" oninput="renderWishlistGrid()">
+      <input type="text" id="wish-filter-text" class="wishlist-input" placeholder="🔍 Filtrer (titre, réal, note...)" oninput="debouncedWishlistFilter()">
       <select id="wish-filter-type" class="wishlist-select" onchange="renderWishlistGrid()">
         <option value="all">🎬 Format : Tous</option>
         <option value="Film">🎬 Films uniquement</option>
@@ -886,13 +985,24 @@
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">📢 Journal de Bord - Mises à Jour</h2></div>
     <div style="overflow-y: auto; text-align: left; padding: 10px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85);">
       
+      <!-- VERSION 8.2 -->
+      <div style="margin-bottom: 25px; border-left: 3px solid var(--neon-blue); padding-left: 12px;">
+        <h3 style="color: var(--neon-blue); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v8.2 - Big Optimisation Globale, Bouton "Rejouer" Arcade & Marges d'Écran</h3>
+        <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Vitesse maximale & ergonomie Arcade</p>
+        <ul style="margin: 0; padding-left: 18px;">
+          <li><strong>Big Optimisation Temps Réel (0ms)</strong> : Patch chirurgical instantané sur le cochage des épisodes (plus de reconstruction complète des modales ni de la grille de séries à chaque clic), sauvegarde Cloud automatique sur le <strong>Bloc-Notes</strong>, et recherche filtrée ultra-rapide par micro-debounce sur tous les onglets.</li>
+          <li><strong>Bouton "🔄 Rejouer" en Arcade</strong> : Plus besoin de quitter le jeu ni d'alerte bloquante en fin de partie ! Enchaîne tes parties directement depuis les 3 bornes d'arcade (<em>L'Affiche Mystère</em>, <em>La Machine Temporelle</em> et <em>L'Œil du Critique</em>).</li>
+          <li><strong>Marges & Espace de Sécurité</strong> : Toutes les modales et boutons d'action (notamment le bouton <em>Valider</em> dans <em>L'Œil du Critique</em>) disposent désormais de marges confortables et ne collent plus jamais aux bords de l'écran.</li>
+        </ul>
+      </div>
+
       <!-- VERSION 8.1 -->
       <div style="margin-bottom: 25px; border-left: 3px solid var(--success); padding-left: 12px;">
         <h3 style="color: var(--success); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v8.1 - Optimisation Instantanée (0ms) & Tri Minimaliste Wishlist</h3>
         <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Performance ultra-fluide & ergonomie épurée</p>
         <ul style="margin: 0; padding-left: 18px;">
-          <li><strong>Changement de Hype 100% Instantané</strong> : Fini la latence ! Cliquer sur le badge de Hype met à jour l'élément directement dans le DOM en moins de 1ms sans recharger toute l'application ni les podiums.</li>
-          <li><strong>Système de Tri Minimaliste</strong> : La barre de tri et filtres de la Liste de Souhaits est désormais centrée uniquement sur l'essentiel : <strong>Hype</strong>, <strong>Genre</strong> et <strong>Format</strong> (Films / Séries).</li>
+          <li><strong>Changement de Hype 100% Instantané</strong> : Cliquer sur le badge de Hype met à jour l'élément directement dans le DOM en moins de 1ms.</li>
+          <li><strong>Système de Tri Minimaliste</strong> : La barre de tri et filtres de la Liste de Souhaits est centrée uniquement sur l'essentiel : <strong>Hype</strong>, <strong>Genre</strong> et <strong>Format</strong>.</li>
         </ul>
       </div>
 
@@ -901,9 +1011,9 @@
         <h3 style="color: var(--neon-pink); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v8.0 - Liste de Souhaits Glassmorphism, Roulette & Transfert 1-Clic</h3>
         <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Nouveau module de gestion des envies</p>
         <ul style="margin: 0; padding-left: 18px;">
-          <li><strong>Bouton & Modale Plein Écran "🌟 Liste de Souhaits"</strong> : Accessible en haut à gauche avec compteur dynamique et interface Glassmorphism néon rose/bleu (96vw × 93vh).</li>
-          <li><strong>Scan TMDB en Direct, Hype & Notes</strong> : Ajoute n'importe quel film, série ou animé instantanément, change son niveau de Hype (<em>Absolue, Moyenne, Tranquille</em>) en 1 clic et note qui te l'a conseillé.</li>
-          <li><strong>🎲 Tirer au sort & Transfert 1-Clic ("✔ Vu ! Forger")</strong> : Une roulette sélectionne une œuvre selon tes filtres actifs, et le bouton <em>Forger</em> la retire de la liste et la pré-verrouille dans l'onglet Gestion !</li>
+          <li><strong>Bouton & Modale Plein Écran "🌟 Liste de Souhaits"</strong> : Accessible en haut à gauche avec compteur dynamique et interface Glassmorphism néon rose/bleu.</li>
+          <li><strong>Scan TMDB en Direct, Hype & Notes</strong> : Ajoute n'importe quel film, série ou animé instantanément et note qui te l'a conseillé.</li>
+          <li><strong>🎲 Tirer au sort & Transfert 1-Clic ("✔ Vu ! Forger")</strong> : Une roulette sélectionne une œuvre selon tes filtres actifs, et le bouton <em>Forger</em> la transfère dans l'onglet Gestion.</li>
         </ul>
       </div>
 
@@ -913,7 +1023,7 @@
         <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Défi saisonnier & personnalisation visuelle</p>
         <ul style="margin: 0; padding-left: 18px;">
           <li><strong>Défi des 20 Films de Noël</strong> : Détection intelligente et vérification des œuvres de Noël dans ta collection pour débloquer la récompense saisonnière.</li>
-          <li><strong>Thème Noël & Neige Animée</strong> : Débloque le skin festif (palette rouge/vert/or + flocons animés) et bascule à tout moment entre le thème Cyber Néon et le thème Noël via le menu permanent.</li>
+          <li><strong>Thème Noël & Neige Animée</strong> : Débloque le skin festif (palette rouge/vert/or + flocons animés) et bascule à tout moment via le menu permanent.</li>
         </ul>
       </div>
 
@@ -922,8 +1032,8 @@
         <h3 style="color: var(--success); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v7.8 - Connexion Intelligente & Récupération de Compte</h3>
         <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Mise à jour authentification & migration GitHub</p>
         <ul style="margin: 0; padding-left: 18px;">
-          <li><strong>Connexion Insensible à la Casse</strong> : Plus besoin de respecter les majuscules, minuscules ou accents exacts de son pseudo pour se connecter. Le système retrouve automatiquement le bon profil dans le Cloud.</li>
-          <li><strong>Gestion des Codes PIN (Panel Admin)</strong> : L'administrateur peut désormais consulter et réinitialiser le code secret d'un ami en cas d'oubli après le passage sur GitHub Pages.</li>
+          <li><strong>Connexion Insensible à la Casse</strong> : Plus besoin de respecter les majuscules, minuscules ou accents exacts de son pseudo pour se connecter.</li>
+          <li><strong>Gestion des Codes PIN (Panel Admin)</strong> : L'administrateur peut consulter et réinitialiser le code secret d'un ami en cas d'oubli.</li>
         </ul>
       </div>
 
@@ -932,8 +1042,8 @@
         <h3 style="color: var(--gold); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v7.7 - Support des Homonymes, Remakes & Live-Actions</h3>
         <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Mise à jour système anti-doublons</p>
         <ul style="margin: 0; padding-left: 18px;">
-          <li><strong>Détection Intelligente des Doublons</strong> : Le système vérifie l'identifiant TMDB unique, le type (Film/Série) ET l'année de sortie.</li>
-          <li><strong>Compatibilité Remakes & Adaptations</strong> : Tu peux désormais collectionner un animé original et son adaptation Live-Action sans conflit.</li>
+          <li><strong>Détection Intelligente des Doublons</strong> : Vérifie l'identifiant TMDB unique, le type (Film/Série) ET l'année de sortie.</li>
+          <li><strong>Compatibilité Remakes & Adaptations</strong> : Collectionne un animé original et son adaptation Live-Action sans conflit.</li>
         </ul>
       </div>
 
@@ -943,7 +1053,7 @@
         <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Mise à jour modération</p>
         <ul style="margin: 0; padding-left: 18px;">
           <li>Création d'un bouton "Panel Admin" en haut à gauche (visible uniquement pour <em>Mr. Bonnet</em>).</li>
-          <li>Ajout d'outils de modération : suppression des faux comptes et réinitialisation des scores d'arcade par utilisateur.</li>
+          <li>Suppression des faux comptes et réinitialisation des scores d'arcade par utilisateur.</li>
         </ul>
       </div>
 
@@ -996,14 +1106,54 @@
   </div>
 </div>
 
-<!-- OVERLAYS DES MINI-JEUX ARCADE -->
-<div id="game-mystery-overlay" class="overlay"><span class="overlay-close" onclick="closeGame('mystery')">×</span><div class="game-modal"><div class="game-header">L'Affiche Mystère</div><div class="game-score">Série en cours : <span id="mystery-score">0</span></div><div class="mystery-poster-container" id="mystery-container"><div id="mystery-image" class="mystery-poster blurred"></div></div><div class="mystery-choices" id="mystery-choices"></div></div></div>
-<div id="game-chrono-overlay" class="overlay"><span class="overlay-close" onclick="closeGame('chrono')">×</span><div class="game-modal"><div class="game-header" style="color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink);">La Machine Temporelle</div><div class="game-score">Série en cours : <span id="chrono-score" style="color: var(--neon-pink);">0</span></div><div class="chrono-poster-container" id="chrono-container"><div id="chrono-poster" class="chrono-poster"></div></div><div class="chrono-title" id="chrono-title">Titre de l'œuvre</div><div class="mystery-choices chrono-choices" id="chrono-choices"></div></div></div>
-<div id="game-critic-overlay" class="overlay"><span class="overlay-close" onclick="closeGame('critic')">×</span><div class="game-modal"><div class="game-header" style="color: var(--gold); text-shadow: 0 0 15px var(--gold);">L'Œil du Critique</div><div class="game-score">Série en cours : <span id="critic-score" style="color: var(--gold);">0</span></div><div class="critic-arena"><div class="critic-poster" id="critic-poster"></div><div class="critic-title" id="critic-title">Titre du Film</div><div class="critic-slider-container"><div class="critic-value-display" id="critic-slider-val">5.0</div><input type="range" id="critic-slider" min="0" max="10" step="0.1" value="5" oninput="updateCriticSlider(this.value)"></div><div id="critic-result" style="height: 30px; margin-bottom: 10px;"></div><button class="btn-submit" id="critic-validate-btn" style="width: auto; padding: 10px 40px; font-size: 20px;">Valider ma note</button></div></div></div>
+<!-- OVERLAYS DES MINI-JEUX ARCADE (AVEC REJOUER + BOUTONS BIEN DÉCOLLÉS DU BORD) -->
+<div id="game-mystery-overlay" class="overlay">
+  <span class="overlay-close" onclick="closeGame('mystery')">×</span>
+  <div class="game-modal">
+    <div class="game-header">L'Affiche Mystère</div>
+    <div class="game-score">Série en cours : <span id="mystery-score">0</span></div>
+    <div class="mystery-poster-container" id="mystery-container"><div id="mystery-image" class="mystery-poster blurred"></div></div>
+    <div class="mystery-choices" id="mystery-choices"></div>
+    <div id="mystery-postgame" class="arcade-postgame-bar" style="display:none;"></div>
+  </div>
+</div>
+
+<div id="game-chrono-overlay" class="overlay">
+  <span class="overlay-close" onclick="closeGame('chrono')">×</span>
+  <div class="game-modal">
+    <div class="game-header" style="color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink);">La Machine Temporelle</div>
+    <div class="game-score">Série en cours : <span id="chrono-score" style="color: var(--neon-pink);">0</span></div>
+    <div class="chrono-poster-container" id="chrono-container"><div id="chrono-poster" class="chrono-poster"></div></div>
+    <div class="chrono-title" id="chrono-title">Titre de l'œuvre</div>
+    <div class="mystery-choices chrono-choices" id="chrono-choices"></div>
+    <div id="chrono-postgame" class="arcade-postgame-bar" style="display:none;"></div>
+  </div>
+</div>
+
+<div id="game-critic-overlay" class="overlay">
+  <span class="overlay-close" onclick="closeGame('critic')">×</span>
+  <div class="game-modal">
+    <div class="game-header" style="color: var(--gold); text-shadow: 0 0 15px var(--gold);">L'Œil du Critique</div>
+    <div class="game-score">Série en cours : <span id="critic-score" style="color: var(--gold);">0</span></div>
+    <div class="critic-arena">
+      <div class="critic-poster" id="critic-poster"></div>
+      <div class="critic-title" id="critic-title">Titre du Film</div>
+      <div class="critic-slider-container">
+        <div class="critic-value-display" id="critic-slider-val">5.0</div>
+        <input type="range" id="critic-slider" min="0" max="10" step="0.1" value="5" oninput="updateCriticSlider(this.value)">
+      </div>
+      <div id="critic-result" style="min-height: 28px; margin-bottom: 6px;"></div>
+      <div id="critic-actions-bar" class="arcade-postgame-bar" style="margin-top: 4px;">
+        <button class="btn-submit" id="critic-validate-btn" style="width: auto; padding: 12px 42px; font-size: 19px; margin: 0;">Valider ma note</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   const API_KEY = 'fb195a905bf531daf7eb642dbf16c455'; 
   const OMDB_KEY = 'bb349eee';
-  const CURRENT_CHANGELOG_VERSION = 'v8.1';
+  const CURRENT_CHANGELOG_VERSION = 'v8.2';
 
   // --- INITIALISATION DE LA BASE DE DONNÉES CLOUD (FIREBASE) ---
   const firebaseConfig = {
@@ -1055,6 +1205,12 @@
   let saveCloudTimeout = null;
   let wishlistRenderTimeout = null;
   let rouletteHighlightedId = null;
+
+  // Timers de debounce dédiés pour une saisie ultra-fluide (0 lag même avec 1000+ cartes)
+  let galleryDebounceTimers = { Film: null, Série: null };
+  let adminSearchTimer = null;
+  let collectionsSearchTimer = null;
+  let wishlistFilterTimer = null;
 
   // --- FONCTIONS UTILITAIRES D'IDENTIFICATION UNIQUE (ANTI-DOUBLONS HOMONYMES) ---
   const normalize = str => {
@@ -1345,7 +1501,7 @@
           document.getElementById('login-overlay').classList.remove('show');
           document.getElementById('app-content').classList.add('loaded');
           saveDataLocalOnly(); applySettingsUI(); applyActiveSkin(); updateApp();
-      }, 1000);
+      }, 600);
   }
 
   window.logout = function() {
@@ -1368,7 +1524,13 @@
       }, 1500);
   }
 
-  // Sauvegarde légère dédiée à la Wishlist : zéro recalcul lourd de la collection principale
+  // Sauvegarde ultra-rapide pour les notes : écriture immédiate en local + synchro Cloud différée sans re-render
+  function saveMoviesOnlyFast() {
+      localStorage.setItem('thomasMovieCollection_v74', JSON.stringify(myMovies));
+      scheduleCloudSync();
+  }
+
+  // Sauvegarde ultra-rapide dédiée à la Wishlist : zéro recalcul lourd de la collection principale
   function saveWishlistFast(reRenderGrid = false) {
       localStorage.setItem('thomasWishlist_v74', JSON.stringify(myWishlist));
       updateWishlistCounters();
@@ -1737,7 +1899,7 @@
   }
 
   // =========================================================================
-  // --- SYSTÈME ULTRA-RÉACTIF & MINIMALISTE : LISTE DE SOUHAITS (v8.1) ---
+  // --- SYSTÈME ULTRA-RÉACTIF & MINIMALISTE : LISTE DE SOUHAITS ---
   // =========================================================================
   let wishlistSearchTimeout = null;
 
@@ -1782,7 +1944,7 @@
       return;
     }
     clearTimeout(wishlistSearchTimeout);
-    wishlistSearchTimeout = setTimeout(() => fetchWishlistTmdbCandidates(q), 250);
+    wishlistSearchTimeout = setTimeout(() => fetchWishlistTmdbCandidates(q), 200);
   };
 
   async function fetchWishlistTmdbCandidates(query) {
@@ -1913,7 +2075,7 @@
         durationMinutes: durationMinutes,
         durationLabel: durationLabel,
         poster: data.poster_path ? `https://image.tmdb.org/t/p/w500${data.poster_path}` : 'https://via.placeholder.com/500x750/0a0a16/00f3ff?text=Image+Manquante',
-        hype: 2, // 3 = Absolue, 2 = Moyenne, 1 = Tranquille
+        hype: 2,
         note: "",
         addedAt: Date.now()
       };
@@ -1928,16 +2090,14 @@
     }
   };
 
-  // MISE À JOUR DOM EN 0ms SANS RE-RENDER DE TOUTE L'APPLICATION !
+  // MISE À JOUR DOM EN 0ms SANS RE-RENDER DE TOUTE L'APPLICATION
   window.cycleWishHype = function(uid, badgeEl) {
     const item = myWishlist.find(w => w.uid === uid);
     if (!item) return;
 
-    // 1. Mise à jour immédiate de la donnée en mémoire
     const nextHype = item.hype === 3 ? 2 : (item.hype === 2 ? 1 : 3);
     item.hype = nextHype;
 
-    // 2. Patch chirurgical instantané du badge cliqué (< 0.1ms)
     const targetBadge = badgeEl || document.getElementById(`hype-badge-${uid}`);
     if (targetBadge) {
       const cfg = HYPE_CONFIG[nextHype];
@@ -1945,11 +2105,9 @@
       targetBadge.textContent = cfg.label;
     }
 
-    // 3. Sauvegarde locale immédiate + synchro Firebase différée en arrière-plan
     localStorage.setItem('thomasWishlist_v74', JSON.stringify(myWishlist));
     scheduleCloudSync();
 
-    // 4. Si un filtre ou tri actif dépend de la hype, on ré-ordonne doucement après un court délai
     const hypeF = document.getElementById('wish-filter-hype')?.value || 'all';
     const sortMode = document.getElementById('wish-sort-mode')?.value || 'hype-desc';
     if (hypeF !== 'all' || sortMode.startsWith('hype-')) {
@@ -2031,6 +2189,11 @@
     if (sortedGenres.includes(currentVal)) select.value = currentVal;
   }
 
+  window.debouncedWishlistFilter = function() {
+    clearTimeout(wishlistFilterTimer);
+    wishlistFilterTimer = setTimeout(() => renderWishlistGrid(), 110);
+  };
+
   function getFilteredAndSortedWishlist() {
     const textQ = normalize(document.getElementById('wish-filter-text')?.value || '');
     const typeF = document.getElementById('wish-filter-type')?.value || 'all';
@@ -2049,7 +2212,6 @@
       return true;
     });
 
-    // Tri minimaliste : Hype, Genre et Format uniquement
     switch (sortMode) {
       case 'hype-desc':
         list.sort((a, b) => (b.hype || 2) - (a.hype || 2) || (b.addedAt || 0) - (a.addedAt || 0));
@@ -2304,7 +2466,7 @@
     }
 
     clearTimeout(liveSearchTimeout);
-    liveSearchTimeout = setTimeout(() => fetchLiveTmdbPreview(titleVal, yearVal, dirVal), 350);
+    liveSearchTimeout = setTimeout(() => fetchLiveTmdbPreview(titleVal, yearVal, dirVal), 250);
   };
 
   async function fetchLiveTmdbPreview(titleQuery, yearFilter, dirFilter) {
@@ -2596,51 +2758,246 @@
     } catch (error) {} finally { loadingUI.style.display = 'none'; submitBtn.style.display = 'block'; }
   });
 
-  // --- RENDU & MODALS ---
+  // --- RENDU & MODALS (OPTIMISÉ DOM CHIRURGICAL) ---
   function getAwardsHTML(awardsArray) { if (!awardsArray) return ''; if (typeof awardsArray === 'string') { if(awardsArray.trim() === '') return ''; return `<ul class="awards-list"><li>🏆 ${awardsArray.replace('🏆 ', '')}</li></ul>`; } if (Array.isArray(awardsArray) && awardsArray.length > 0) { const listItems = awardsArray.map(a => `<li>🏆 ${a}</li>`).join(''); return `<ul class="awards-list">${listItems}</ul>`; } return ''; }
-  function renderAll() { renderGallery('Film', 'gallery-films', 'sort-select-films', 'search-filter-films'); renderGallery('Série', 'gallery-series', 'sort-select-series', 'search-filter-series'); }
-  function renderGallery(type, containerId, sortId, searchId) { const gallery = document.getElementById(containerId); gallery.innerHTML = ''; let sortedMovies = myMovies.map((movie, originalIndex) => ({ movie, originalIndex })).filter(item => item.movie.type === type); const searchVal = document.getElementById(searchId).value.toLowerCase(); if (searchVal) { sortedMovies = sortedMovies.filter(item => item.movie.title.toLowerCase().includes(searchVal)); } const sortValue = document.getElementById(sortId).value; if (sortValue === 'title-asc') sortedMovies.sort((a, b) => a.movie.title.localeCompare(b.movie.title)); else if (sortValue === 'rarity-desc') { const scores = { legendaire: 4, epique: 3, rare: 2, commune: 1 }; sortedMovies.sort((a, b) => scores[b.movie.rarity] - scores[a.movie.rarity]); } else if (sortValue === 'year-asc') { sortedMovies.sort((a, b) => parseInt(a.movie.year || 9999) - parseInt(b.movie.year || 9999)); } sortedMovies.forEach(item => { const movie = item.movie; const index = item.originalIndex; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const animClass = (getMovieUniqueKey(movie) === recentlyAddedKey && !appSettings.skipAnimation) ? 'new-card-anim' : ''; let epBadge = ''; let percentage = 100; if (isSerie) { if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } const cardHTML = `<div class="card-container ${animClass}" onclick="openModal(${index})"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel}:</span> ${movie.director}</p><p><span>Année:</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre:</span> ${movie.genre}</p></div><div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div></div></div></div>`; gallery.innerHTML += cardHTML; }); if(type === 'Série' || type === 'Film') { setTimeout(() => { recentlyAddedKey = null; }, 100); } }
 
-  function openModal(index) { const movie = myMovies[index]; const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : ''; const isSerie = movie.type === 'Série'; const typeLabel = isSerie ? 'Créateur' : 'Réal'; const typeClass = isSerie ? 'serie-text' : ''; const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`; const awardsHTML = getAwardsHTML(movie.awards); const synopsisText = movie.synopsis || "Clique sur 'Synchroniser les données'."; const userNoteText = movie.userNote || ""; const notesHiddenClass = notesVisible ? '' : 'hidden'; const toggleButtonText = notesVisible ? '📝 Masquer les notes' : '📝 Afficher les notes'; let epBadge = ''; let percentage = 100; let btnManager = ''; if (isSerie) { btnManager = `<button class="btn-sync" style="border-color: var(--neon-pink); color: var(--neon-pink); font-size: 12px; padding: 6px 12px; margin-top: 10px;" onclick="openEpisodeManager(${index})">📺 Gérer les épisodes</button>`; if (movie.seasonsData && movie.seasonsData.length > 0) { let completedSeasons = 0; let totalSeasons = movie.seasonsData.length; movie.seasonsData.forEach(season => { let w = movie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; }); percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0; epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`; } else { epBadge = `<div class="episodes-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`; } } const fullModalHTML = `<div class="modal-container-box"><button class="btn-toggle-notes" onclick="toggleNotes(${index})">${toggleButtonText}</button><div class="modal-wrapper"><div class="modal-notes ${notesHiddenClass}" id="modal-notes-panel"><h3>📝 Mes Notes</h3><textarea class="post-it" placeholder="Écris tes critiques..." oninput="saveNote(${index}, this.value)">${userNoteText}</textarea><span style="font-size: 10px; color: #888; margin-top: 5px; text-align:right;">* Sauvegarde en temps réel</span></div><div class="modal-card-container"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel} :</span> ${movie.director}</p><p><span>Année :</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre :</span> ${movie.genre}</p>${btnManager}</div>${awardsHTML}<div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div><p class="quote">"${movie.quote}"</p></div></div></div><div class="modal-synopsis"><h3>Synopsis</h3><p>${synopsisText}</p></div></div></div>`; document.getElementById('modal-content-area').innerHTML = fullModalHTML; document.getElementById('card-modal-overlay').classList.add('show'); }
+  window.debouncedGallerySearch = function(type) {
+    clearTimeout(galleryDebounceTimers[type]);
+    galleryDebounceTimers[type] = setTimeout(() => {
+      if (type === 'Film') renderGallery('Film', 'gallery-films', 'sort-select-films', 'search-filter-films');
+      else renderGallery('Série', 'gallery-series', 'sort-select-series', 'search-filter-series');
+    }, 100);
+  };
+
+  function getSeriesProgressInfo(movie) {
+    if (!movie.seasonsData || movie.seasonsData.length === 0) {
+      return { percentage: 0, badgeText: 'À SYNCHRONISER', isUnsynced: true };
+    }
+    let completedSeasons = 0;
+    const totalSeasons = movie.seasonsData.length;
+    movie.seasonsData.forEach(season => {
+      const w = (movie.watchedEpisodes && movie.watchedEpisodes[season.s]) || [];
+      if (season.e > 0 && w.length === season.e) completedSeasons++;
+    });
+    const percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0;
+    return { percentage, badgeText: `👁️ ${completedSeasons}/${totalSeasons} S`, isUnsynced: false };
+  }
+
+  function renderAll() {
+    renderGallery('Film', 'gallery-films', 'sort-select-films', 'search-filter-films');
+    renderGallery('Série', 'gallery-series', 'sort-select-series', 'search-filter-series');
+  }
+
+  function renderGallery(type, containerId, sortId, searchId) {
+    const gallery = document.getElementById(containerId);
+    if (!gallery) return;
+    let sortedMovies = myMovies.map((movie, originalIndex) => ({ movie, originalIndex })).filter(item => item.movie.type === type);
+    const searchVal = normalize(document.getElementById(searchId)?.value || '');
+    if (searchVal) {
+      sortedMovies = sortedMovies.filter(item => normalize(item.movie.title).includes(searchVal));
+    }
+    const sortValue = document.getElementById(sortId)?.value || 'default';
+    if (sortValue === 'title-asc') sortedMovies.sort((a, b) => a.movie.title.localeCompare(b.movie.title));
+    else if (sortValue === 'rarity-desc') {
+      const scores = { legendaire: 4, epique: 3, rare: 2, commune: 1 };
+      sortedMovies.sort((a, b) => scores[b.movie.rarity] - scores[a.movie.rarity]);
+    } else if (sortValue === 'year-asc') {
+      sortedMovies.sort((a, b) => parseInt(a.movie.year || 9999) - parseInt(b.movie.year || 9999));
+    }
+
+    // Assemblage en un seul innerHTML (évite le recalcul de layout à chaque itération)
+    const htmlChunks = sortedMovies.map(item => {
+      const movie = item.movie;
+      const index = item.originalIndex;
+      const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : '';
+      const isSerie = movie.type === 'Série';
+      const typeLabel = isSerie ? 'Créateur' : 'Réal';
+      const typeClass = isSerie ? 'serie-text' : '';
+      const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`;
+      const animClass = (getMovieUniqueKey(movie) === recentlyAddedKey && !appSettings.skipAnimation) ? 'new-card-anim' : '';
+      let epBadge = '';
+      let percentage = 100;
+      if (isSerie) {
+        const prog = getSeriesProgressInfo(movie);
+        percentage = prog.percentage;
+        epBadge = prog.isUnsynced
+          ? `<div class="episodes-badge" id="gallery-ep-badge-${index}" style="background:#ff4c4c;">À SYNCHRONISER</div>`
+          : `<div class="episodes-badge" id="gallery-ep-badge-${index}">${prog.badgeText}</div>`;
+      }
+      return `<div class="card-container ${animClass}" onclick="openModal(${index})"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div id="gallery-front-fill-${index}" class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel}:</span> ${movie.director}</p><p><span>Année:</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre:</span> ${movie.genre}</p></div><div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div></div></div></div>`;
+    });
+
+    gallery.innerHTML = htmlChunks.join('');
+    if (type === 'Série' || type === 'Film') {
+      setTimeout(() => { recentlyAddedKey = null; }, 100);
+    }
+  }
+
+  function openModal(index) {
+    const movie = myMovies[index];
+    const uniTag = movie.universe ? `<div class="universe-tag">${movie.universe.replace(' Collection', '')}</div>` : '';
+    const isSerie = movie.type === 'Série';
+    const typeLabel = isSerie ? 'Créateur' : 'Réal';
+    const typeClass = isSerie ? 'serie-text' : '';
+    const badgeHTML = isSerie ? `<div class="media-badge badge-serie">📺 Série</div>` : `<div class="media-badge badge-film">🎬 Film</div>`;
+    const awardsHTML = getAwardsHTML(movie.awards);
+    const synopsisText = movie.synopsis || "Clique sur 'Synchroniser les données'.";
+    const userNoteText = movie.userNote || "";
+    const notesHiddenClass = notesVisible ? '' : 'hidden';
+    const toggleButtonText = notesVisible ? '📝 Masquer les notes' : '📝 Afficher les notes';
+    let epBadge = '';
+    let percentage = 100;
+    let btnManager = '';
+    if (isSerie) {
+      btnManager = `<button class="btn-sync" style="border-color: var(--neon-pink); color: var(--neon-pink); font-size: 12px; padding: 6px 12px; margin-top: 10px;" onclick="openEpisodeManager(${index})">📺 Gérer les épisodes</button>`;
+      const prog = getSeriesProgressInfo(movie);
+      percentage = prog.percentage;
+      epBadge = prog.isUnsynced
+        ? `<div class="episodes-badge" id="modal-ep-badge" style="background:#ff4c4c;">À SYNCHRONISER</div>`
+        : `<div class="episodes-badge" id="modal-ep-badge">${prog.badgeText}</div>`;
+    }
+    const fullModalHTML = `<div class="modal-container-box"><button class="btn-toggle-notes" id="btn-toggle-notes" onclick="toggleNotes()">${toggleButtonText}</button><div class="modal-wrapper"><div class="modal-notes ${notesHiddenClass}" id="modal-notes-panel"><h3>📝 Mes Notes <span id="note-save-indicator" style="font-size:11px; color:var(--success); font-weight:normal;">✔ Synchronisé</span></h3><textarea class="post-it" placeholder="Écris tes critiques..." oninput="saveNote(${index}, this.value)">${userNoteText}</textarea><span style="font-size: 10px; color: #888; margin-top: 5px; text-align:right;">* Sauvegarde instantanée locale & Cloud</span></div><div class="modal-card-container"><div class="card"><div class="card-face card-front ${movie.rarity} ${isSerie ? 'in-progress' : ''}" style="background-image: url('${movie.poster}');">${badgeHTML}${epBadge}</div><div id="modal-front-fill" class="card-face card-front ${movie.rarity}" style="background-image: url('${movie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML}${epBadge}</div><div class="card-face card-back ${movie.rarity}"><h4>${movie.title}</h4><div class="info" style="text-align:center;">${uniTag}<p><span class="${typeClass}">${typeLabel} :</span> ${movie.director}</p><p><span>Année :</span> ${movie.year} <span class="rating-badge">★ ${movie.rating}</span></p><p><span>Genre :</span> ${movie.genre}</p>${btnManager}</div>${awardsHTML}<div class="unlock">🔓 <strong>Visionné le :</strong><br>${movie.unlockDate}</div><p class="quote">"${movie.quote}"</p></div></div></div><div class="modal-synopsis"><h3>Synopsis</h3><p>${synopsisText}</p></div></div></div>`;
+    document.getElementById('modal-content-area').innerHTML = fullModalHTML;
+    document.getElementById('card-modal-overlay').classList.add('show');
+  }
   
+  // BLOC-NOTES : SAUVEGARDE INSTANTANÉE LOCALE + CLOUD DIFFÉRÉE
   window.saveNote = function(index, text) { 
       if (myMovies[index]) { 
           myMovies[index].userNote = text; 
-          saveDataLocalOnly(); 
+          saveMoviesOnlyFast();
+          const ind = document.getElementById('note-save-indicator');
+          if (ind) {
+              ind.textContent = '💾 Sauvegardé';
+              ind.style.color = 'var(--gold)';
+              clearTimeout(ind._timer);
+              ind._timer = setTimeout(() => {
+                  ind.textContent = '✔ Synchronisé';
+                  ind.style.color = 'var(--success)';
+              }, 900);
+          }
       } 
+  };
+
+  // Bascule des notes en 0ms sans reconstruire le DOM de la carte
+  function toggleNotes() {
+    notesVisible = !notesVisible;
+    const panel = document.getElementById('modal-notes-panel');
+    const btn = document.getElementById('btn-toggle-notes');
+    if (panel) panel.classList.toggle('hidden', !notesVisible);
+    if (btn) btn.textContent = notesVisible ? '📝 Masquer les notes' : '📝 Afficher les notes';
   }
 
-  function toggleNotes(index) { notesVisible = !notesVisible; openModal(index);  }
-  function closeModal() { document.getElementById('card-modal-overlay').classList.remove('show'); setTimeout(() => { document.getElementById('modal-content-area').innerHTML = ''; }, 300); }
+  function closeModal() { document.getElementById('card-modal-overlay').classList.remove('show'); setTimeout(() => { document.getElementById('modal-content-area').innerHTML = ''; }, 250); }
   document.getElementById('card-modal-overlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 
-  window.openEpisodeManager = function(index) { const overlay = document.getElementById('episode-manager-overlay'); const content = document.getElementById('episode-manager-content'); const titleObj = document.getElementById('episode-manager-title'); let movie = myMovies[index]; titleObj.innerText = `Épisodes : ${movie.title}`; let oldScrollX = 0; let oldScrollY = []; let isSameMovie = (content.dataset.activeIndex == index); if (isSameMovie) { const oldContainer = content.querySelector('.seasons-container'); if (oldContainer) { oldScrollX = oldContainer.scrollLeft; const oldLists = content.querySelectorAll('.episodes-list'); oldLists.forEach(list => oldScrollY.push(list.scrollTop)); } } content.dataset.activeIndex = index; if (!movie.seasonsData || movie.seasonsData.length === 0) { content.innerHTML = `<p style="text-align:center; color:#888; margin-top:50px;">Aucune donnée de saison.</p>`; } else { let html = '<div class="seasons-container">'; movie.seasonsData.forEach(season => { let sNum = season.s; let epCount = season.e; let watched = movie.watchedEpisodes[sNum] || []; html += `<div class="season-col"><div style="flex-shrink:0; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><h4 style="margin:0; color:var(--neon-blue); font-family:'Rajdhani'; font-size: 18px;">Saison ${sNum}</h4><button onclick="toggleAllEpisodes(${index}, ${sNum})" style="background:var(--glass-bg); border:1px solid var(--neon-pink); border-radius:5px; color:var(--neon-pink); cursor:pointer; font-size:10px; padding:3px 6px;">TOUT</button></div><div class="episodes-list">`; for (let e = 1; e <= epCount; e++) { let isW = watched.includes(e); let btnClass = isW ? 'ep-btn watched' : 'ep-btn'; let icon = isW ? '✔ ' : ''; html += `<button class="${btnClass}" onclick="toggleEpisode(${index}, ${sNum}, ${e})">${icon}S${sNum} E${e}</button>`; } html += `</div></div>`; }); html += '</div>'; content.innerHTML = html; if (isSameMovie) { const newContainer = content.querySelector('.seasons-container'); if (newContainer) { newContainer.scrollLeft = oldScrollX; const newLists = content.querySelectorAll('.episodes-list'); newLists.forEach((list, i) => { if (oldScrollY[i] !== undefined) list.scrollTop = oldScrollY[i]; }); } } } overlay.classList.add('show'); };
-  window.closeEpisodeManager = function() { document.getElementById('episode-manager-overlay').classList.remove('show'); };
+  // --- GESTIONNAIRE D'ÉPISODES ULTRA-RÉACTIF (0ms DOM PATCH) ---
+  window.openEpisodeManager = function(index) {
+    const overlay = document.getElementById('episode-manager-overlay');
+    const content = document.getElementById('episode-manager-content');
+    const titleObj = document.getElementById('episode-manager-title');
+    let movie = myMovies[index];
+    titleObj.innerText = `Épisodes : ${movie.title}`;
+    content.dataset.activeIndex = index;
+
+    if (!movie.seasonsData || movie.seasonsData.length === 0) {
+      content.innerHTML = `<p style="text-align:center; color:#888; margin-top:50px;">Aucune donnée de saison.</p>`;
+    } else {
+      let html = '<div class="seasons-container">';
+      movie.seasonsData.forEach(season => {
+        let sNum = season.s;
+        let epCount = season.e;
+        let watched = (movie.watchedEpisodes && movie.watchedEpisodes[sNum]) || [];
+        html += `<div class="season-col"><div style="flex-shrink:0; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><h4 style="margin:0; color:var(--neon-blue); font-family:'Rajdhani'; font-size: 18px;">Saison ${sNum}</h4><button onclick="toggleAllEpisodes(${index}, ${sNum})" style="background:var(--glass-bg); border:1px solid var(--neon-pink); border-radius:5px; color:var(--neon-pink); cursor:pointer; font-size:10px; padding:3px 6px;">TOUT</button></div><div class="episodes-list" id="ep-list-s${sNum}">`;
+        for (let e = 1; e <= epCount; e++) {
+          let isW = watched.includes(e);
+          let btnClass = isW ? 'ep-btn watched' : 'ep-btn';
+          let icon = isW ? '✔ ' : '';
+          html += `<button id="ep-btn-s${sNum}-e${e}" class="${btnClass}" onclick="toggleEpisode(${index}, ${sNum}, ${e})">${icon}S${sNum} E${e}</button>`;
+        }
+        html += `</div></div>`;
+      });
+      html += '</div>';
+      content.innerHTML = html;
+    }
+    overlay.classList.add('show');
+  };
+
+  window.closeEpisodeManager = function() {
+    document.getElementById('episode-manager-overlay').classList.remove('show');
+  };
+
+  // Met à jour uniquement la jauge de la carte ouverte, la carte dans la galerie et le compteur d'heures sans reconstruire toute l'interface !
+  function patchSeriesProgressFast(mIndex) {
+    const movie = myMovies[mIndex];
+    if (!movie) return;
+    const prog = getSeriesProgressInfo(movie);
+
+    const modalFill = document.getElementById('modal-front-fill');
+    if (modalFill) modalFill.style.clipPath = `inset(calc(100% - ${prog.percentage}%) 0 0 0)`;
+
+    const modalBadge = document.getElementById('modal-ep-badge');
+    if (modalBadge && !prog.isUnsynced) modalBadge.textContent = prog.badgeText;
+
+    const modalCardBadges = document.querySelectorAll('.modal-card-container .episodes-badge');
+    modalCardBadges.forEach(b => { if (!prog.isUnsynced) b.textContent = prog.badgeText; });
+
+    const galFill = document.getElementById(`gallery-front-fill-${mIndex}`);
+    if (galFill) galFill.style.clipPath = `inset(calc(100% - ${prog.percentage}%) 0 0 0)`;
+
+    const galBadge = document.getElementById(`gallery-ep-badge-${mIndex}`);
+    if (galBadge && !prog.isUnsynced) galBadge.textContent = prog.badgeText;
+
+    updateStats();
+    saveMoviesOnlyFast();
+  }
   
   window.toggleEpisode = function(mIndex, sNum, eNum) { 
       let movie = myMovies[mIndex]; 
-      if(!movie.watchedEpisodes[sNum]) movie.watchedEpisodes[sNum] = []; 
+      if (!movie.watchedEpisodes) movie.watchedEpisodes = {};
+      if (!movie.watchedEpisodes[sNum]) movie.watchedEpisodes[sNum] = []; 
       let arr = movie.watchedEpisodes[sNum]; 
       let idx = arr.indexOf(eNum); 
-      if(idx > -1) arr.splice(idx, 1); 
-      else arr.push(eNum); 
-      saveData(); 
-      openModal(mIndex); 
-      openEpisodeManager(mIndex); 
+      let nowWatched = false;
+      if (idx > -1) {
+          arr.splice(idx, 1);
+      } else {
+          arr.push(eNum);
+          nowWatched = true;
+      }
+
+      // Patch chirurgical instantané du bouton d'épisode (< 0.1ms)
+      const btn = document.getElementById(`ep-btn-s${sNum}-e${eNum}`);
+      if (btn) {
+          btn.classList.toggle('watched', nowWatched);
+          btn.textContent = `${nowWatched ? '✔ ' : ''}S${sNum} E${eNum}`;
+      }
+
+      patchSeriesProgressFast(mIndex);
   };
   
   window.toggleAllEpisodes = function(mIndex, sNum) { 
       let movie = myMovies[mIndex]; 
-      if(!movie.watchedEpisodes[sNum]) movie.watchedEpisodes[sNum] = []; 
+      if (!movie.watchedEpisodes) movie.watchedEpisodes = {};
+      if (!movie.watchedEpisodes[sNum]) movie.watchedEpisodes[sNum] = []; 
       let season = movie.seasonsData.find(s => s.s === sNum); 
-      if (movie.watchedEpisodes[sNum].length === season.e) { 
-          movie.watchedEpisodes[sNum] = []; 
-      } else { 
-          movie.watchedEpisodes[sNum] = Array.from({length: season.e}, (_, i) => i + 1); 
-      } 
-      saveData(); 
-      openModal(mIndex); 
-      openEpisodeManager(mIndex); 
+      if (!season) return;
+
+      const selectAll = movie.watchedEpisodes[sNum].length !== season.e;
+      movie.watchedEpisodes[sNum] = selectAll ? Array.from({length: season.e}, (_, i) => i + 1) : [];
+
+      // Patch chirurgical des boutons de la saison sans perdre le scroll
+      const listEl = document.getElementById(`ep-list-s${sNum}`);
+      if (listEl) {
+          const btns = listEl.querySelectorAll('.ep-btn');
+          btns.forEach((b, idx) => {
+              const epNum = idx + 1;
+              b.classList.toggle('watched', selectAll);
+              b.textContent = `${selectAll ? '✔ ' : ''}S${sNum} E${epNum}`;
+          });
+      }
+
+      patchSeriesProgressFast(mIndex);
   };
 
   // --- SYSTÈME DE PODIUMS TOP 3 & RECHERCHE RAPIDE (SUPPORT MULTI-VERSIONS) ---
@@ -2750,14 +3107,18 @@
     if (input) input.value = '';
     if (drop) drop.classList.remove('active');
 
-    saveData();
+    localStorage.setItem('thomasTop3_v74', JSON.stringify(myTop3));
+    renderPodiums();
+    scheduleCloudSync();
     closePodiumSelector();
   };
 
   window.removePodiumItem = function(type, rank) {
     ensureValidTop3();
     myTop3[type][rank - 1] = null;
-    saveData();
+    localStorage.setItem('thomasTop3_v74', JSON.stringify(myTop3));
+    renderPodiums();
+    scheduleCloudSync();
   };
 
   window.openPodiumSelector = function(type, rank) {
@@ -2768,13 +3129,12 @@
     if (searchInput) searchInput.value = '';
     renderPodiumModalGrid('');
     document.getElementById('podium-selection-overlay').classList.add('show');
-    if (searchInput) setTimeout(() => searchInput.focus(), 100);
+    if (searchInput) setTimeout(() => searchInput.focus(), 80);
   };
 
   window.renderPodiumModalGrid = function(query = '') {
     const grid = document.getElementById('selector-grid');
     if (!grid || !currentPodiumSelectionType) return;
-    grid.innerHTML = '';
 
     const cleanQ = normalize(query);
     const options = myMovies
@@ -2787,13 +3147,13 @@
       return;
     }
 
-    options.forEach(({ movie, idx }) => {
+    grid.innerHTML = options.map(({ movie, idx }) => {
       let displayTitle = movie.title.length > 15 ? movie.title.substring(0, 13) + '...' : movie.title;
-      grid.innerHTML += `
+      return `
         <div class="selector-item" style="background-image: url('${movie.poster}');" onclick="assignPodiumByIndex('${currentPodiumSelectionType}', ${currentPodiumSelectionRank}, ${idx})">
           <div class="selector-title">${displayTitle} (${movie.year})</div>
         </div>`;
-    });
+    }).join('');
   };
 
   window.closePodiumSelector = function() {
@@ -2813,12 +3173,17 @@
   });
   document.getElementById('podium-selection-overlay').addEventListener('click', function(e) { if (e.target === this) closePodiumSelector(); });
 
+  window.debouncedCollectionsSearch = function() {
+    clearTimeout(collectionsSearchTimer);
+    collectionsSearchTimer = setTimeout(() => updateCollectionsTab(), 110);
+  };
+
   function updateCollectionsTab() {
     const uniMap = {}; const dirMap = {};
     myMovies.forEach(m => { let assignedUniverse = null; let assignedMax = 0; let searchString = ((m.universe || "") + " " + (m.title || "")).toLowerCase(); for (const [superName, data] of Object.entries(SUPER_UNIVERSES)) { if (data.localKeys.some(kw => searchString.includes(kw))) { assignedUniverse = superName; assignedMax = data.max; break; } } if (!assignedUniverse && m.universe) { assignedUniverse = m.universe.replace(' Collection', ''); assignedMax = m.universeTotal || 0; } if (assignedUniverse) { if (!uniMap[assignedUniverse]) { uniMap[assignedUniverse] = { count: 0, max: assignedMax }; } uniMap[assignedUniverse].count++; if (m.universeTotal > uniMap[assignedUniverse].max) { uniMap[assignedUniverse].max = m.universeTotal; } } if (m.director && m.director !== "Inconnu") { const dirs = m.director.split(', '); dirs.forEach(d => { const key = d.trim(); if (!dirMap[key]) dirMap[key] = { count: 0, total: m.directorTotal || 0 }; dirMap[key].count++; if (m.directorTotal > dirMap[key].total) dirMap[key].total = m.directorTotal; }); } });
     let universesArray = []; for (const [name, data] of Object.entries(uniMap)) { let maxVal = SUPER_UNIVERSES[name] ? SUPER_UNIVERSES[name].max : data.max; if (appSettings.universeCounts && appSettings.universeCounts[name]) { maxVal = appSettings.universeCounts[name]; } let finalTotal = Math.max(data.count, maxVal); let percentage = Math.min(Math.round((data.count / finalTotal) * 100), 100); universesArray.push({ name, count: data.count, total: finalTotal, percentage }); }
     let directorsArray = []; for (const [name, data] of Object.entries(dirMap)) { let finalTotal = Math.max(data.total > 0 ? data.total : data.count, data.count); let percentage = Math.min(Math.round((data.count / finalTotal) * 100), 100); directorsArray.push({ name, count: data.count, total: finalTotal, percentage }); }
-    const searchInput = document.getElementById('search-filter-collections'); const searchVal = searchInput ? searchInput.value.toLowerCase() : ""; if (searchVal) { universesArray = universesArray.filter(u => u.name.toLowerCase().includes(searchVal)); directorsArray = directorsArray.filter(d => d.name.toLowerCase().includes(searchVal)); }
+    const searchInput = document.getElementById('search-filter-collections'); const searchVal = normalize(searchInput ? searchInput.value : ""); if (searchVal) { universesArray = universesArray.filter(u => normalize(u.name).includes(searchVal)); directorsArray = directorsArray.filter(d => normalize(d.name).includes(searchVal)); }
     const sortInput = document.getElementById('sort-select-collections'); const sortVal = sortInput ? sortInput.value : 'count-desc'; const sortFn = (a, b) => { if (sortVal === 'name-asc') return a.name.localeCompare(b.name); if (sortVal === 'count-desc') { if (b.count !== a.count) return b.count - a.count; return a.name.localeCompare(b.name); } if (sortVal === 'percent-desc') { if (b.percentage !== a.percentage) return b.percentage - a.percentage; return b.count - a.count; } return 0; };
     universesArray.sort(sortFn); directorsArray.sort(sortFn);
     document.getElementById('collections-universes').innerHTML = universesArray.map(u => createProgressBar(u.name, u.count, u.total, 'openUniverseBinder')).join('') || "<p style='color:#888;'>Aucune saga trouvée.</p>";
@@ -2832,7 +3197,7 @@
     return `<div class="progress-block" ${onClickAttr} style="${cursorStyle}"><div class="progress-header"><span>${label}</span><span>${watched}/${total} (${percentage}%)</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${percentage}%;"></div></div></div>`;
   }
 
-  window.closeBinder = function() { document.getElementById('collection-binder-overlay').classList.remove('show'); setTimeout(() => { document.getElementById('collection-binder-content').innerHTML = ''; }, 300); }
+  window.closeBinder = function() { document.getElementById('collection-binder-overlay').classList.remove('show'); setTimeout(() => { document.getElementById('collection-binder-content').innerHTML = ''; }, 250); }
   document.getElementById('collection-binder-overlay').addEventListener('click', function(e) { if (e.target === this) closeBinder(); });
 
   window.openDirectorBinder = async function(directorName) {
@@ -2873,12 +3238,9 @@
           const index = myMovies.indexOf(userMovie);
           let percentage = 100; let epBadge = '';
           if (userMovie.type === 'Série') {
-             if (userMovie.seasonsData && userMovie.seasonsData.length > 0) {
-                let completedSeasons = 0; let totalSeasons = userMovie.seasonsData.length;
-                userMovie.seasonsData.forEach(season => { let w = userMovie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; });
-                percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0;
-                epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`;
-             }
+             const prog = getSeriesProgressInfo(userMovie);
+             percentage = prog.percentage;
+             if (!prog.isUnsynced) epBadge = `<div class="episodes-badge">${prog.badgeText}</div>`;
           }
           html += `<div style="display: flex; flex-direction: column;"><div class="card-container" onclick="closeBinder(); openModal(${index})"><div class="card" style="transform: none;"><div class="card-face card-front ${userMovie.rarity} ${userMovie.type === 'Série' ? 'in-progress' : ''}" style="background-image: url('${userMovie.poster}');">${badgeHTML} ${epBadge}</div><div class="card-face card-front ${userMovie.rarity}" style="background-image: url('${userMovie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML} ${epBadge}</div></div></div><div style="text-align:center; margin-top:12px; font-size:14px; color:var(--neon-blue); font-family:'Rajdhani'; font-weight:bold; text-shadow:0 0 5px var(--neon-blue); text-transform:uppercase;">✔ Vu en ${userMovie.unlockDate}</div></div>`;
         } else {
@@ -3002,12 +3364,9 @@
               const index = myMovies.indexOf(userMovie);
               let percentage = 100; let epBadge = '';
               if (userMovie.type === 'Série') {
-                 if (userMovie.seasonsData && userMovie.seasonsData.length > 0) {
-                    let completedSeasons = 0; let totalSeasons = userMovie.seasonsData.length;
-                    userMovie.seasonsData.forEach(season => { let w = userMovie.watchedEpisodes[season.s] || []; if (season.e > 0 && w.length === season.e) completedSeasons++; });
-                    percentage = totalSeasons > 0 ? (completedSeasons / totalSeasons) * 100 : 0;
-                    epBadge = `<div class="episodes-badge">👁️ ${completedSeasons}/${totalSeasons} S</div>`;
-                 }
+                 const prog = getSeriesProgressInfo(userMovie);
+                 percentage = prog.percentage;
+                 if (!prog.isUnsynced) epBadge = `<div class="episodes-badge">${prog.badgeText}</div>`;
               }
               html += `<div style="display: flex; flex-direction: column;"><div class="card-container" onclick="closeBinder(); openModal(${index})"><div class="card" style="transform: none;"><div class="card-face card-front ${userMovie.rarity} ${userMovie.type === 'Série' ? 'in-progress' : ''}" style="background-image: url('${userMovie.poster}');">${badgeHTML} ${epBadge}</div><div class="card-face card-front ${userMovie.rarity}" style="background-image: url('${userMovie.poster}'); clip-path: inset(calc(100% - ${percentage}%) 0 0 0);">${badgeHTML} ${epBadge}</div></div></div><div style="text-align:center; margin-top:12px; font-size:14px; color:var(--neon-blue); font-family:'Rajdhani'; font-weight:bold; text-shadow:0 0 5px var(--neon-blue); text-transform:uppercase;">✔ Vu en ${userMovie.unlockDate}</div></div>`;
           } else {
@@ -3021,7 +3380,24 @@
 
   function updateStats() { document.getElementById('stat-total').innerText = myMovies.length; let totalMinutes = 0; myMovies.forEach(m => { if (m.type === 'Série' && m.episodeRuntime) { let epsWatched = 0; if (m.watchedEpisodes) { for (let s in m.watchedEpisodes) { epsWatched += m.watchedEpisodes[s].length; } } else if (m.episodesWatched !== undefined) { epsWatched = m.episodesWatched; } totalMinutes += m.episodeRuntime * epsWatched; } else if (m.runtime) { totalMinutes += m.runtime; } }); document.getElementById('stat-runtime').innerText = Math.round(totalMinutes / 60) + " h"; if (myMovies.length > 0) { const counts = {}; let maxCount = 0; let topDirector = "-"; myMovies.forEach(m => { if (m.director && m.director !== "Inconnu") { const dirs = m.director.split(', '); dirs.forEach(d => { counts[d] = (counts[d] || 0) + 1; if (counts[d] > maxCount) { maxCount = counts[d]; topDirector = d; } }); } }); if (maxCount > 0) document.getElementById('stat-director').innerHTML = `${topDirector}<div style="font-size: 18px; color: #e0e6ed; text-shadow: none; margin-top: 5px;">(${maxCount} visionnages)</div>`; else document.getElementById('stat-director').innerText = "-"; } else { document.getElementById('stat-director').innerText = "-"; } }
 
-  function renderAdminList() { const listContainer = document.getElementById('admin-movie-list'); const searchVal = document.getElementById('admin-search-input') ? document.getElementById('admin-search-input').value.toLowerCase() : ""; listContainer.innerHTML = ''; let moviesToRender = myMovies.map((movie, index) => ({ movie, index })); if (searchVal) { moviesToRender = moviesToRender.filter(item => item.movie.title.toLowerCase().includes(searchVal) || String(item.movie.year).includes(searchVal)); } moviesToRender.forEach(item => { listContainer.innerHTML += `<div class="movie-list-item"><div><strong>${item.movie.title}</strong> <span style="color:#888; font-size:12px;">(${item.movie.type} - ${item.movie.year})</span></div><button class="btn-delete" onclick="deleteMovie(${item.index})">Effacer</button></div>`; }); }
+  window.debouncedAdminSearch = function() {
+    clearTimeout(adminSearchTimer);
+    adminSearchTimer = setTimeout(() => renderAdminList(), 100);
+  };
+
+  function renderAdminList() {
+    const listContainer = document.getElementById('admin-movie-list');
+    if (!listContainer) return;
+    const searchVal = normalize(document.getElementById('admin-search-input')?.value || '');
+    let moviesToRender = myMovies.map((movie, index) => ({ movie, index }));
+    if (searchVal) {
+      moviesToRender = moviesToRender.filter(item => normalize(item.movie.title).includes(searchVal) || String(item.movie.year).includes(searchVal));
+    }
+    listContainer.innerHTML = moviesToRender.map(item =>
+      `<div class="movie-list-item"><div><strong>${item.movie.title}</strong> <span style="color:#888; font-size:12px;">(${item.movie.type} - ${item.movie.year})</span></div><button class="btn-delete" onclick="deleteMovie(${item.index})">Effacer</button></div>`
+    ).join('');
+  }
+
   window.deleteMovie = function(index) {
     if(confirm("Détruire cette carte ?")) {
       const targetMovie = myMovies[index];
@@ -3030,27 +3406,237 @@
       myTop3[movieType] = myTop3[movieType].map(token => isMovieMatchingPodiumToken(targetMovie, token) ? null : token);
       myMovies.splice(index, 1);
       saveData();
-      renderAdminList();
     }
   }
 
-  // --- LOGIQUE DES MINI JEUX ARCADE ---
-  function checkArcadeAvailability() { const arcadeContainer = document.getElementById('arcade-container'); if (myMovies.length < 4) { arcadeContainer.innerHTML = `<div style="grid-column: 1 / -1; padding: 30px; border: 2px dashed rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); border-radius: 15px;">Pour allumer les bornes d'arcade, tu dois forger au moins 4 cartes dans ta collection.</div>`; } }
+  // =========================================================================
+  // --- LOGIQUE DES MINI JEUX ARCADE (AVEC BOUTON REJOUER + ZÉRO ALERTE BLOQUANTE) ---
+  // =========================================================================
+  function checkArcadeAvailability() {
+    const arcadeContainer = document.getElementById('arcade-container');
+    if (myMovies.length < 4) {
+      arcadeContainer.innerHTML = `<div style="grid-column: 1 / -1; padding: 30px; border: 2px dashed rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); border-radius: 15px;">Pour allumer les bornes d'arcade, tu dois forger au moins 4 cartes dans ta collection.</div>`;
+    }
+  }
+
+  // --- JEU 1 : L'AFFICHE MYSTÈRE ---
   let mysteryScore = 0; let currentMysteryMovie = null;
-  window.initMysteryGame = function() { if (myMovies.length < 4) return; mysteryScore = 0; document.getElementById('mystery-score').innerText = mysteryScore; document.getElementById('game-mystery-overlay').classList.add('show'); nextMysteryRound(); };
-  function nextMysteryRound() { const choices = [...myMovies].sort(() => 0.5 - Math.random()).slice(0, 4); currentMysteryMovie = choices[Math.floor(Math.random() * 4)]; const poster = document.getElementById('mystery-image'); poster.style.backgroundImage = `url('${currentMysteryMovie.poster}')`; poster.className = 'mystery-poster blurred'; const choicesContainer = document.getElementById('mystery-choices'); choicesContainer.innerHTML = ''; choices.forEach(c => { const btn = document.createElement('button'); btn.className = 'mystery-btn'; btn.innerText = c.title; btn.onclick = () => handleMysteryGuess(btn, c.title === currentMysteryMovie.title); choicesContainer.appendChild(btn); }); }
-  function handleMysteryGuess(btn, isCorrect) { document.querySelectorAll('#mystery-choices .mystery-btn').forEach(b => b.disabled = true); if (isCorrect) { btn.classList.add('correct'); mysteryScore++; document.getElementById('mystery-score').innerText = mysteryScore; document.getElementById('mystery-image').className = 'mystery-poster revealed'; setTimeout(nextMysteryRound, 1200); } else { btn.classList.add('wrong'); const container = document.getElementById('mystery-container'); container.classList.add('shake-effect'); document.getElementById('mystery-image').className = 'mystery-poster revealed'; document.querySelectorAll('#mystery-choices .mystery-btn').forEach(b => { if(b.innerText === currentMysteryMovie.title) b.classList.add('correct'); }); setTimeout(() => { container.classList.remove('shake-effect'); if (mysteryScore > (appSettings.highScores.mystery || 0)) { appSettings.highScores.mystery = mysteryScore; saveData(); } alert(`Game Over ! Score final : ${mysteryScore}`); closeGame('mystery'); }, 1800); } }
+  window.initMysteryGame = function() {
+    if (myMovies.length < 4) return;
+    mysteryScore = 0;
+    document.getElementById('mystery-score').innerText = mysteryScore;
+    const postBar = document.getElementById('mystery-postgame');
+    if (postBar) { postBar.style.display = 'none'; postBar.innerHTML = ''; }
+    document.getElementById('game-mystery-overlay').classList.add('show');
+    nextMysteryRound();
+  };
 
+  function nextMysteryRound() {
+    const choices = [...myMovies].sort(() => 0.5 - Math.random()).slice(0, 4);
+    currentMysteryMovie = choices[Math.floor(Math.random() * 4)];
+    const poster = document.getElementById('mystery-image');
+    poster.style.backgroundImage = `url('${currentMysteryMovie.poster}')`;
+    poster.className = 'mystery-poster blurred';
+    const postBar = document.getElementById('mystery-postgame');
+    if (postBar) { postBar.style.display = 'none'; postBar.innerHTML = ''; }
+    const choicesContainer = document.getElementById('mystery-choices');
+    choicesContainer.innerHTML = '';
+    choices.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'mystery-btn';
+      btn.innerText = c.title;
+      btn.onclick = () => handleMysteryGuess(btn, c.title === currentMysteryMovie.title);
+      choicesContainer.appendChild(btn);
+    });
+  }
+
+  function handleMysteryGuess(btn, isCorrect) {
+    document.querySelectorAll('#mystery-choices .mystery-btn').forEach(b => b.disabled = true);
+    if (isCorrect) {
+      btn.classList.add('correct');
+      mysteryScore++;
+      document.getElementById('mystery-score').innerText = mysteryScore;
+      document.getElementById('mystery-image').className = 'mystery-poster revealed';
+      setTimeout(nextMysteryRound, 950);
+    } else {
+      btn.classList.add('wrong');
+      const container = document.getElementById('mystery-container');
+      container.classList.add('shake-effect');
+      document.getElementById('mystery-image').className = 'mystery-poster revealed';
+      document.querySelectorAll('#mystery-choices .mystery-btn').forEach(b => {
+        if (b.innerText === currentMysteryMovie.title) b.classList.add('correct');
+      });
+      setTimeout(() => container.classList.remove('shake-effect'), 500);
+
+      let isRecord = false;
+      if (mysteryScore > (appSettings.highScores.mystery || 0)) {
+        appSettings.highScores.mystery = mysteryScore;
+        isRecord = true;
+        localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
+        updateHighScoresDisplay();
+        scheduleCloudSync();
+      }
+
+      const postBar = document.getElementById('mystery-postgame');
+      if (postBar) {
+        postBar.style.display = 'flex';
+        postBar.innerHTML = `
+          <div style="width:100%; font-family:'Rajdhani'; font-size:20px; font-weight:bold; color:${isRecord ? 'var(--gold)' : 'var(--danger)'}; margin-bottom:4px;">
+            ${isRecord ? '🏆 NOUVEAU RECORD !' : '💥 GAME OVER !'} Score final : ${mysteryScore}
+          </div>
+          <button class="btn-replay-arcade" onclick="initMysteryGame()">🔄 Rejouer</button>
+          <button class="btn-quit-arcade" onclick="closeGame('mystery')">Quitter</button>
+        `;
+      }
+    }
+  }
+
+  // --- JEU 2 : LA MACHINE TEMPORELLE ---
   let chronoScore = 0; let currentChronoMovie = null;
-  window.initChronoGame = function() { const validMovies = myMovies.filter(m => m.year && m.year !== "N/A" && !isNaN(parseInt(m.year))); if (validMovies.length < 4) { alert("Pas assez d'œuvres avec une date de sortie valide."); return; } chronoScore = 0; document.getElementById('chrono-score').innerText = chronoScore; document.getElementById('game-chrono-overlay').classList.add('show'); nextChronoRound(validMovies); };
-  function nextChronoRound(validMovies) { currentChronoMovie = validMovies[Math.floor(Math.random() * validMovies.length)]; document.getElementById('chrono-poster').style.backgroundImage = `url('${currentChronoMovie.poster}')`; document.getElementById('chrono-title').innerText = currentChronoMovie.title; const realYear = parseInt(currentChronoMovie.year); const yearSet = new Set([realYear]); const offsets = [-7, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 7].sort(() => 0.5 - Math.random()); for (let offset of offsets) { let candidate = realYear + offset; if (candidate > 1950 && candidate <= 2030) yearSet.add(candidate); if (yearSet.size === 4) break; } while (yearSet.size < 4) { yearSet.add(parseInt(validMovies[Math.floor(Math.random() * validMovies.length)].year)); } const choices = Array.from(yearSet).sort(() => 0.5 - Math.random()); const choicesContainer = document.getElementById('chrono-choices'); choicesContainer.innerHTML = ''; choices.forEach(y => { const btn = document.createElement('button'); btn.className = 'mystery-btn'; btn.innerText = y; btn.onclick = () => handleChronoGuess(btn, y === realYear, validMovies); choicesContainer.appendChild(btn); }); }
-  function handleChronoGuess(btn, isCorrect, validMovies) { document.querySelectorAll('#chrono-choices .mystery-btn').forEach(b => b.disabled = true); if (isCorrect) { btn.classList.add('correct'); chronoScore++; document.getElementById('chrono-score').innerText = chronoScore; setTimeout(() => nextChronoRound(validMovies), 1000); } else { btn.classList.add('wrong'); const container = document.getElementById('chrono-container'); container.classList.add('shake-effect'); document.querySelectorAll('#chrono-choices .mystery-btn').forEach(b => { if(parseInt(b.innerText) === parseInt(currentChronoMovie.year)) b.classList.add('correct'); }); setTimeout(() => { container.classList.remove('shake-effect'); if (chronoScore > (appSettings.highScores.chrono || 0)) { appSettings.highScores.chrono = chronoScore; saveData(); } alert(`Raté ! L'année de sortie était ${currentChronoMovie.year}.\nScore final : ${chronoScore}`); closeGame('chrono'); }, 1800); } }
+  window.initChronoGame = function() {
+    const validMovies = myMovies.filter(m => m.year && m.year !== "N/A" && !isNaN(parseInt(m.year)));
+    if (validMovies.length < 4) { alert("Pas assez d'œuvres avec une date de sortie valide."); return; }
+    chronoScore = 0;
+    document.getElementById('chrono-score').innerText = chronoScore;
+    const postBar = document.getElementById('chrono-postgame');
+    if (postBar) { postBar.style.display = 'none'; postBar.innerHTML = ''; }
+    document.getElementById('game-chrono-overlay').classList.add('show');
+    nextChronoRound(validMovies);
+  };
 
+  function nextChronoRound(validMovies) {
+    currentChronoMovie = validMovies[Math.floor(Math.random() * validMovies.length)];
+    document.getElementById('chrono-poster').style.backgroundImage = `url('${currentChronoMovie.poster}')`;
+    document.getElementById('chrono-title').innerText = currentChronoMovie.title;
+    const postBar = document.getElementById('chrono-postgame');
+    if (postBar) { postBar.style.display = 'none'; postBar.innerHTML = ''; }
+
+    const realYear = parseInt(currentChronoMovie.year);
+    const yearSet = new Set([realYear]);
+    const offsets = [-7, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 7].sort(() => 0.5 - Math.random());
+    for (let offset of offsets) {
+      let candidate = realYear + offset;
+      if (candidate > 1950 && candidate <= 2030) yearSet.add(candidate);
+      if (yearSet.size === 4) break;
+    }
+    while (yearSet.size < 4) {
+      yearSet.add(parseInt(validMovies[Math.floor(Math.random() * validMovies.length)].year));
+    }
+    const choices = Array.from(yearSet).sort(() => 0.5 - Math.random());
+    const choicesContainer = document.getElementById('chrono-choices');
+    choicesContainer.innerHTML = '';
+    choices.forEach(y => {
+      const btn = document.createElement('button');
+      btn.className = 'mystery-btn';
+      btn.innerText = y;
+      btn.onclick = () => handleChronoGuess(btn, y === realYear, validMovies);
+      choicesContainer.appendChild(btn);
+    });
+  }
+
+  function handleChronoGuess(btn, isCorrect, validMovies) {
+    document.querySelectorAll('#chrono-choices .mystery-btn').forEach(b => b.disabled = true);
+    if (isCorrect) {
+      btn.classList.add('correct');
+      chronoScore++;
+      document.getElementById('chrono-score').innerText = chronoScore;
+      setTimeout(() => nextChronoRound(validMovies), 850);
+    } else {
+      btn.classList.add('wrong');
+      const container = document.getElementById('chrono-container');
+      container.classList.add('shake-effect');
+      document.querySelectorAll('#chrono-choices .mystery-btn').forEach(b => {
+        if (parseInt(b.innerText) === parseInt(currentChronoMovie.year)) b.classList.add('correct');
+      });
+      setTimeout(() => container.classList.remove('shake-effect'), 500);
+
+      let isRecord = false;
+      if (chronoScore > (appSettings.highScores.chrono || 0)) {
+        appSettings.highScores.chrono = chronoScore;
+        isRecord = true;
+        localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
+        updateHighScoresDisplay();
+        scheduleCloudSync();
+      }
+
+      const postBar = document.getElementById('chrono-postgame');
+      if (postBar) {
+        postBar.style.display = 'flex';
+        postBar.innerHTML = `
+          <div style="width:100%; font-family:'Rajdhani'; font-size:20px; font-weight:bold; color:${isRecord ? 'var(--gold)' : 'var(--danger)'}; margin-bottom:4px;">
+            ${isRecord ? '🏆 NOUVEAU RECORD !' : `💥 Raté ! C'était en ${currentChronoMovie.year}.`} Score final : ${chronoScore}
+          </div>
+          <button class="btn-replay-arcade" onclick="initChronoGame()">🔄 Rejouer</button>
+          <button class="btn-quit-arcade" onclick="closeGame('chrono')">Quitter</button>
+        `;
+      }
+    }
+  }
+
+  // --- JEU 3 : L'ŒIL DU CRITIQUE ---
   let criticScore = 0; let currentCriticMovie = null;
-  window.initCriticGame = function() { if (myMovies.length < 1) return; criticScore = 0; document.getElementById('critic-score').innerText = criticScore; document.getElementById('game-critic-overlay').classList.add('show'); nextCriticRound(); }
-  function nextCriticRound() { currentCriticMovie = myMovies[Math.floor(Math.random() * myMovies.length)]; document.getElementById('critic-poster').style.backgroundImage = `url('${currentCriticMovie.poster}')`; document.getElementById('critic-title').innerText = currentCriticMovie.title; const slider = document.getElementById('critic-slider'); slider.value = 5.0; document.getElementById('critic-slider-val').innerText = "5.0"; slider.disabled = false; const btn = document.getElementById('critic-validate-btn'); btn.innerText = "Valider ma note"; btn.onclick = () => validateCriticGuess(); btn.className = 'btn-submit'; document.getElementById('critic-result').innerText = ""; }
-  window.updateCriticSlider = function(val) { document.getElementById('critic-slider-val').innerText = parseFloat(val).toFixed(1); }
-  window.validateCriticGuess = function() { const slider = document.getElementById('critic-slider'); const guessed = parseFloat(slider.value); const realRating = parseFloat(currentCriticMovie.rating); slider.disabled = true; const diff = Math.abs(guessed - realRating); const resDiv = document.getElementById('critic-result'); if (diff <= 0.5) { resDiv.innerHTML = `<span style="color: var(--success); font-weight: bold; font-size: 20px;">Exact ! La note est de ${realRating}</span>`; criticScore++; document.getElementById('critic-score').innerText = criticScore; const btn = document.getElementById('critic-validate-btn'); btn.innerText = "Suivant ➔"; btn.onclick = nextCriticRound; } else { resDiv.innerHTML = `<span style="color: var(--danger); font-weight: bold; font-size: 20px;">Raté ! La vraie note est de ${realRating}</span>`; setTimeout(() => { if (criticScore > (appSettings.highScores.critic || 0)) { appSettings.highScores.critic = criticScore; saveData(); } alert(`Game Over ! Score final : ${criticScore}`); closeGame('critic'); }, 1800); } }
+  window.initCriticGame = function() {
+    if (myMovies.length < 1) return;
+    criticScore = 0;
+    document.getElementById('critic-score').innerText = criticScore;
+    document.getElementById('game-critic-overlay').classList.add('show');
+    nextCriticRound();
+  };
+
+  function nextCriticRound() {
+    currentCriticMovie = myMovies[Math.floor(Math.random() * myMovies.length)];
+    document.getElementById('critic-poster').style.backgroundImage = `url('${currentCriticMovie.poster}')`;
+    document.getElementById('critic-title').innerText = currentCriticMovie.title;
+    const slider = document.getElementById('critic-slider');
+    slider.value = 5.0;
+    document.getElementById('critic-slider-val').innerText = "5.0";
+    slider.disabled = false;
+    document.getElementById('critic-result').innerText = "";
+
+    const actionsBar = document.getElementById('critic-actions-bar');
+    if (actionsBar) {
+      actionsBar.innerHTML = `<button class="btn-submit" id="critic-validate-btn" style="width: auto; padding: 12px 42px; font-size: 19px; margin: 0;" onclick="validateCriticGuess()">Valider ma note</button>`;
+    }
+  }
+
+  window.updateCriticSlider = function(val) {
+    document.getElementById('critic-slider-val').innerText = parseFloat(val).toFixed(1);
+  };
+
+  window.validateCriticGuess = function() {
+    const slider = document.getElementById('critic-slider');
+    const guessed = parseFloat(slider.value);
+    const realRating = parseFloat(currentCriticMovie.rating);
+    slider.disabled = true;
+    const diff = Math.abs(guessed - realRating);
+    const resDiv = document.getElementById('critic-result');
+    const actionsBar = document.getElementById('critic-actions-bar');
+
+    if (diff <= 0.5) {
+      resDiv.innerHTML = `<span style="color: var(--success); font-weight: bold; font-size: 19px;">✔ Exact ! La note TMDB est de ${realRating}</span>`;
+      criticScore++;
+      document.getElementById('critic-score').innerText = criticScore;
+      if (actionsBar) {
+        actionsBar.innerHTML = `<button class="btn-submit" style="width: auto; padding: 12px 42px; font-size: 19px; margin: 0;" onclick="nextCriticRound()">Suivant ➔</button>`;
+      }
+    } else {
+      let isRecord = false;
+      if (criticScore > (appSettings.highScores.critic || 0)) {
+        appSettings.highScores.critic = criticScore;
+        isRecord = true;
+        localStorage.setItem('thomasSettings_v74', JSON.stringify(appSettings));
+        updateHighScoresDisplay();
+        scheduleCloudSync();
+      }
+      resDiv.innerHTML = `<span style="color: var(--danger); font-weight: bold; font-size: 19px;">💥 Raté ! La vraie note était ${realRating} • ${isRecord ? '🏆 Record : ' : 'Score : '}${criticScore}</span>`;
+      if (actionsBar) {
+        actionsBar.innerHTML = `
+          <button class="btn-replay-arcade" onclick="initCriticGame()">🔄 Rejouer</button>
+          <button class="btn-quit-arcade" onclick="closeGame('critic')">Quitter</button>
+        `;
+      }
+    }
+  };
 
   window.closeGame = function(gameId) { document.getElementById(`game-${gameId}-overlay`).classList.remove('show'); };
 </script>
