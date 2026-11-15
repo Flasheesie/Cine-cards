@@ -9,7 +9,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore-compat.js"></script>
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Inter:wght@300;500;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Inter:wght@300;500;700&family=Mountains+of+Christmas:wght@700&display=swap');
 
   :root {
     --bg-dark: #05050a; --neon-blue: #00f3ff; --neon-pink: #ff00ea;
@@ -18,21 +18,180 @@
     --success: #00ff73; --danger: #ff003c;
   }
 
-  /* THÈME DE NOËL (SKIN DÉBLOQUÉ) */
+  /* =========================================================================
+     THÈME MAGIE DE NOËL 100% IMMERSIF (GIVRE, GUIRLANDES, NEIGE, TRAÎNEAU, OR)
+     ========================================================================= */
   body.theme-christmas {
-    --bg-dark: #06120c;
+    --bg-dark: #07160f;
     --neon-blue: #ff2a55;
     --neon-pink: #00ff88;
-    --glass-bg: rgba(12, 28, 20, 0.72);
-    --glass-border: rgba(255, 215, 0, 0.25);
+    --glass-bg: rgba(10, 28, 19, 0.76);
+    --glass-border: rgba(255, 215, 0, 0.38);
   }
   body.theme-christmas .bg-animation {
-    background: radial-gradient(circle at center, #0d261a 0%, #030a06 100%);
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(255, 42, 85, 0.25) 0%, transparent 55%),
+      radial-gradient(ellipse at 15% 85%, rgba(0, 255, 136, 0.2) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 80%, rgba(255, 215, 0, 0.22) 0%, transparent 50%),
+      radial-gradient(circle at center, #0e2e1f 0%, #030a06 100%);
   }
-  body.theme-christmas .orb-1 { background: #ff1e42; opacity: 0.45; }
-  body.theme-christmas .orb-2 { background: #00e676; opacity: 0.4; }
+  body.theme-christmas .orb-1 { background: #ff1e42; opacity: 0.55; filter: blur(70px); }
+  body.theme-christmas .orb-2 { background: #00e676; opacity: 0.48; filter: blur(75px); }
+
+  /* Aurore boréale de Noël */
+  .xmas-aurora {
+    display: none;
+    position: fixed;
+    top: -15%;
+    left: -10%;
+    width: 120vw;
+    height: 48vh;
+    background: linear-gradient(120deg, rgba(0,255,136,0.18), rgba(255,42,85,0.22), rgba(255,215,0,0.2), rgba(0,243,255,0.15));
+    filter: blur(55px);
+    pointer-events: none;
+    z-index: 0;
+    animation: auroraWave 11s ease-in-out infinite alternate;
+  }
+  body.theme-christmas .xmas-aurora { display: block; }
+  @keyframes auroraWave {
+    0% { transform: translateX(-4%) skewY(-3deg) scaleY(1); opacity: 0.65; }
+    50% { transform: translateX(3%) skewY(2deg) scaleY(1.18); opacity: 0.95; }
+    100% { transform: translateX(-2%) skewY(-2deg) scaleY(0.95); opacity: 0.75; }
+  }
+
+  /* Guirlande lumineuse animée en haut de l'écran */
+  .xmas-garland-bar {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 28px;
+    z-index: 1500;
+    pointer-events: none;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding: 0 10px;
+    box-sizing: border-box;
+    border-top: 3px solid #165b33;
+    box-shadow: 0 2px 12px rgba(0, 255, 136, 0.25);
+  }
+  body.theme-christmas .xmas-garland-bar { display: flex; }
+  .xmas-bulb {
+    width: 11px;
+    height: 16px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    margin-top: 2px;
+    position: relative;
+    animation: bulbTwinkle 1.4s infinite alternate ease-in-out;
+  }
+  .xmas-bulb::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 3px;
+    width: 5px;
+    height: 4px;
+    background: #222;
+    border-radius: 2px;
+  }
+  .xmas-bulb.b-red { background: #ff2a55; box-shadow: 0 0 12px #ff2a55, 0 0 24px #ff2a55; }
+  .xmas-bulb.b-gold { background: #ffd700; box-shadow: 0 0 12px #ffd700, 0 0 24px #ffd700; animation-delay: 0.35s; }
+  .xmas-bulb.b-green { background: #00ff88; box-shadow: 0 0 12px #00ff88, 0 0 24px #00ff88; animation-delay: 0.7s; }
+  .xmas-bulb.b-blue { background: #00f3ff; box-shadow: 0 0 12px #00f3ff, 0 0 24px #00f3ff; animation-delay: 1.05s; }
+  @keyframes bulbTwinkle {
+    0% { opacity: 0.45; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1.12); }
+  }
+
+  /* Traîneau du Père Noël traversant le ciel */
+  .xmas-sleigh-runner {
+    display: none;
+    position: fixed;
+    top: 11vh;
+    left: -260px;
+    font-size: 26px;
+    z-index: 3;
+    pointer-events: none;
+    white-space: nowrap;
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.85));
+    animation: sleighFly 24s linear infinite;
+  }
+  body.theme-christmas .xmas-sleigh-runner { display: block; }
+  @keyframes sleighFly {
+    0% { transform: translateX(-280px) translateY(0px) rotate(-3deg); opacity: 0; }
+    6% { opacity: 1; }
+    25% { transform: translateX(30vw) translateY(-18px) rotate(2deg); }
+    50% { transform: translateX(65vw) translateY(8px) rotate(-2deg); }
+    75% { transform: translateX(95vw) translateY(-14px) rotate(3deg); opacity: 1; }
+    100% { transform: translateX(125vw) translateY(0px) rotate(0deg); opacity: 0; }
+  }
+
+  /* Décorations de coins fixes (Sapins, Cadeaux, Canne à sucre) */
+  .xmas-corner-deco {
+    display: none;
+    position: fixed;
+    bottom: 12px;
+    z-index: 4;
+    pointer-events: none;
+    font-size: 34px;
+    filter: drop-shadow(0 0 14px rgba(255, 215, 0, 0.55));
+    animation: decoBounce 3.2s ease-in-out infinite alternate;
+  }
+  body.theme-christmas .xmas-corner-deco { display: flex; align-items: flex-end; gap: 6px; }
+  .xmas-corner-left { left: 16px; }
+  .xmas-corner-right { right: 16px; animation-delay: 1.4s; }
+  @keyframes decoBounce {
+    0% { transform: translateY(0) scale(1); }
+    100% { transform: translateY(-6px) scale(1.06); }
+  }
+
+  /* Titre & Panneaux enneigés / givrés en mode Noël */
+  body.theme-christmas header {
+    padding-top: 42px;
+    background: linear-gradient(180deg, rgba(16, 42, 28, 0.88) 0%, transparent 100%);
+  }
   body.theme-christmas h1 {
-    text-shadow: 0 0 12px #ff2a55, 0 0 24px #ffd700;
+    font-family: 'Mountains of Christmas', 'Rajdhani', cursive;
+    letter-spacing: 6px;
+    color: #fff8dc;
+    text-shadow: 0 0 12px #ff2a55, 0 0 26px #ffd700, 0 0 42px #00ff88;
+  }
+  body.theme-christmas h1::before { content: '🎅 '; font-size: 0.72em; vertical-align: middle; }
+  body.theme-christmas h1::after { content: ' 🎄'; font-size: 0.72em; vertical-align: middle; }
+
+  body.theme-christmas .glass-panel {
+    border: 1px solid rgba(255, 215, 0, 0.42);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.55),
+      inset 0 3px 0 rgba(255, 255, 255, 0.55),
+      0 0 22px rgba(255, 42, 85, 0.16);
+  }
+  body.theme-christmas .glass-panel::after {
+    content: '❄️';
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    font-size: 15px;
+    opacity: 0.65;
+    pointer-events: none;
+  }
+  body.theme-christmas .tab-btn {
+    border-color: rgba(255, 215, 0, 0.35);
+  }
+  body.theme-christmas .tab-btn:hover,
+  body.theme-christmas .tab-btn.active {
+    background: linear-gradient(135deg, rgba(255, 42, 85, 0.25), rgba(0, 255, 136, 0.2));
+    border-color: var(--gold);
+    color: var(--gold);
+    box-shadow: 0 0 18px rgba(255, 215, 0, 0.45);
+  }
+  body.theme-christmas .btn-submit {
+    background: linear-gradient(90deg, #ff2a55, #d4af37, #00c853);
+    box-shadow: 0 0 18px rgba(255, 215, 0, 0.35);
+  }
+  body.theme-christmas .card-container:hover .card {
+    filter: drop-shadow(0 0 14px rgba(255, 215, 0, 0.65));
   }
 
   body { 
@@ -42,7 +201,7 @@
     transition: background-color 0.5s ease;
   }
 
-  /* ARRIÈRE-PLAN ANIMÉ + FLOCONS DE NEIGE */
+  /* ARRIÈRE-PLAN ANIMÉ + FLOCONS DE NEIGE MULTI-COUCHES */
   .bg-animation { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; background: radial-gradient(circle at center, #0a0a16 0%, #000 100%); transition: background 0.5s ease; }
   .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; animation: floatBg 10s infinite alternate ease-in-out; }
   .orb-1 { width: 40vw; height: 40vw; background: var(--neon-blue); top: -10%; left: -10%; }
@@ -51,37 +210,41 @@
 
   #snow-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 2; overflow: hidden; display: none; }
   body.theme-christmas #snow-container { display: block; }
-  .snowflake { position: absolute; top: -10px; color: #fff; user-select: none; animation: fall linear infinite; opacity: 0.8; text-shadow: 0 0 6px #fff; }
-  @keyframes fall {
-    0% { transform: translateY(-10vh) rotate(0deg); }
-    100% { transform: translateY(110vh) rotate(360deg); }
+  .snowflake { position: absolute; top: -20px; color: #fff; user-select: none; animation: fallSway linear infinite; opacity: 0.85; text-shadow: 0 0 8px rgba(255, 255, 255, 0.9); }
+  .snowflake.gold-spark { color: #ffd700; text-shadow: 0 0 10px #ffd700, 0 0 18px #ff2a55; }
+  @keyframes fallSway {
+    0% { transform: translateY(-10vh) translateX(0px) rotate(0deg); }
+    25% { transform: translateY(20vh) translateX(18px) rotate(90deg); }
+    50% { transform: translateY(50vh) translateX(-16px) rotate(180deg); }
+    75% { transform: translateY(80vh) translateX(18px) rotate(270deg); }
+    100% { transform: translateY(112vh) translateX(0px) rotate(360deg); }
   }
 
   /* HEADER & TABS */
-  header { text-align: center; padding: 30px 0 10px 0; background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%); }
-  h1 { font-family: 'Rajdhani', sans-serif; font-size: 3.5em; color: #fff; text-transform: uppercase; letter-spacing: 5px; margin: 0 0 20px 0; text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-pink); }
+  header { text-align: center; padding: 30px 0 10px 0; background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%); transition: padding 0.4s ease; }
+  h1 { font-family: 'Rajdhani', sans-serif; font-size: 3.5em; color: #fff; text-transform: uppercase; letter-spacing: 5px; margin: 0 0 20px 0; text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-pink); transition: 0.4s; }
   .tabs { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;}
-  .tab-btn { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); color: var(--text-main); padding: 12px 25px; font-size: 14px; font-family: 'Rajdhani', sans-serif; font-weight: 700; cursor: pointer; border-radius: 30px; transition: 0.4s; text-transform: uppercase; letter-spacing: 2px; }
+  .tab-btn { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); color: var(--text-main); padding: 12px 25px; font-size: 14px; font-family: 'Rajdhani', sans-serif; font-weight: 700; cursor: pointer; border-radius: 30px; transition: 0.3s; text-transform: uppercase; letter-spacing: 2px; }
   .tab-btn:hover, .tab-btn.active { background: rgba(0, 243, 255, 0.1); border-color: var(--neon-blue); color: var(--neon-blue); box-shadow: 0 0 15px rgba(0, 243, 255, 0.3); }
   .tab-btn.btn-classement { border-color: var(--gold); color: var(--gold); }
   .tab-btn.btn-classement:hover, .tab-btn.btn-classement.active { background: rgba(255, 215, 0, 0.1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
 
   /* BARRE D'ACTIONS EN HAUT À GAUCHE */
-  .top-left-controls { position: absolute; top: 20px; left: 30px; display: flex; align-items: center; gap: 10px; z-index: 100; flex-wrap: wrap; }
+  .top-left-controls { position: absolute; top: 26px; left: 30px; display: flex; align-items: center; gap: 10px; z-index: 100; flex-wrap: wrap; }
   .top-pill-btn { padding: 8px 16px; border-radius: 20px; font-family: 'Rajdhani'; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 7px; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px); }
   .btn-wishlist-top { background: rgba(255, 0, 234, 0.15); border: 1px solid var(--neon-pink); color: var(--neon-pink); box-shadow: 0 0 12px rgba(255, 0, 234, 0.25); }
   .btn-wishlist-top:hover { background: rgba(255, 0, 234, 0.3); box-shadow: 0 0 20px rgba(255, 0, 234, 0.5); transform: translateY(-1px); }
   .wishlist-counter-pill { background: var(--neon-blue); color: #000; font-weight: 800; padding: 1px 7px; border-radius: 10px; font-size: 11px; box-shadow: 0 0 8px var(--neon-blue); }
 
   /* BOUTONS EN HAUT À DROITE (ÉVÉNEMENT NOËL / SKINS + NOUVEAUTÉS) */
-  .top-right-controls { position: absolute; top: 20px; right: 30px; display: flex; align-items: center; gap: 10px; z-index: 100; flex-wrap: wrap; }
+  .top-right-controls { position: absolute; top: 26px; right: 30px; display: flex; align-items: center; gap: 10px; z-index: 100; flex-wrap: wrap; }
   .btn-xmas-top { background: linear-gradient(135deg, rgba(255, 30, 66, 0.22), rgba(0, 230, 118, 0.22)); border: 1px solid var(--gold); color: var(--gold); box-shadow: 0 0 14px rgba(255, 215, 0, 0.3); }
   .btn-xmas-top:hover { background: rgba(255, 215, 0, 0.28); box-shadow: 0 0 22px rgba(255, 215, 0, 0.6); transform: translateY(-1px); }
 
-  #app-content { display: none; }
+  #app-content { display: none; position: relative; z-index: 5; }
   #app-content.loaded { display: block; }
 
-  .tab-content { display: none; padding: 40px 20px; max-width: 1300px; margin: 0 auto; animation: fadeIn 0.5s ease-out; }
+  .tab-content { display: none; padding: 40px 20px; max-width: 1300px; margin: 0 auto; animation: fadeIn 0.4s ease-out; }
   .tab-content.active { display: block; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   .glass-panel { background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); position: relative; }
@@ -242,7 +405,7 @@
   }
   .new-card-anim { animation: projectorReveal 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
 
-  /* OVERLAYS & MODALES (ESPACE DE SÉCURITÉ ANTI-COLLAGE AUX BORDS) */
+  /* OVERLAYS & MODALES */
   .overlay {
     display: none;
     position: fixed;
@@ -288,7 +451,7 @@
   #login-overlay { background: var(--bg-dark); z-index: 99999; }
   .login-box { width: 100%; max-width: 400px; text-align: center; }
 
-  /* MODALES DE JEU ARCADE (MARGES SÉCURISÉES & DÉFILEMENT PROPRE) */
+  /* MODALES DE JEU ARCADE */
   .game-modal {
     width: 100%;
     max-width: 860px;
@@ -652,6 +815,8 @@
     padding: 14px 16px;
     border-radius: 12px;
     margin-bottom: 10px;
+    gap: 10px;
+    flex-wrap: wrap;
   }
   .skin-card.active-skin {
     border-color: var(--gold);
@@ -681,7 +846,7 @@
   .arcade-desc { font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.4; }
   .arcade-hs { position: absolute; top: 10px; right: 10px; border: 1px solid; font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 12px; font-family: 'Inter', sans-serif; z-index: 10; }
 
-  /* JEUX STYLES (PROPORTIONS ADAPTÉES POUR NE JAMAIS TOUCHER LE BAS DE L'ÉCRAN) */
+  /* JEUX STYLES */
   .mystery-poster-container { width: 220px; height: 330px; margin: 0 auto 22px auto; border-radius: 15px; border: 3px solid #333; overflow: hidden; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); transition: 0.5s;}
   .mystery-poster { width: 100%; height: 100%; background-size: cover; background-position: center; transition: 0.8s ease-out; }
   .mystery-poster.blurred { filter: blur(25px) contrast(1.5) grayscale(50%); transform: scale(1.1); }
@@ -725,6 +890,18 @@
 <body>
 
 <div class="bg-animation"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
+<div class="xmas-aurora"></div>
+
+<!-- GUIRLANDE LUMINEUSE DE NOËL EN HAUT DE L'ÉCRAN -->
+<div class="xmas-garland-bar" id="xmas-garland-bar"></div>
+
+<!-- TRAÎNEAU DU PÈRE NOËL ANIMÉ -->
+<div class="xmas-sleigh-runner">🦌🦌🛷🎅✨</div>
+
+<!-- DÉCORATIONS FESTIVES DE COINS -->
+<div class="xmas-corner-deco xmas-corner-left">🎄🎁⛄</div>
+<div class="xmas-corner-deco xmas-corner-right">🕯️🔔🎄</div>
+
 <div id="snow-container"></div>
 
 <!-- ÉCRAN DE CONNEXION (VERROUILLAGE) -->
@@ -985,14 +1162,24 @@
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">📢 Journal de Bord - Mises à Jour</h2></div>
     <div style="overflow-y: auto; text-align: left; padding: 10px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85);">
       
+      <!-- VERSION 8.3 -->
+      <div style="margin-bottom: 25px; border-left: 3px solid var(--gold); padding-left: 12px;">
+        <h3 style="color: var(--gold); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v8.3 - Mode Aperçu Admin Indépendant & Skin Magie de Noël 100% Immersif</h3>
+        <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Dissociation quête / test admin & refonte festive complète</p>
+        <ul style="margin: 0; padding-left: 18px;">
+          <li><strong>Pass Admin Sans Valider la Quête</strong> : Tester ou équiper le skin Noël via le <em>Pass Admin</em> ne valide plus artificiellement le défi ! La quête des 20 films reste active et consultable pour la compléter légitimement (avec bouton de réinitialisation du test si besoin).</li>
+          <li><strong>Skin Magie de Noël 100% Féerique</strong> : Ajout d'une guirlande lumineuse animée en haut de l'écran, d'une aurore boréale, d'un traîneau du Père Noël traversant le ciel, de flocons blancs et dorés, de givre sur les panneaux et d'une typographie festive dédiée.</li>
+        </ul>
+      </div>
+
       <!-- VERSION 8.2 -->
       <div style="margin-bottom: 25px; border-left: 3px solid var(--neon-blue); padding-left: 12px;">
         <h3 style="color: var(--neon-blue); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v8.2 - Big Optimisation Globale, Bouton "Rejouer" Arcade & Marges d'Écran</h3>
         <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Vitesse maximale & ergonomie Arcade</p>
         <ul style="margin: 0; padding-left: 18px;">
-          <li><strong>Big Optimisation Temps Réel (0ms)</strong> : Patch chirurgical instantané sur le cochage des épisodes (plus de reconstruction complète des modales ni de la grille de séries à chaque clic), sauvegarde Cloud automatique sur le <strong>Bloc-Notes</strong>, et recherche filtrée ultra-rapide par micro-debounce sur tous les onglets.</li>
-          <li><strong>Bouton "🔄 Rejouer" en Arcade</strong> : Plus besoin de quitter le jeu ni d'alerte bloquante en fin de partie ! Enchaîne tes parties directement depuis les 3 bornes d'arcade (<em>L'Affiche Mystère</em>, <em>La Machine Temporelle</em> et <em>L'Œil du Critique</em>).</li>
-          <li><strong>Marges & Espace de Sécurité</strong> : Toutes les modales et boutons d'action (notamment le bouton <em>Valider</em> dans <em>L'Œil du Critique</em>) disposent désormais de marges confortables et ne collent plus jamais aux bords de l'écran.</li>
+          <li><strong>Big Optimisation Temps Réel (0ms)</strong> : Patch chirurgical instantané sur le cochage des épisodes, sauvegarde Cloud automatique sur le <strong>Bloc-Notes</strong>, et recherche filtrée ultra-rapide par micro-debounce.</li>
+          <li><strong>Bouton "🔄 Rejouer" en Arcade</strong> : Plus besoin de quitter le jeu ni d'alerte bloquante en fin de partie ! Enchaîne tes parties directement depuis les 3 bornes d'arcade.</li>
+          <li><strong>Marges & Espace de Sécurité</strong> : Toutes les modales et boutons d'action disposent désormais de marges confortables et ne collent plus aux bords de l'écran.</li>
         </ul>
       </div>
 
@@ -1023,7 +1210,7 @@
         <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Défi saisonnier & personnalisation visuelle</p>
         <ul style="margin: 0; padding-left: 18px;">
           <li><strong>Défi des 20 Films de Noël</strong> : Détection intelligente et vérification des œuvres de Noël dans ta collection pour débloquer la récompense saisonnière.</li>
-          <li><strong>Thème Noël & Neige Animée</strong> : Débloque le skin festif (palette rouge/vert/or + flocons animés) et bascule à tout moment via le menu permanent.</li>
+          <li><strong>Thème Noël & Neige Animée</strong> : Débloque le skin festif et bascule à tout moment via le menu permanent.</li>
         </ul>
       </div>
 
@@ -1153,7 +1340,7 @@
 <script>
   const API_KEY = 'fb195a905bf531daf7eb642dbf16c455'; 
   const OMDB_KEY = 'bb349eee';
-  const CURRENT_CHANGELOG_VERSION = 'v8.2';
+  const CURRENT_CHANGELOG_VERSION = 'v8.3';
 
   // --- INITIALISATION DE LA BASE DE DONNÉES CLOUD (FIREBASE) ---
   const firebaseConfig = {
@@ -1196,7 +1383,7 @@
   let appSettings = JSON.parse(localStorage.getItem('thomasSettings_v74')) || {
     skipAnimation: false, precisionMode: false, dateMode: 'manual', searchMode: 'multi', universeCounts: {},
     highScores: { mystery: 0, chrono: 0, critic: 0 }, pseudo: "", pin: "",
-    unlockedSkins: ['default'], activeSkin: 'default'
+    unlockedSkins: ['default'], activeSkin: 'default', adminBypassSkins: []
   };
   let myMovies = [];
   let myTop3 = { Film: [null, null, null], Série: [null, null, null] };
@@ -1206,7 +1393,7 @@
   let wishlistRenderTimeout = null;
   let rouletteHighlightedId = null;
 
-  // Timers de debounce dédiés pour une saisie ultra-fluide (0 lag même avec 1000+ cartes)
+  // Timers de debounce dédiés pour une saisie ultra-fluide
   let galleryDebounceTimers = { Film: null, Série: null };
   let adminSearchTimer = null;
   let collectionsSearchTimer = null;
@@ -1266,6 +1453,7 @@
        appSettings.pseudo = oldSettings.pseudo || ""; appSettings.pin = oldSettings.pin || "";
     }
     if (!Array.isArray(appSettings.unlockedSkins)) appSettings.unlockedSkins = ['default'];
+    if (!Array.isArray(appSettings.adminBypassSkins)) appSettings.adminBypassSkins = [];
     if (!appSettings.activeSkin) appSettings.activeSkin = 'default';
     applyActiveSkin();
 
@@ -1433,6 +1621,7 @@
                           if (saveData.top3Str) myTop3 = JSON.parse(saveData.top3Str);
                           if (saveData.wishlistStr) myWishlist = JSON.parse(saveData.wishlistStr);
                           if (Array.isArray(saveData.unlockedSkins)) appSettings.unlockedSkins = saveData.unlockedSkins;
+                          if (Array.isArray(saveData.adminBypassSkins)) appSettings.adminBypassSkins = saveData.adminBypassSkins;
                           if (saveData.activeSkin) appSettings.activeSkin = saveData.activeSkin;
                       }
                       
@@ -1487,6 +1676,20 @@
       });
       myMovies = uniqueMovies;
       if (!Array.isArray(myWishlist)) myWishlist = [];
+      if (!Array.isArray(appSettings.unlockedSkins)) appSettings.unlockedSkins = ['default'];
+      if (!Array.isArray(appSettings.adminBypassSkins)) appSettings.adminBypassSkins = [];
+
+      // Correction automatique si l'admin avait précédemment utilisé le bypass :
+      // la quête reste non validée tant que les 20 films ne sont pas réellement atteints !
+      if (appSettings.pseudo === "Mr. Bonnet") {
+        const realXmasCount = detectChristmasMovies().length;
+        if (realXmasCount < 20 && appSettings.unlockedSkins.includes('christmas')) {
+          appSettings.unlockedSkins = appSettings.unlockedSkins.filter(s => s !== 'christmas');
+          if (!appSettings.adminBypassSkins.includes('christmas')) {
+            appSettings.adminBypassSkins.push('christmas');
+          }
+        }
+      }
 
       const adminBtn = document.getElementById('admin-dash-btn');
       if (adminBtn) {
@@ -1524,13 +1727,11 @@
       }, 1500);
   }
 
-  // Sauvegarde ultra-rapide pour les notes : écriture immédiate en local + synchro Cloud différée sans re-render
   function saveMoviesOnlyFast() {
       localStorage.setItem('thomasMovieCollection_v74', JSON.stringify(myMovies));
       scheduleCloudSync();
   }
 
-  // Sauvegarde ultra-rapide dédiée à la Wishlist : zéro recalcul lourd de la collection principale
   function saveWishlistFast(reRenderGrid = false) {
       localStorage.setItem('thomasWishlist_v74', JSON.stringify(myWishlist));
       updateWishlistCounters();
@@ -1580,6 +1781,7 @@
                 top3Str: JSON.stringify(myTop3),
                 wishlistStr: JSON.stringify(myWishlist),
                 unlockedSkins: appSettings.unlockedSkins || ['default'],
+                adminBypassSkins: appSettings.adminBypassSkins || [],
                 activeSkin: appSettings.activeSkin || 'default'
               };
               await db.collection('saves').doc(appSettings.pseudo).set(payloadSave, { merge: true });
@@ -1628,6 +1830,9 @@
     if (document.getElementById('wishlist-overlay').classList.contains('show')) {
       populateWishlistGenreFilter();
       renderWishlistGrid();
+    }
+    if (document.getElementById('christmas-overlay').classList.contains('show')) {
+      renderChristmasModal();
     }
   }
 
@@ -1707,6 +1912,7 @@
       top3: myTop3,
       wishlist: myWishlist,
       unlockedSkins: appSettings.unlockedSkins || ['default'],
+      adminBypassSkins: appSettings.adminBypassSkins || [],
       activeSkin: appSettings.activeSkin || 'default'
     };
     const jsonStr = JSON.stringify(data);
@@ -1725,6 +1931,7 @@
           if (importedData.top3) myTop3 = importedData.top3;
           if (Array.isArray(importedData.wishlist)) myWishlist = importedData.wishlist;
           if (Array.isArray(importedData.unlockedSkins)) appSettings.unlockedSkins = importedData.unlockedSkins;
+          if (Array.isArray(importedData.adminBypassSkins)) appSettings.adminBypassSkins = importedData.adminBypassSkins;
           if (importedData.activeSkin) appSettings.activeSkin = importedData.activeSkin;
           applyActiveSkin();
           saveData();
@@ -1736,7 +1943,7 @@
   }
 
   // =========================================================================
-  // --- ÉVÉNEMENT SPÉCIAL NOËL & GESTIONNAIRE DE SKINS (v7.9) ---
+  // --- ÉVÉNEMENT SPÉCIAL NOËL & GESTIONNAIRE DE SKINS (QUÊTE INDÉPENDANTE DU PASS ADMIN) ---
   // =========================================================================
   const XMAS_KEYWORDS = [
     "noel", "christmas", "santa", "pere noel", "grinch", "maman j ai rate l avion", "home alone",
@@ -1768,24 +1975,39 @@
     const skin = appSettings.activeSkin || 'default';
     if (skin === 'christmas') {
       document.body.classList.add('theme-christmas');
+      ensureGarlandBulbs();
       ensureSnowflakes();
     } else {
       document.body.classList.remove('theme-christmas');
     }
   }
 
+  function ensureGarlandBulbs() {
+    const bar = document.getElementById('xmas-garland-bar');
+    if (!bar || bar.children.length > 0) return;
+    const colors = ['b-red', 'b-gold', 'b-green', 'b-blue'];
+    const bulbCount = Math.max(18, Math.floor(window.innerWidth / 48));
+    let html = '';
+    for (let i = 0; i < bulbCount; i++) {
+      html += `<span class="xmas-bulb ${colors[i % colors.length]}" style="animation-delay:${(i % 4) * 0.35}s;"></span>`;
+    }
+    bar.innerHTML = html;
+  }
+
   function ensureSnowflakes() {
     const container = document.getElementById('snow-container');
     if (!container || container.children.length > 0) return;
-    const flakes = ['❄', '❅', '❆', '•'];
-    for (let i = 0; i < 35; i++) {
+    const flakes = ['❄', '❅', '❆', '✨', '•'];
+    for (let i = 0; i < 60; i++) {
       const span = document.createElement('span');
-      span.className = 'snowflake';
-      span.innerText = flakes[i % flakes.length];
+      const isGold = i % 7 === 0;
+      span.className = isGold ? 'snowflake gold-spark' : 'snowflake';
+      span.innerText = isGold ? '✨' : flakes[i % 4];
       span.style.left = Math.random() * 100 + 'vw';
-      span.style.fontSize = (10 + Math.random() * 14) + 'px';
-      span.style.animationDuration = (6 + Math.random() * 9) + 's';
-      span.style.animationDelay = (-Math.random() * 10) + 's';
+      span.style.fontSize = (9 + Math.random() * 16) + 'px';
+      span.style.opacity = (0.45 + Math.random() * 0.5).toFixed(2);
+      span.style.animationDuration = (5.5 + Math.random() * 9.5) + 's';
+      span.style.animationDelay = (-Math.random() * 12) + 's';
       container.appendChild(span);
     }
   }
@@ -1803,28 +2025,60 @@
     if (e.target === this) closeChristmasModal();
   });
 
+  function canUseSkin(skinId) {
+    if (skinId === 'default') return true;
+    const unlockedByQuest = (appSettings.unlockedSkins || []).includes(skinId);
+    const unlockedByAdminBypass = (appSettings.pseudo === "Mr. Bonnet") && (appSettings.adminBypassSkins || []).includes(skinId);
+    return unlockedByQuest || unlockedByAdminBypass;
+  }
+
   window.equipSkin = function(skinId) {
-    if (!appSettings.unlockedSkins.includes(skinId)) return;
+    if (!canUseSkin(skinId)) return;
     appSettings.activeSkin = skinId;
     applyActiveSkin();
-    saveData();
+    saveDataLocalOnly();
+    scheduleCloudSync();
     renderChristmasModal();
   };
 
-  window.unlockChristmasReward = function(forceAdmin = false) {
+  // Validation légitime de la quête (uniquement si les 20 films sont vraiment dans la collection)
+  window.unlockChristmasReward = function() {
     const xmasFilms = detectChristmasMovies();
-    if (!forceAdmin && xmasFilms.length < 20) {
-      alert(`🎅 Il te manque encore ${20 - xmasFilms.length} film(s) de Noël visionné(s) dans ta collection pour débloquer ce skin !`);
+    if (xmasFilms.length < 20) {
+      alert(`🎅 Il te manque encore ${20 - xmasFilms.length} film(s) de Noël visionné(s) dans ta collection pour valider la quête !`);
       return;
     }
+    if (!Array.isArray(appSettings.unlockedSkins)) appSettings.unlockedSkins = ['default'];
     if (!appSettings.unlockedSkins.includes('christmas')) {
       appSettings.unlockedSkins.push('christmas');
     }
     appSettings.activeSkin = 'christmas';
     applyActiveSkin();
-    saveData();
+    saveDataLocalOnly();
+    scheduleCloudSync();
     renderChristmasModal();
-    alert("🎄 Félicitations ! Le Skin Exclusif Noël (Ambiance Rouge/Vert/Or + Neige) est débloqué et équipé !");
+    alert("🎄 Félicitations ! Quête validée à 100% ! Le Skin Magie de Noël est débloqué et équipé !");
+  };
+
+  // Pass Admin : débloque l'aperçu/équipement dans le vestiaire SANS marquer la quête comme terminée
+  window.toggleAdminBypassChristmas = function() {
+    if (appSettings.pseudo !== "Mr. Bonnet") return;
+    if (!Array.isArray(appSettings.adminBypassSkins)) appSettings.adminBypassSkins = [];
+
+    const idx = appSettings.adminBypassSkins.indexOf('christmas');
+    if (idx === -1) {
+      appSettings.adminBypassSkins.push('christmas');
+      appSettings.activeSkin = 'christmas';
+    } else {
+      appSettings.adminBypassSkins.splice(idx, 1);
+      if (appSettings.activeSkin === 'christmas' && !(appSettings.unlockedSkins || []).includes('christmas')) {
+        appSettings.activeSkin = 'default';
+      }
+    }
+    applyActiveSkin();
+    saveDataLocalOnly();
+    scheduleCloudSync();
+    renderChristmasModal();
   };
 
   function renderChristmasModal() {
@@ -1835,8 +2089,10 @@
     const count = xmasFilms.length;
     const target = 20;
     const pct = Math.min(Math.round((count / target) * 100), 100);
-    const hasXmasSkin = (appSettings.unlockedSkins || []).includes('christmas');
+    const isQuestCompleted = (appSettings.unlockedSkins || []).includes('christmas');
     const isAdmin = appSettings.pseudo === "Mr. Bonnet";
+    const hasAdminTestPass = isAdmin && (appSettings.adminBypassSkins || []).includes('christmas');
+    const canEquipXmas = isQuestCompleted || hasAdminTestPass;
 
     const chipsHtml = xmasFilms.length > 0
       ? xmasFilms.map(m => `<span class="xmas-movie-chip">🎬 ${m.title} (${m.year})</span>`).join('')
@@ -1844,29 +2100,37 @@
 
     body.innerHTML = `
       <div class="xmas-progress-box">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <strong style="color:var(--gold); font-family:'Rajdhani'; font-size:19px;">🎁 Défi : 20 Films de Noël Visionnés</strong>
-          <span style="color:var(--success); font-weight:bold; font-size:15px;">${count} / ${target} (${pct}%)</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+          <strong style="color:var(--gold); font-family:'Rajdhani'; font-size:19px;">🎁 Quête : 20 Films de Noël Visionnés</strong>
+          <span style="color:${isQuestCompleted ? 'var(--success)' : 'var(--gold)'}; font-weight:bold; font-size:15px;">
+            ${count} / ${target} (${pct}%) ${isQuestCompleted ? '• ✔ Quête Validée' : '• En cours'}
+          </span>
         </div>
         <div class="progress-bar-bg" style="height:12px; margin-bottom:12px;">
           <div class="progress-bar-fill" style="width:${pct}%; background: linear-gradient(90deg, #ff2a55, #ffd700, #00ff88);"></div>
         </div>
-        <p style="font-size:12px; color:rgba(255,255,255,0.75); margin:0 0 10px 0;">
-          Forges 20 films de Noël dans ta collection pour débloquer définitivement le <strong>Skin Noël</strong> (thème Rouge/Vert/Or + flocons de neige).
+        <p style="font-size:12px; color:rgba(255,255,255,0.78); margin:0 0 10px 0;">
+          Forges 20 films de Noël dans ta collection pour valider cette quête et débloquer définitivement le skin <strong>Magie de Noël</strong>.
         </p>
         <div style="max-height:110px; overflow-y:auto; padding:6px; background:rgba(0,0,0,0.35); border-radius:8px; margin-bottom:12px;">
           ${chipsHtml}
         </div>
         <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-          ${!hasXmasSkin
-            ? `<button class="btn-submit" style="margin:0; flex:1; background:linear-gradient(90deg, #ff2a55, #00c853);" onclick="unlockChristmasReward(false)">🔍 Vérifier & Débloquer (${count}/${target})</button>`
-            : `<div style="color:var(--success); font-weight:bold; font-size:13px;">✔ Récompense débloquée et ajoutée à ton vestiaire !</div>`
+          ${!isQuestCompleted
+            ? `<button class="btn-submit" style="margin:0; flex:1; background:linear-gradient(90deg, #ff2a55, #00c853);" onclick="unlockChristmasReward()">🔍 Vérifier & Valider la Quête (${count}/${target})</button>`
+            : `<div style="color:var(--success); font-weight:bold; font-size:13px;">✔ Quête terminée ! Récompense débloquée définitivement.</div>`
           }
-          ${isAdmin && !hasXmasSkin
-            ? `<button class="btn-sync" style="margin:0; border-color:var(--danger); color:var(--danger); font-size:12px; padding:10px 14px;" onclick="unlockChristmasReward(true)">🛡️ Bypass Admin</button>`
+          ${isAdmin
+            ? `<button class="btn-sync" style="margin:0; border-color:${hasAdminTestPass ? 'var(--gold)' : 'var(--danger)'}; color:${hasAdminTestPass ? 'var(--gold)' : 'var(--danger)'}; font-size:12px; padding:10px 14px;" onclick="toggleAdminBypassChristmas()" title="Active ou désactive l'accès test au skin sans valider la quête">
+                ${hasAdminTestPass ? '🛡️ Pass Admin Test : ACTIF (Désactiver)' : '🛡️ Pass Admin : Tester le Skin'}
+              </button>`
             : ''
           }
         </div>
+        ${hasAdminTestPass && !isQuestCompleted
+          ? `<div style="margin-top:8px; font-size:11px; color:var(--gold);">ℹ️ Mode Aperçu Admin actif : tu peux équiper le skin librement tout en continuant ta quête (${count}/20).</div>`
+          : ''
+        }
       </div>
 
       <h3 style="color:var(--neon-blue); font-family:'Rajdhani'; text-transform:uppercase; margin:0 0 10px 0; font-size:20px;">🎨 Menu Permanent des Skins</h3>
@@ -1884,13 +2148,13 @@
 
       <div class="skin-card ${appSettings.activeSkin === 'christmas' ? 'active-skin' : ''}">
         <div>
-          <div style="font-weight:bold; color:var(--gold); font-size:15px;">🎄 Magie de Noël (Édition Limitée)</div>
-          <div style="font-size:12px; color:#aaa;">Palette Rouge, Vert Sapin & Or + chute de neige animée.</div>
+          <div style="font-weight:bold; color:var(--gold); font-size:15px;">🎄 Magie de Noël (100% Féerique)</div>
+          <div style="font-size:12px; color:#aaa;">Guirlande lumineuse, aurore boréale, traîneau du Père Noël, neige dorée & givre.</div>
         </div>
-        ${!hasXmasSkin
+        ${!canEquipXmas
           ? `<span style="color:#888; font-size:12px;">🔒 Verrouillé (${count}/${target})</span>`
           : (appSettings.activeSkin === 'christmas'
-              ? `<span style="color:var(--gold); font-weight:bold; font-size:12px;">✔ Équipé</span>`
+              ? `<span style="color:var(--gold); font-weight:bold; font-size:12px;">✔ Équipé ${!isQuestCompleted ? '(Test Admin)' : ''}</span>`
               : `<button class="btn-sync" style="margin:0; padding:6px 14px; font-size:12px; border-color:var(--gold); color:var(--gold);" onclick="equipSkin('christmas')">Équiper</button>`
             )
         }
@@ -2090,7 +2354,6 @@
     }
   };
 
-  // MISE À JOUR DOM EN 0ms SANS RE-RENDER DE TOUTE L'APPLICATION
   window.cycleWishHype = function(uid, badgeEl) {
     const item = myWishlist.find(w => w.uid === uid);
     if (!item) return;
@@ -2805,7 +3068,6 @@
       sortedMovies.sort((a, b) => parseInt(a.movie.year || 9999) - parseInt(b.movie.year || 9999));
     }
 
-    // Assemblage en un seul innerHTML (évite le recalcul de layout à chaque itération)
     const htmlChunks = sortedMovies.map(item => {
       const movie = item.movie;
       const index = item.originalIndex;
@@ -2861,7 +3123,6 @@
     document.getElementById('card-modal-overlay').classList.add('show');
   }
   
-  // BLOC-NOTES : SAUVEGARDE INSTANTANÉE LOCALE + CLOUD DIFFÉRÉE
   window.saveNote = function(index, text) { 
       if (myMovies[index]) { 
           myMovies[index].userNote = text; 
@@ -2879,7 +3140,6 @@
       } 
   };
 
-  // Bascule des notes en 0ms sans reconstruire le DOM de la carte
   function toggleNotes() {
     notesVisible = !notesVisible;
     const panel = document.getElementById('modal-notes-panel');
@@ -2927,7 +3187,6 @@
     document.getElementById('episode-manager-overlay').classList.remove('show');
   };
 
-  // Met à jour uniquement la jauge de la carte ouverte, la carte dans la galerie et le compteur d'heures sans reconstruire toute l'interface !
   function patchSeriesProgressFast(mIndex) {
     const movie = myMovies[mIndex];
     if (!movie) return;
@@ -2966,7 +3225,6 @@
           nowWatched = true;
       }
 
-      // Patch chirurgical instantané du bouton d'épisode (< 0.1ms)
       const btn = document.getElementById(`ep-btn-s${sNum}-e${eNum}`);
       if (btn) {
           btn.classList.toggle('watched', nowWatched);
@@ -2986,7 +3244,6 @@
       const selectAll = movie.watchedEpisodes[sNum].length !== season.e;
       movie.watchedEpisodes[sNum] = selectAll ? Array.from({length: season.e}, (_, i) => i + 1) : [];
 
-      // Patch chirurgical des boutons de la saison sans perdre le scroll
       const listEl = document.getElementById(`ep-list-s${sNum}`);
       if (listEl) {
           const btns = listEl.querySelectorAll('.ep-btn');
