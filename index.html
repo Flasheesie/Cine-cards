@@ -210,6 +210,8 @@
 
   #snow-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 2; overflow: hidden; display: none; }
   body.theme-christmas #snow-container { display: block; }
+  #snow-physics-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9998; display: none; }
+  body.theme-christmas #snow-physics-canvas { display: block; }
   .snowflake { position: absolute; top: -20px; color: #fff; user-select: none; animation: fallSway linear infinite; opacity: 0.85; text-shadow: 0 0 8px rgba(255, 255, 255, 0.9); }
   .snowflake.gold-spark { color: #ffd700; text-shadow: 0 0 10px #ffd700, 0 0 18px #ff2a55; }
   @keyframes fallSway {
@@ -903,6 +905,7 @@
 <div class="xmas-corner-deco xmas-corner-right">🕯️🔔🎄</div>
 
 <div id="snow-container"></div>
+<canvas id="snow-physics-canvas"></canvas>
 
 <!-- ÉCRAN DE CONNEXION (VERROUILLAGE) -->
 <div id="login-overlay" class="overlay show">
@@ -1162,6 +1165,17 @@
     <div class="selector-header"><h2 style="font-family: 'Rajdhani'; color: var(--neon-blue); text-transform: uppercase; margin: 0;">📢 Journal de Bord - Mises à Jour</h2></div>
     <div style="overflow-y: auto; text-align: left; padding: 10px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85);">
       
+      <!-- VERSION 8.4 -->
+      <div style="margin-bottom: 25px; border-left: 3px solid #00f3ff; padding-left: 12px;">
+        <h3 style="color: #00f3ff; font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">❄️ v8.4 - Moteur Physique de Neige 2D (Accumulation & Avalanches Souris)</h3>
+        <p style="margin: 0 0 8px 0; color: #888; font-size: 11px;">Physique Temps Réel sur le Thème Magie de Noël</p>
+        <ul style="margin: 0; padding-left: 18px;">
+          <li><strong>Accumulation sur les Blocs de la Vitrine</strong> : Les flocons 2D détectent en temps réel le rebord supérieur de chaque panneau (Statistiques, Podiums, Bornes d'Arcade, Onglets) et forment de vraies congères de neige qui suivent le défilement de la page !</li>
+          <li><strong>Étalement Naturel & Glissement aux Rebords</strong> : Quand un tas de neige s'élève, il s'étale vers les côtés et finit par glisser dans le vide aux extrémités gauche et droite du panneau.</li>
+          <li><strong>Balayage Interactif à la Souris</strong> : Passe ton curseur sur le dessus enneigé d'un bloc pour balayer la neige ! Elle est projetée sur les côtés selon la vitesse de ta souris et retombe en cascade sur les panneaux situés plus bas.</li>
+        </ul>
+      </div>
+
       <!-- VERSION 8.3 -->
       <div style="margin-bottom: 25px; border-left: 3px solid var(--gold); padding-left: 12px;">
         <h3 style="color: var(--gold); font-family: 'Rajdhani'; margin: 0 0 4px 0; font-size: 18px;">v8.3 - Mode Aperçu Admin Indépendant & Skin Magie de Noël 100% Immersif</h3>
@@ -1340,7 +1354,7 @@
 <script>
   const API_KEY = 'fb195a905bf531daf7eb642dbf16c455'; 
   const OMDB_KEY = 'bb349eee';
-  const CURRENT_CHANGELOG_VERSION = 'v8.3';
+  const CURRENT_CHANGELOG_VERSION = 'v8.4';
 
   // --- INITIALISATION DE LA BASE DE DONNÉES CLOUD (FIREBASE) ---
   const firebaseConfig = {
@@ -1977,8 +1991,323 @@
       document.body.classList.add('theme-christmas');
       ensureGarlandBulbs();
       ensureSnowflakes();
+      startSnowPhysics2D();
     } else {
       document.body.classList.remove('theme-christmas');
+      stopSnowPhysics2D();
+    }
+  }
+
+  // =========================================================================
+  // --- MOTEUR PHYSIQUE DE NEIGE 2D (ACCUMULATION SUR LES BLOCS & BALAYAGE SOURIS) ---
+  // =========================================================================
+  let snowPhysicsAnimId = null;
+  let physSnowflakes = [];
+  let physAvalancheDrops = [];
+  let physSnowLedges = new Map();
+  let physCachedRects = [];
+  let physLastScanTime = 0;
+  let physMouse = { x: -1000, y: -1000, vx: 0, vy: 0, prevX: -1000, prevY: -1000 };
+  let physWindX = 0;
+
+  window.addEventListener('mousemove', (e) => {
+    physMouse.vx = e.clientX - physMouse.prevX;
+    physMouse.vy = e.clientY - physMouse.prevY;
+    physMouse.x = e.clientX;
+    physMouse.y = e.clientY;
+    physMouse.prevX = e.clientX;
+    physMouse.prevY = e.clientY;
+    physWindX = ((e.clientX / window.innerWidth) - 0.5) * 1.3;
+  });
+
+  function scanPhysicsColliders() {
+    const appContent = document.getElementById('app-content');
+    if (!appContent || !appContent.classList.contains('loaded')) return;
+
+    const selectors = '.tab-content.active .glass-panel, .tab-content.active .arcade-cabinet, header .tab-btn';
+    const elements = document.querySelectorAll(selectors);
+    const binSize = 5;
+    const activeRects = [];
+
+    elements.forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (r.width < 50 || r.height < 25) return;
+      if (r.bottom < -50 || r.top > window.innerHeight + 50) return;
+
+      const numBins = Math.max(4, Math.floor((r.width - 16) / binSize));
+      let ledgeData = physSnowLedges.get(el);
+      if (!ledgeData || Math.abs(ledgeData.bins.length - numBins) > 3) {
+        ledgeData = {
+          bins: new Float32Array(numBins),
+          maxHeight: el.classList.contains('tab-btn') ? 10 : 26
+        };
+        physSnowLedges.set(el, ledgeData);
+      }
+
+      activeRects.push({
+        el: el,
+        left: r.left + 8,
+        right: r.right - 8,
+        top: r.top,
+        width: Math.max(10, r.width - 16),
+        binSize: (r.width - 16) / ledgeData.bins.length,
+        bins: ledgeData.bins,
+        maxHeight: ledgeData.maxHeight
+      });
+    });
+
+    activeRects.sort((a, b) => a.top - b.top);
+    physCachedRects = activeRects;
+  }
+
+  function spawnAvalancheParticle(x, y, vx, vy, radius) {
+    if (physAvalancheDrops.length > 280) return;
+    physAvalancheDrops.push({
+      x: x,
+      y: y,
+      vx: vx,
+      vy: vy,
+      r: radius || (Math.random() * 2.4 + 1.4),
+      opacity: Math.random() * 0.35 + 0.6,
+      ignoreTopY: y + 14
+    });
+  }
+
+  function startSnowPhysics2D() {
+    const canvas = document.getElementById('snow-physics-canvas');
+    if (!canvas || snowPhysicsAnimId) return;
+    const ctx = canvas.getContext('2d');
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      scanPhysicsColliders();
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    physSnowflakes = Array.from({ length: 145 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 2.9 + 1.3,
+      speedY: Math.random() * 1.5 + 0.75,
+      drift: Math.random() * 0.8 - 0.4,
+      opacity: Math.random() * 0.55 + 0.4,
+      wobble: Math.random() * Math.PI * 2
+    }));
+
+    function tickSnowPhysics(now) {
+      if (!document.body.classList.contains('theme-christmas')) {
+        snowPhysicsAnimId = null;
+        return;
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (!physLastScanTime || now - physLastScanTime > 110) {
+        scanPhysicsColliders();
+        physLastScanTime = now;
+      }
+
+      // 1. GESTION DES CONGÈRES SUR CHAQUE ÉLÉMENT DE LA VITRINE
+      for (let ledge of physCachedRects) {
+        const bins = ledge.bins;
+        const n = bins.length;
+        const bSize = ledge.binSize;
+
+        // Balayage interactif quand la souris passe sur le rebord supérieur du bloc
+        const surfaceTopY = ledge.top - 24;
+        const surfaceBottomY = ledge.top + 18;
+        if (physMouse.y >= surfaceTopY && physMouse.y <= surfaceBottomY &&
+            physMouse.x >= ledge.left - 25 && physMouse.x <= ledge.right + 25) {
+          const hitRadius = 40;
+          for (let i = 0; i < n; i++) {
+            const bx = ledge.left + (i + 0.5) * bSize;
+            const dist = Math.abs(bx - physMouse.x);
+            if (dist < hitRadius && bins[i] > 0.35) {
+              const removed = bins[i] * 0.68;
+              bins[i] -= removed;
+
+              const pushDir = Math.abs(physMouse.vx) > 1.2
+                ? Math.sign(physMouse.vx)
+                : (bx < (ledge.left + ledge.right) / 2 ? -1 : 1);
+
+              const neighborIdx = i + pushDir * 2;
+              if (neighborIdx >= 0 && neighborIdx < n) {
+                bins[neighborIdx] += removed * 0.45;
+              }
+
+              const numDrops = Math.min(4, Math.ceil(removed * 0.95));
+              for (let k = 0; k < numDrops; k++) {
+                const kickVx = pushDir * (Math.random() * 2.9 + 1.4) + (physMouse.vx * 0.22);
+                const kickVy = -Math.random() * 2.1 - 0.3;
+                spawnAvalancheParticle(bx + (Math.random() * 6 - 3), ledge.top - bins[i], kickVx, kickVy, Math.random() * 2.3 + 1.3);
+              }
+            }
+          }
+        }
+
+        // Physique de pente (automate cellulaire) & chute sur les côtés gauche/droite
+        for (let i = 0; i < n; i++) {
+          if (i === 0 && bins[0] > 2.0) {
+            const slide = (bins[0] - 1.8) * 0.38;
+            bins[0] -= slide;
+            if (Math.random() < 0.6) {
+              spawnAvalancheParticle(ledge.left - 3, ledge.top, -Math.random() * 1.5 - 0.5, Math.random() * 0.9, 2.1);
+            }
+          } else if (i === n - 1 && bins[n - 1] > 2.0) {
+            const slide = (bins[n - 1] - 1.8) * 0.38;
+            bins[n - 1] -= slide;
+            if (Math.random() < 0.6) {
+              spawnAvalancheParticle(ledge.right + 3, ledge.top, Math.random() * 1.5 + 0.5, Math.random() * 0.9, 2.1);
+            }
+          }
+
+          if (i < n - 1) {
+            const diff = bins[i] - bins[i + 1];
+            if (Math.abs(diff) > 1.7) {
+              const transfer = diff * 0.19;
+              bins[i] -= transfer;
+              bins[i + 1] += transfer;
+            }
+          }
+
+          if (bins[i] > ledge.maxHeight) {
+            const overflow = bins[i] - ledge.maxHeight;
+            bins[i] = ledge.maxHeight;
+            const side = i < n / 2 ? -1 : 1;
+            if (i + side >= 0 && i + side < n) bins[i + side] += overflow * 0.85;
+          }
+        }
+
+        // Dessin du manteau neigeux accumulé sur le dessus de l'élément
+        let hasSnow = false;
+        for (let i = 0; i < n; i++) { if (bins[i] > 0.3) { hasSnow = true; break; } }
+        if (hasSnow) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(ledge.left, ledge.top + 2);
+          for (let i = 0; i < n; i++) {
+            const px = ledge.left + (i + 0.5) * bSize;
+            const py = ledge.top - bins[i];
+            ctx.lineTo(px, py);
+          }
+          ctx.lineTo(ledge.right, ledge.top + 2);
+          ctx.closePath();
+
+          const grad = ctx.createLinearGradient(0, ledge.top - ledge.maxHeight, 0, ledge.top + 3);
+          grad.addColorStop(0, 'rgba(255, 255, 255, 0.98)');
+          grad.addColorStop(0.65, 'rgba(232, 245, 255, 0.92)');
+          grad.addColorStop(1, 'rgba(190, 225, 255, 0.78)');
+          ctx.fillStyle = grad;
+          ctx.shadowColor = 'rgba(255, 255, 255, 0.65)';
+          ctx.shadowBlur = 6;
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      // 2. CHUTE & COLLISION DES FLOCONS 2D
+      for (let f of physSnowflakes) {
+        f.wobble += 0.03;
+        const prevY = f.y;
+        f.y += f.speedY;
+        f.x += f.drift + Math.sin(f.wobble) * 0.35 + physWindX * 0.55;
+
+        const dxM = f.x - physMouse.x;
+        const dyM = f.y - physMouse.y;
+        const distM = Math.hypot(dxM, dyM);
+        if (distM < 44 && distM > 0.1) {
+          f.x += (dxM / distM) * 2.1 + physMouse.vx * 0.14;
+          f.y += (dyM / distM) * 1.1;
+        }
+
+        let landed = false;
+        for (let ledge of physCachedRects) {
+          if (f.x >= ledge.left && f.x <= ledge.right) {
+            const binIdx = Math.min(ledge.bins.length - 1, Math.max(0, Math.floor((f.x - ledge.left) / ledge.binSize)));
+            const snowTopY = ledge.top - ledge.bins[binIdx];
+            if (prevY <= snowTopY + 3 && f.y >= snowTopY - 1) {
+              const deposit = f.r * 0.65;
+              ledge.bins[binIdx] += deposit;
+              if (binIdx > 0) ledge.bins[binIdx - 1] += deposit * 0.45;
+              if (binIdx < ledge.bins.length - 1) ledge.bins[binIdx + 1] += deposit * 0.45;
+              landed = true;
+              break;
+            }
+          }
+        }
+
+        if (landed) {
+          f.y = -8;
+          f.x = Math.random() * canvas.width;
+          continue;
+        }
+
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${f.opacity})`;
+        ctx.fill();
+
+        if (f.y > canvas.height + 5) { f.y = -5; f.x = Math.random() * canvas.width; }
+        if (f.x > canvas.width + 5) f.x = -5;
+        if (f.x < -5) f.x = canvas.width + 5;
+      }
+
+      // 3. PHYSIQUE DES PARTICULES D'AVALANCHE (CASCADE SUR LES CÔTÉS)
+      for (let i = physAvalancheDrops.length - 1; i >= 0; i--) {
+        const p = physAvalancheDrops[i];
+        const prevPY = p.y;
+        p.vy += 0.18;
+        p.vx *= 0.98;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.opacity -= 0.004;
+
+        let caughtLower = false;
+        if (p.y > p.ignoreTopY) {
+          for (let ledge of physCachedRects) {
+            if (ledge.top > p.ignoreTopY && p.x >= ledge.left && p.x <= ledge.right) {
+              const binIdx = Math.min(ledge.bins.length - 1, Math.max(0, Math.floor((p.x - ledge.left) / ledge.binSize)));
+              const snowTopY = ledge.top - ledge.bins[binIdx];
+              if (prevPY <= snowTopY + 5 && p.y >= snowTopY - 2) {
+                ledge.bins[binIdx] += p.r * 0.52;
+                caughtLower = true;
+                break;
+              }
+            }
+          }
+        }
+
+        if (caughtLower || p.y > canvas.height + 10 || p.opacity <= 0.05) {
+          physAvalancheDrops.splice(i, 1);
+          continue;
+        }
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(240, 248, 255, ${p.opacity})`;
+        ctx.fill();
+      }
+
+      physMouse.vx *= 0.8;
+      physMouse.vy *= 0.8;
+
+      snowPhysicsAnimId = requestAnimationFrame(tickSnowPhysics);
+    }
+
+    snowPhysicsAnimId = requestAnimationFrame(tickSnowPhysics);
+  }
+
+  function stopSnowPhysics2D() {
+    if (snowPhysicsAnimId) {
+      cancelAnimationFrame(snowPhysicsAnimId);
+      snowPhysicsAnimId = null;
+    }
+    physSnowLedges.clear();
+    physAvalancheDrops = [];
+    const canvas = document.getElementById('snow-physics-canvas');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
   }
 
