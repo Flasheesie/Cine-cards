@@ -648,10 +648,13 @@
   .wishlist-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 18px;
+    align-content: start;
+    align-items: start;
+    gap: 20px;
     overflow-y: auto;
     flex-grow: 1;
-    padding: 4px 6px 15px 2px;
+    padding: 16px 16px 24px 16px;
+    box-sizing: border-box;
   }
   .wish-card {
     background: rgba(18, 18, 34, 0.78);
@@ -660,6 +663,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    height: auto;
     transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
     position: relative;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
@@ -671,8 +675,9 @@
   }
   .wish-card.roulette-winner {
     border: 2px solid var(--gold) !important;
-    box-shadow: 0 0 35px rgba(255, 215, 0, 0.85) !important;
-    transform: scale(1.03);
+    box-shadow: 0 0 28px rgba(255, 215, 0, 0.85) !important;
+    transform: translateY(-2px);
+    z-index: 5;
     animation: pulseWinner 1s infinite alternate;
   }
   @keyframes pulseWinner {
